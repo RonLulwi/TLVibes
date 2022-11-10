@@ -3,6 +3,7 @@ package demo;
 // {"message":"Hello SuperApp World!"}
 public class DemoBoundary {
 	private String message;
+	private int temp; //This is the change
 
 	public DemoBoundary() {
 	}
