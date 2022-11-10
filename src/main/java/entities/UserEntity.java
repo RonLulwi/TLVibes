@@ -1,4 +1,4 @@
-package Interfaces;
+package entities;
 
 public class UserEntity {
 	private String userName;
