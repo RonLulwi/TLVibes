@@ -4,6 +4,8 @@ package demo;
 public class DemoBoundary {
 	private String message;
 
+	private double temp2;
+	
 	public DemoBoundary() {
 	}
 
