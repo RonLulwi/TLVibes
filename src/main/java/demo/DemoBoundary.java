@@ -5,6 +5,8 @@ public class DemoBoundary {
 	private String message;
 	private int temp; //This is the change
 
+	private double temp2;
+	
 	public DemoBoundary() {
 	}
 
