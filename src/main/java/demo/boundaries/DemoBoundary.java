@@ -1,4 +1,4 @@
-package demo;
+package demo.boundaries;
 
 // {"message":"Hello SuperApp World!"}
 public class DemoBoundary {

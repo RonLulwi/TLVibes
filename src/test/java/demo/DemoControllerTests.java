@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
+import demo.boundaries.DemoBoundary;
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class DemoControllerTests {
 	private int port;
