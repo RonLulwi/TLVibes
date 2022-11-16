@@ -6,13 +6,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import demo.boundaries.MiniAppCommandBoundary;
+
 @RestController
 public class AdminController {
 	@RequestMapping(
 			path= {"/superapp/admin/users"},
 			method = {RequestMethod.DELETE})
 	public void DeleteAllUsers() {
-		// TODO delete all users in database
+		// TODO delete all objects in database
 	}
 	@RequestMapping(
 			path= {"/superapp/admin/objects"},
@@ -26,5 +28,13 @@ public class AdminController {
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public String DeleteSelectedMiniappHistory(@PathVariable("selectedappname") String name) {
 		return "All The History Of MiniApp With Name \"" + name + "\" Was Deleted Successfuly";
+	}
+	
+	@RequestMapping(
+			path= {"/superapp/admin/users"},
+			method = {RequestMethod.GET},
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+			public MiniAppCommandBoundary GetAllUsers() {
+			return  null; // need return array of user boundaries
 	}
 }
