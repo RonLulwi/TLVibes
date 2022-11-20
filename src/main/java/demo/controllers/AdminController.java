@@ -31,6 +31,26 @@ public class AdminController {
 	}
 	
 	@RequestMapping(
+			path= {"/superapp/admin/miniapp/{selectedappname}"},
+			method = {RequestMethod.GET},
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public MiniAppCommandBoundary One_Command(@PathVariable("selectedappname") String name) {
+		return new MiniAppCommandBoundary(name);
+	}
+	
+	@RequestMapping(
+			path= {"/superapp/admin/miniapp"},
+			method = {RequestMethod.GET},
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public MiniAppCommandBoundary[] Commands() {
+		MiniAppCommandBoundary command_1=new MiniAppCommandBoundary("command_1");
+		MiniAppCommandBoundary command_2=new MiniAppCommandBoundary("command_2");
+		MiniAppCommandBoundary command_3=new MiniAppCommandBoundary("command_3");
+		MiniAppCommandBoundary[] allCommands = {command_1,command_2,command_3};
+		return allCommands;
+	}
+	
+	@RequestMapping(
 			path= {"/superapp/admin/users"},
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})

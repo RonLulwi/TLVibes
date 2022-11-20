@@ -12,8 +12,8 @@ public class MiniAppCommandBoundary {
 	private Map<String, Object> commandAttributes;
 	
 	
-	public MiniAppCommandBoundary() {
-		ObjectDummyInit();
+	public MiniAppCommandBoundary(String command_name) {
+		ObjectDummyInit(command_name);
 	}
 	
 	
@@ -104,7 +104,7 @@ public class MiniAppCommandBoundary {
 
 
 
-	private void ObjectDummyInit() {
+	private void ObjectDummyInit(String command_name) {
 		//config dummy
 		String superapp_name="2023.a.demo";
 		String type = "dummyApp";
@@ -120,7 +120,7 @@ public class MiniAppCommandBoundary {
 		this.commandId.put("internalCommandId", commandId);
 		
 		//**************************************************
-		this.command ="doSomething";
+		this.command = command_name;
 		Map<String, Object> object_id=  new HashMap<>();
 		object_id.put("superapp", superapp_name);
 		object_id.put("internalObjectId", objectId);
