@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import demo.boundaries.NewUserBoundary;
+import demo.boundaries.ObjectBoundary;
 import demo.boundaries.UserBoundary;
 
 @RestController
@@ -35,4 +36,17 @@ public class UserController {
 		 	String email=message.getemail();
 			return new UserBoundary(superApp,email);
 		}
+	
+	@RequestMapping(
+			path = "/superapp/users/{superapp}/{userEmail}",
+			method = RequestMethod.PUT,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void updateUser (
+			@PathVariable("superapp") String superapp,
+			@PathVariable("userEmail") String userEmail, 
+			@RequestBody UserBoundary update) {
+		// TODO update user if exists at database
+		
+		
+	}
 }
