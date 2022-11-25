@@ -20,7 +20,7 @@ public class MiniAppCommandBoundary {
 	public MiniAppCommandBoundary(String command_name) {
 		ObjectDummyInit(command_name);
 	}
-	
+	// this is my note
 	private void ObjectDummyInit(String command_name) {
 		//config dummy
 		String superapp_name="2023.a.demo";
