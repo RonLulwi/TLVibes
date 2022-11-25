@@ -9,7 +9,7 @@ public class UserBoundary {
 	
 	
 	private HashMap<String,String> userId;
-	private Role role;
+	private String role;
 	private String username;
 	private String avatar;
 	
@@ -35,11 +35,11 @@ public class UserBoundary {
 		this.userId = userId;
 	}
 
-	public Role getrole() {
+	public String getrole() {
 		return role;
 	}
 
-	public void setrole(Role role) {
+	public void setrole(String role) {
 		this.role = role;
 	}
 

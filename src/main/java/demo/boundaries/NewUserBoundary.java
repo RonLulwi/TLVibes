@@ -6,7 +6,7 @@ import demo.enums.Role;
 public class NewUserBoundary {
 	
 	private String email;
-	private Role role;
+	private String role;
 	private String username;
 	private String avatar;
 	
@@ -30,11 +30,11 @@ public class NewUserBoundary {
 		this.email = email;
 	}
 
-	public Role getrole() {
+	public String getrole() {
 		return role;
 	}
 
-	public void setrole(Role role) {
+	public void setrole(String role) {
 		this.role = role;
 	}
 

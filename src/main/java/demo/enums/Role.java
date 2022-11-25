@@ -1,5 +1,5 @@
 package demo.enums;
 
-public enum Role {
-	STUDENT
+public final class Role {
+	public static final String STUDENT = "Student";
 }
