@@ -12,7 +12,7 @@ public class CommandId {
 	public CommandId() {
 		supperApp = "2023a.demo";
 		miniApp = "dummyApp";
-		internalCommanId = IdGenerator.GenerateID();
+		internalCommanId = IdGenerator.GenerateUUID();
 		
 	}
 

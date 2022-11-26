@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import demo.boundaries.NewUserBoundary;
-import demo.boundaries.ObjectBoundary;
 import demo.boundaries.UserBoundary;
 import demo.boundaries.identifiers.UserId;
 

@@ -1,24 +1,35 @@
 package demo.boundaries.identifiers;
 
-import java.util.UUID;
-
 import demo.infrastructure.IdGenerator;
 
 public class ObjectId {
 	String supperApp;
-	UUID internalObjectId;
+	int internalObjectId;
 	
 	public ObjectId()
 	{
-		supperApp = "2023a.demo";
-		internalObjectId = IdGenerator.GenerateID();
+		setSupperApp("2023a.demo");
+		setInternalObjectId(IdGenerator.GenerateIntID());
 	}
 
 	public ObjectId(String superApp)
 	{
 		this();
-		this.supperApp = superApp;
+		setSupperApp(superApp);
 	}
+
+	public ObjectId(String superApp, int internalObjectId)
+	{
+		setSupperApp(superApp);
+		setInternalObjectId(internalObjectId);
+	}
+	
+	public ObjectId(String superApp, String internalObjectId)
+	{
+		setSupperApp(superApp);
+		setInternalObjectId(internalObjectId);
+	}
+
 
 	public String getSupperApp() {
 		return supperApp;
@@ -28,13 +39,19 @@ public class ObjectId {
 		this.supperApp = supperApp;
 	}
 
-	public UUID getInternalObjectId() {
+	public int getInternalObjectId() {
 		return internalObjectId;
 	}
 
-	public void setInternalObjectId(UUID internalObjectId) {
+	public void setInternalObjectId(int internalObjectId) {
 		this.internalObjectId = internalObjectId;
 	}
+	
+	public void setInternalObjectId(String internalObjectId) {
+		this.internalObjectId = Integer.parseInt(internalObjectId);
+	}
+
+
 
 	
 }

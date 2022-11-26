@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import demo.boundaries.ObjectBoundary;
+import demo.boundaries.identifiers.ObjectId;
 
 @RestController
 public class ObjectController {
@@ -21,10 +22,7 @@ public class ObjectController {
 			@PathVariable("superapp") String superapp,
 			@PathVariable("InternalObjectId") String InternalObjectId
 			){
-
-		//System.err.println("supperapp=" + superapp +", InternalObjectId=" + InternalObjectId);
-		return new ObjectBoundary(InternalObjectId);
-
+		return new ObjectBoundary(new ObjectId(superapp,InternalObjectId));
 	}
 
 
@@ -33,10 +31,11 @@ public class ObjectController {
 			path = "/superapp/objects",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ObjectBoundary[] retriveAllObjects (){
-		String InternalObjectId = null;
 		ObjectBoundary[] objs = new ObjectBoundary[3];
-		for(int i = 0; i < objs.length; ++i) {
-			objs[i] = new ObjectBoundary(InternalObjectId);
+		for(int i = 0; i < objs.length; i++) {
+			ObjectId objectId = new ObjectId();
+			objectId.setInternalObjectId(String.valueOf(100 + i));
+			objs[i] = new ObjectBoundary(objectId);
 		}
 		return objs;
 	}
@@ -66,7 +65,7 @@ public class ObjectController {
 			@PathVariable("InternalObjectId") String InternalObjectId, 
 			@RequestBody ObjectBoundary update) {
 		// TODO update message if exists at database
-		System.err.println(update.getObjectId());
+		System.err.println(update.getObjectId().getInternalObjectId());
 		
 	}
 
