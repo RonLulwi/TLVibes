@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import demo.boundaries.MiniAppCommandBoundary;
 import demo.boundaries.UserBoundary;
+import demo.boundaries.identifiers.UserId;
+import demo.enums.Role;
 
 @RestController
 public class AdminController {
@@ -34,8 +36,10 @@ public class AdminController {
 			path= {"/superapp/admin/miniapp/{selectedappname}"},
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public MiniAppCommandBoundary One_Command(@PathVariable("selectedappname") String name) {
-		return new MiniAppCommandBoundary(name);
+	public MiniAppCommandBoundary[] One_Command(
+			@PathVariable("selectedappname") String selectedappname
+			) {
+		return new MiniAppCommandBoundary[] {new MiniAppCommandBoundary(selectedappname)};
 	}
 
 	@RequestMapping(
@@ -43,9 +47,9 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public MiniAppCommandBoundary[] Commands() {
-		MiniAppCommandBoundary command_1=new MiniAppCommandBoundary("command_1");
-		MiniAppCommandBoundary command_2=new MiniAppCommandBoundary("command_2");
-		MiniAppCommandBoundary command_3=new MiniAppCommandBoundary("command_3");
+		MiniAppCommandBoundary command_1=new MiniAppCommandBoundary("miniApp1");
+		MiniAppCommandBoundary command_2=new MiniAppCommandBoundary("miniApp2");
+		MiniAppCommandBoundary command_3=new MiniAppCommandBoundary("miniApp3");
 		MiniAppCommandBoundary[] allCommands = {command_1,command_2,command_3};
 		return allCommands;
 	}
@@ -56,8 +60,15 @@ public class AdminController {
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public UserBoundary[] GetAllUsers() {
 		UserBoundary[] users = new UserBoundary[3];
-		for(int i = 0; i <3 ; ++i) {
-			users[i] = new UserBoundary("2023.a.demo", "something" + i + "@gmail.com");
+		for(int i = 0; i <3 ; i++) {
+			String miniAppName = "miniApp" + i;
+			String userName = "User" + i;
+			users[i] = new UserBoundary(
+					new UserId(userName, userName + "@demo.com"),
+					Role.STUDENT,
+					miniAppName,
+					Character.toString(65 + i)
+					);
 		}
 		return users;
 	}

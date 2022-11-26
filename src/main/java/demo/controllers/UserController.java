@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import demo.boundaries.NewUserBoundary;
 import demo.boundaries.ObjectBoundary;
 import demo.boundaries.UserBoundary;
+import demo.boundaries.identifiers.UserId;
 
 @RestController
 public class UserController {
@@ -21,8 +22,7 @@ public class UserController {
 		public UserBoundary loginAndRetreiveDetails(
 				@PathVariable("superapp") String superApp,
 				@PathVariable("email") String email ) {
-		 	
-			return new UserBoundary(superApp,email);
+			return new UserBoundary(new UserId(superApp,email));
 		}
 
 	@RequestMapping(
@@ -34,7 +34,7 @@ public class UserController {
 				@RequestBody NewUserBoundary message) {
 		 	String superApp="2023a.demo";
 		 	String email=message.getemail();
-			return new UserBoundary(superApp,email);
+			return new UserBoundary(new UserId(superApp,email));
 		}
 	
 	@RequestMapping(

@@ -1,45 +1,43 @@
 package demo.boundaries;
 
-import java.util.HashMap;
-
+import demo.boundaries.identifiers.UserId;
 import demo.enums.Role;
 
 public class UserBoundary {
-	
-	
-	
-	private HashMap<String,String> userId;
-	private Role role;
+	private UserId userId;
+	private String role;
 	private String username;
 	private String avatar;
 	
 	public UserBoundary() {
-		
-	}
-
-	public UserBoundary(String superApp,String email) {
-		this.userId=new HashMap<>();
-		this.userId.put("superapp", superApp);
-		this.userId.put("email", email);
+		this.userId = new UserId();
 		this.role=Role.STUDENT;
 		this.username="Jane Roe";
 		this.avatar="J";
-		
-	}
 
-	public HashMap<String, String> getuserId() {
-		return userId;
 	}
-
-	public void setuserId(HashMap<String, String> userId) {
+	
+	public UserBoundary(UserId userId)
+	{
+		this();
 		this.userId = userId;
 	}
 
-	public Role getrole() {
+	
+	public UserBoundary(UserId userId,String role,String userName, String avatar)
+	{
+		this.userId = userId;
+		this.role=role;
+		this.username=userName;
+		this.avatar=avatar;
+	}
+	
+
+	public String getrole() {
 		return role;
 	}
 
-	public void setrole(Role role) {
+	public void setrole(String role) {
 		this.role = role;
 	}
 
@@ -58,8 +56,12 @@ public class UserBoundary {
 	public void setavatar(String avatar) {
 		this.avatar = avatar;
 	}
-	
-	
-	
 
+	public UserId getUserId() {
+		return userId;
+	}
+
+	public void setUserId(UserId userId) {
+		this.userId = userId;
+	}
 }
