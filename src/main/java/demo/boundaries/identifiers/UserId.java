@@ -10,8 +10,16 @@ public class UserId {
 	}
 	
 	public UserId(String superApp, String email) {
-		this.superApp = superApp;	
-		this.email = email;	
+		this();
+		
+		if(superApp != null) {
+			this.superApp = superApp;				
+		}
+		
+		if(email != null)
+		{			
+			this.email = email;	
+		}
 	}
 
 	public String getSuperApp() {

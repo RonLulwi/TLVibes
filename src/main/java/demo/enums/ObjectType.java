@@ -1,5 +1,6 @@
 package demo.enums;
 
-public enum ObjectType {
-	dummyType
+public final class ObjectType {
+	public static final String DUMMY = "dummyType";	
 }
+
