@@ -4,12 +4,12 @@ import demo.infrastructure.IdGenerator;
 
 public class ObjectId {
 	String supperApp;
-	int internalObjectId;
+	String internalObjectId; // TODO  to be String
 	
 	public ObjectId()
 	{
 		setSupperApp("2023a.demo");
-		setInternalObjectId(IdGenerator.GenerateIntID());
+		setInternalObjectId(Integer.toString(IdGenerator.GenerateIntID()));
 	}
 
 	public ObjectId(String superApp)
@@ -17,19 +17,12 @@ public class ObjectId {
 		this();
 		setSupperApp(superApp);
 	}
-
-	public ObjectId(String superApp, int internalObjectId)
-	{
-		setSupperApp(superApp);
-		setInternalObjectId(internalObjectId);
-	}
 	
 	public ObjectId(String superApp, String internalObjectId)
 	{
 		setSupperApp(superApp);
 		setInternalObjectId(internalObjectId);
 	}
-
 
 	public String getSupperApp() {
 		return supperApp;
@@ -39,20 +32,12 @@ public class ObjectId {
 		this.supperApp = supperApp;
 	}
 
-	public int getInternalObjectId() {
+	public String getInternalObjectId() {
 		return internalObjectId;
 	}
 
-	public void setInternalObjectId(int internalObjectId) {
-		this.internalObjectId = internalObjectId;
-	}
-	
 	public void setInternalObjectId(String internalObjectId) {
-		this.internalObjectId = Integer.parseInt(internalObjectId);
-	}
-
-
-
-	
+		this.internalObjectId = internalObjectId;
+	}	
 }
 

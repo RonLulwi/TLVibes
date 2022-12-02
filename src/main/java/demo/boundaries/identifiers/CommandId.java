@@ -2,24 +2,14 @@ package demo.boundaries.identifiers;
 
 import java.util.UUID;
 
-import demo.infrastructure.IdGenerator;
 
 public class CommandId {
 	String supperApp;
 	String miniApp;
-	UUID internalCommanId;
+	String internalCommanId;
 
-	public CommandId() {
-		supperApp = "2023a.demo";
-		miniApp = "dummyApp";
-		internalCommanId = IdGenerator.GenerateUUID();
-		
-	}
+	public CommandId() {}
 
-	public CommandId(String miniAppName) {
-		this();
-		miniApp = miniAppName;
-	}
 
 	public String getSupperApp() {
 		return supperApp;
@@ -37,11 +27,11 @@ public class CommandId {
 		this.miniApp = miniApp;
 	}
 
-	public UUID getInternalCommanId() {
+	public String getInternalCommanId() {
 		return internalCommanId;
 	}
 
-	public void setInternalCommanId(UUID internalCommanId) {
+	public void setInternalCommanId(String internalCommanId) {
 		this.internalCommanId = internalCommanId;
 	}
 }

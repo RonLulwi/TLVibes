@@ -10,7 +10,7 @@ public interface MiniAppCommandsService {
 	
 	public List<MiniAppCommandBoundary> getAllCommands();
 	
-	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String nimiAppName);
+	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName);
 	
 	public void deleteAllCommands();
 }

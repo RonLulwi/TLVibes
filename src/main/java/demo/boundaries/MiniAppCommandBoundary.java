@@ -30,7 +30,7 @@ public class MiniAppCommandBoundary {
 
 	public MiniAppCommandBoundary(String miniAppName) {
 		this();
-		this.commandId = new CommandId(miniAppName);
+		this.commandId = new CommandId();
 	}
 	
 	public CommandId getCommandId() {
