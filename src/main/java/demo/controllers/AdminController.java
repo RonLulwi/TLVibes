@@ -65,7 +65,7 @@ public class AdminController {
 			String userName = "User" + i;
 			users[i] = new UserBoundary(
 					new UserId(userName, userName + "@demo.com"),
-					Role.STUDENT,
+					Role.MINIAPP_USER,
 					miniAppName,
 					Character.toString(65 + i)
 					);

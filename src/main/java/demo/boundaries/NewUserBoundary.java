@@ -6,7 +6,7 @@ import demo.enums.Role;
 public class NewUserBoundary {
 	
 	private String email;
-	private String role;
+	private Role role;
 	private String username;
 	private String avatar;
 	
@@ -16,7 +16,7 @@ public class NewUserBoundary {
 
 	public NewUserBoundary(String superApp,String email) {
 		this.email=email;
-		this.role=Role.STUDENT;
+		this.role=Role.MINIAPP_USER;
 		this.username="Jane Roe";
 		this.avatar="J";
 		
@@ -30,11 +30,11 @@ public class NewUserBoundary {
 		this.email = email;
 	}
 
-	public String getrole() {
+	public Role getrole() {
 		return role;
 	}
 
-	public void setrole(String role) {
+	public void setrole(Role role) {
 		this.role = role;
 	}
 
