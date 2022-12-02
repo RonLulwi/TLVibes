@@ -13,7 +13,7 @@ import tlvibes.data.enums.ObjectType;
 import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.boundaries.identifiers.UserId;
 
-public class ObjectBoundary{
+public class SuperAppObjectBoundary{
 	
 	private ObjectId objectId;
 	private String type;
@@ -23,7 +23,7 @@ public class ObjectBoundary{
 	private UserId createdBy;
 	private Map<String, Object> objectDetails;	
 
-	public ObjectBoundary() {
+	public SuperAppObjectBoundary() {
 		this.objectId = new ObjectId();
 		this.type = ObjectType.DUMMY;
 		this.alias = ObjectAlias.DUMMY;
@@ -33,12 +33,12 @@ public class ObjectBoundary{
 		this.objectDetails = new  HashMap<String, Object>();
 	}
 
-	public ObjectBoundary(ObjectId objectId) {
+	public SuperAppObjectBoundary(ObjectId objectId) {
 		this();
 		this.objectId = objectId;
 	}
 
-	public ObjectBoundary(ObjectBoundary other) {
+	public SuperAppObjectBoundary(SuperAppObjectBoundary other) {
 		this.objectId = other.getObjectId();
 		this.type = other.getType();
 		this.alias = other.getAlias();
