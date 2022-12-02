@@ -1,4 +1,4 @@
-package tlvibes.boundaries.identifiers;
+package tlvibes.logic.boundaries.identifiers;
 
 public class UserId {
 	String superApp;

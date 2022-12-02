@@ -1,6 +1,4 @@
-package tlvibes.boundaries.identifiers;
-
-import java.util.UUID;
+package tlvibes.logic.boundaries.identifiers;
 
 
 public class CommandId {

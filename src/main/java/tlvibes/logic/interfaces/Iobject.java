@@ -1,4 +1,4 @@
-package tlvibes.interfaces;
+package tlvibes.logic.interfaces;
 
 import java.util.Map;
 

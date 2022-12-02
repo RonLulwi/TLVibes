@@ -1,4 +1,4 @@
-package tlvibes.boundaries;
+package tlvibes.logic.boundaries;
 
 
 
@@ -8,10 +8,10 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import tlvibes.boundaries.identifiers.ObjectId;
-import tlvibes.boundaries.identifiers.UserId;
-import tlvibes.enums.ObjectAlias;
-import tlvibes.enums.ObjectType;
+import tlvibes.data.enums.ObjectAlias;
+import tlvibes.data.enums.ObjectType;
+import tlvibes.logic.boundaries.identifiers.ObjectId;
+import tlvibes.logic.boundaries.identifiers.UserId;
 
 public class ObjectBoundary{
 	

@@ -1,12 +1,12 @@
-package tlvibes.entities;
+package tlvibes.data.entities;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import tlvibes.boundaries.identifiers.CommandId;
-import tlvibes.boundaries.identifiers.ObjectId;
-import tlvibes.boundaries.identifiers.UserId;
+import tlvibes.logic.boundaries.identifiers.CommandId;
+import tlvibes.logic.boundaries.identifiers.ObjectId;
+import tlvibes.logic.boundaries.identifiers.UserId;
 
 public class MiniAppCommandEntity {
 	private CommandId commandId;

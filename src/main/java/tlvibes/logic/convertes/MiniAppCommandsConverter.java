@@ -1,9 +1,9 @@
-package tlvibes.convertes;
+package tlvibes.logic.convertes;
 
 import org.springframework.stereotype.Component;
 
-import tlvibes.boundaries.MiniAppCommandBoundary;
-import tlvibes.entities.MiniAppCommandEntity;
+import tlvibes.data.entities.MiniAppCommandEntity;
+import tlvibes.logic.boundaries.MiniAppCommandBoundary;
 
 @Component
 public class MiniAppCommandsConverter {

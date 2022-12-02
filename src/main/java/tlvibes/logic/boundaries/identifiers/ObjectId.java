@@ -1,6 +1,6 @@
-package tlvibes.boundaries.identifiers;
+package tlvibes.logic.boundaries.identifiers;
 
-import tlvibes.infrastructure.IdGenerator;
+import tlvibes.logic.infrastructure.IdGenerator;
 
 public class ObjectId {
 	String supperApp;

@@ -1,4 +1,4 @@
-package tlvibes.services;
+package tlvibes.logic.services;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,12 +12,12 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import tlvibes.boundaries.MiniAppCommandBoundary;
-import tlvibes.boundaries.identifiers.ObjectId;
-import tlvibes.convertes.MiniAppCommandsConverter;
-import tlvibes.entities.MiniAppCommandEntity;
-import tlvibes.infrastructure.ConfigProperties;
-import tlvibes.interfaces.MiniAppCommandsService;
+import tlvibes.data.entities.MiniAppCommandEntity;
+import tlvibes.logic.boundaries.MiniAppCommandBoundary;
+import tlvibes.logic.boundaries.identifiers.ObjectId;
+import tlvibes.logic.convertes.MiniAppCommandsConverter;
+import tlvibes.logic.infrastructure.ConfigProperties;
+import tlvibes.logic.interfaces.MiniAppCommandsService;
 
 @Service
 public class MockupMiniAppCommandsService implements MiniAppCommandsService {

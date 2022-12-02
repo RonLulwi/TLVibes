@@ -1,8 +1,8 @@
-package tlvibes.interfaces;
+package tlvibes.logic.interfaces;
 
 import java.util.List;
 
-import tlvibes.boundaries.MiniAppCommandBoundary;
+import tlvibes.logic.boundaries.MiniAppCommandBoundary;
 
 
 public interface MiniAppCommandsService {

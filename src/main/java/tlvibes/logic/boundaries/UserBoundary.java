@@ -1,8 +1,8 @@
-package tlvibes.boundaries;
+package tlvibes.logic.boundaries;
 
 
-import tlvibes.boundaries.identifiers.UserId;
-import tlvibes.enums.Role;
+import tlvibes.data.enums.Role;
+import tlvibes.logic.boundaries.identifiers.UserId;
 
 public class UserBoundary {
 	private UserId userId;

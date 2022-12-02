@@ -1,4 +1,4 @@
-package tlvibes.entities;
+package tlvibes.data.entities;
 
 public class UserEntity {
 	private String userName;

@@ -1,4 +1,4 @@
-package tlvibes.enums;
+package tlvibes.data.enums;
 
 public enum Role {
 	MINIAPP_USER,

@@ -1,4 +1,4 @@
-package tlvibes.controllers;
+package tlvibes.logic.controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tlvibes.boundaries.ObjectBoundary;
-import tlvibes.boundaries.identifiers.ObjectId;
+import tlvibes.logic.boundaries.ObjectBoundary;
+import tlvibes.logic.boundaries.identifiers.ObjectId;
 
 @RestController
 public class ObjectController {

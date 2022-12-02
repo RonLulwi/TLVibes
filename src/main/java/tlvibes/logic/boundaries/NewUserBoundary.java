@@ -1,7 +1,7 @@
-package tlvibes.boundaries;
+package tlvibes.logic.boundaries;
 
 
-import tlvibes.enums.Role;
+import tlvibes.data.enums.Role;
 
 public class NewUserBoundary {
 	

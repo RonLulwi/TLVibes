@@ -1,4 +1,4 @@
-package tlvibes.infrastructure;
+package tlvibes.logic.infrastructure;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
