@@ -1,7 +1,5 @@
 package tlvibes.logic.controllers;
 
-import java.util.Date;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,10 +32,9 @@ public class ObjectController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ObjectBoundary[] retriveAllObjects (){
 		ObjectBoundary[] objs = new ObjectBoundary[3];
-		for(int i = 0; i < objs.length; ++i) {
-			
+		for(int i = 0; i < objs.length; i++) {
 			ObjectId objectId = new ObjectId();
-			//objectId.setInternalObjectId(String.valueOf(100 + i));
+			objectId.setInternalObjectId(String.valueOf(100 + i));
 			objs[i] = new ObjectBoundary(objectId);
 		}
 		return objs;
@@ -52,8 +49,7 @@ public class ObjectController {
 	public ObjectBoundary createObject (@RequestBody ObjectBoundary obj) {
 		// TODO store message to database
 		ObjectBoundary copy =  new ObjectBoundary(obj);
-		copy.setCreationTimestamp(new Date());
-		copy.setObjectId(new ObjectId());
+		copy.setObjectId(null);
 		return copy;
 	}
 
