@@ -8,15 +8,28 @@ import tlvibes.logic.boundaries.UserBoundary;
 @Component
 public class UserConvertor {
 
-	public UserEntity UserBoundaryToEntity(UserBoundary boundary)
-	{
+	public UserEntity UserBoundaryToEntity(UserBoundary boundary)	{
+		
 		UserEntity entity = new UserEntity();
 		
-		entity.setEmail(boundary.getUserId().getEmail());
-		entity.setFirstName(boundary.getusername().split(" ")[0]);
-		entity.setLastName(boundary.getusername().split(" ")[1]);
-		entity.setUserName(boundary.getavatar());
-
+		entity.setUserId(boundary.getUserId());
+		entity.setAvatar(boundary.getAvatar());
+		entity.setRole(boundary.getRole());
+		entity.setUsername(boundary.getUsername());
+		
 		return entity;
+	}
+
+	public UserBoundary UserEntityToBoundary(UserEntity entity) {
+		
+		UserBoundary boundary = new UserBoundary();
+		
+		boundary.setAvatar(entity.getAvatar());
+		boundary.setRole(entity.getRole());
+		boundary.setUserId(entity.getUserId());
+		boundary.setUsername(entity.getUsername());
+		
+		return boundary;
+		
 	}
 }

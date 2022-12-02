@@ -1,38 +1,44 @@
 package tlvibes.data.entities;
 
+import tlvibes.data.enums.Role;
+import tlvibes.logic.boundaries.identifiers.UserId;
 import tlvibes.logic.infrastructure.ImutableField;
 
 public class UserEntity {
 	@ImutableField
-	private String email;
-	private String userName;
-	private String firstName;
-	private String LastName;
+	private UserId userId;
+	private Role role;
+	private String username;
+	private String avatar;
 	
-	public String getUserName() {
-		return userName;
+	public UserId getUserId() {
+		return userId;
 	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUserId(UserId userId) {
+		this.userId = userId;
 	}
-
-	public String getEmail() {
-		return email;
+	public Role getRole() {
+		return role;
 	}
-	public void setEmail(String email) {
-		this.email = email;
+	public void setRole(Role role) {
+		this.role = role;
 	}
-	public String getFirstName() {
-		return firstName;
+	public String getUsername() {
+		return username;
 	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
+	public void setUsername(String username) {
+		this.username = username;
 	}
-	public String getLastName() {
-		return LastName;
+	public String getAvatar() {
+		return avatar;
 	}
-	public void setLastName(String lastName) {
-		LastName = lastName;
+	public void setAvatar(String avatar) {
+		this.avatar = avatar;
 	}
-
+	@Override
+	public String toString() {
+		return "UserEntity [userId=" + userId + ", role=" + role + ", username=" + username + ", avatar=" + avatar
+				+ "]";
+	}
+	
 }

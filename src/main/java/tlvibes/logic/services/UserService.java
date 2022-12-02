@@ -8,18 +8,20 @@ import tlvibes.data.entities.UserEntity;
 import tlvibes.logic.boundaries.UserBoundary;
 import tlvibes.logic.convertes.UserConvertor;
 import tlvibes.logic.infrastructure.ImutableField;
+import tlvibes.logic.infrastructure.ImutableObject;
 import tlvibes.logic.interfaces.UsersService;
 
 public class UserService implements UsersService {
 	
-	List<UserEntity> Users = Collections.synchronizedList(new ArrayList<>());
+	List<UserEntity> UserEntities = Collections.synchronizedList(new ArrayList<>());
+	List<UserBoundary> UserBoundaries = Collections.synchronizedList(new ArrayList<>());
 	UserConvertor convertor = new UserConvertor();
 
-	
 	@Override
 	public UserBoundary createUser(UserBoundary user) {
 		var entity = convertor.UserBoundaryToEntity(user);
-		Users.add(entity);
+		UserEntities.add(entity);
+		UserBoundaries.add(user);
 		return user;
 	}
 
@@ -32,33 +34,40 @@ public class UserService implements UsersService {
 	@Override
 	public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 		
-		var currentUser = GetUserEntityBy(userSuperApp,userEmail);
+		UserEntity updateAsEntity = convertor.UserBoundaryToEntity(update);
 		
+		UserEntity currentUser = GetUserEntityBy(userSuperApp,userEmail);
 		
-		
-		for (var field : currentUser.getClass().getFields()) {
-			if(field.getAnnotation(ImutableField.class) == null)
+		for (var field : currentUser.getClass().getDeclaredFields()) {
+			if(!(field.isAnnotationPresent(ImutableField.class)))
 			{
+			    field.setAccessible(true);
 				try {
-					field.set(currentUser, field.get(update));
+					field.set(currentUser, field.get(updateAsEntity));
 				} catch (Exception e) {
 					e.printStackTrace();
 				} 
 			}
 		}
 		
+		UserBoundary updatedUser = convertor.UserEntityToBoundary(currentUser);
 		
-		return null;
+		if(UserBoundaries.removeIf(user -> user.getUserId().equals(updatedUser.getUserId())))
+		{
+			UserBoundaries.add(updatedUser);
+		}
+		
+		return updatedUser;
 	}
 
 	private UserEntity GetUserEntityBy(String userSuperApp, String userEmail) {
-		return Users.get(0);
+		return UserEntities.get(0);
 	}
 
 	@Override
 	public List<UserBoundary> getAllUsers() {
 		// TODO Auto-generated method stub
-		return null;
+		return UserBoundaries;
 	}
 
 	@Override

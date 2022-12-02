@@ -1,5 +1,8 @@
 package tlvibes.logic.boundaries.identifiers;
 
+import tlvibes.logic.infrastructure.ImutableObject;
+
+@ImutableObject
 public class UserId {
 	String superApp;
 	String email;
@@ -30,8 +33,10 @@ public class UserId {
 		return email;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	@Override
+	public String toString() {
+		return "UserId [superApp=" + superApp + ", email=" + email + "]";
 	}
+
 
 }
