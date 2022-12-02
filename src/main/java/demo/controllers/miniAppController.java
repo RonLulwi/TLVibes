@@ -15,7 +15,7 @@ import demo.interfaces.MiniAppCommandsService;
 @RestController
 public class miniAppController {
 	private MiniAppCommandsService MiniAppCommand;
-	
+	// tt
 	@Autowired
 	public void setMiniAppController(MiniAppCommandsService MiniAppService) {
 		this.MiniAppCommand = MiniAppService;
