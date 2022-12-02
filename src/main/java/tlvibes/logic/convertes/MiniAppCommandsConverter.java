@@ -7,14 +7,11 @@ import tlvibes.logic.boundaries.MiniAppCommandBoundary;
 
 @Component
 public class MiniAppCommandsConverter {
-	
 
-	
-	
-	
 	public MiniAppCommandEntity toEntity(MiniAppCommandBoundary boundary) {
+		
 		MiniAppCommandEntity entity =  new MiniAppCommandEntity();
-			
+		
 		entity.setCommandId(boundary.getCommandId());
 		entity.setInvocationTimestamp(boundary.getInvocationTimestamp());
 		entity.setCommand(boundary.getCommand());
@@ -29,11 +26,6 @@ public class MiniAppCommandsConverter {
 	
 	public MiniAppCommandBoundary toBoundary(MiniAppCommandEntity entity) {
 		MiniAppCommandBoundary boundary =  new MiniAppCommandBoundary();
-		
-		// TODO convert entity to boundary
-		
-		
-		
 		
 		return boundary;
 	}

@@ -4,7 +4,7 @@ import java.util.List;
 
 import tlvibes.logic.boundaries.UserBoundary;
 
-public interface UserService {
+public interface UsersService {
 	
 	public UserBoundary createUser(UserBoundary user);
 	

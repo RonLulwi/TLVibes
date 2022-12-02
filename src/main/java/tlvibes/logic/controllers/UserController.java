@@ -45,7 +45,6 @@ public class UserController {
 			@PathVariable("userEmail") String userEmail, 
 			@RequestBody UserBoundary update) {
 		// TODO update user if exists at database
-		
-		
+				
 	}
 }

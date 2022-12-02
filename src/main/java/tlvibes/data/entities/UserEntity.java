@@ -1,9 +1,11 @@
 package tlvibes.data.entities;
 
+import tlvibes.logic.infrastructure.ImutableField;
+
 public class UserEntity {
-	private String userName;
-	private String password;
+	@ImutableField
 	private String email;
+	private String userName;
 	private String firstName;
 	private String LastName;
 	
@@ -13,12 +15,7 @@ public class UserEntity {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
+
 	public String getEmail() {
 		return email;
 	}
