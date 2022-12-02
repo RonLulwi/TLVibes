@@ -33,31 +33,6 @@ public class UserBoundary {
 		this.username=userName;
 		this.avatar=avatar;
 	}
-	
-
-	public Role getrole() {
-		return role;
-	}
-
-	public void setrole(Role role) {
-		this.role = role;
-	}
-
-	public String getusername() {
-		return username;
-	}
-
-	public void setusername(String username) {
-		this.username = username;
-	}
-
-	public String getavatar() {
-		return avatar;
-	}
-
-	public void setavatar(String avatar) {
-		this.avatar = avatar;
-	}
 
 	public UserId getUserId() {
 		return userId;
@@ -66,6 +41,7 @@ public class UserBoundary {
 	public void setUserId(UserId userId) {
 		this.userId = userId;
 	}
+
 	public Role getRole() {
 		return role;
 	}
@@ -90,4 +66,10 @@ public class UserBoundary {
 		this.avatar = avatar;
 	}
 
+	@Override
+	public String toString() {
+		return "UserBoundary [userId=" + userId + ", role=" + role + ", username=" + username + ", avatar=" + avatar
+				+ "]";
+	}
+	
 }
