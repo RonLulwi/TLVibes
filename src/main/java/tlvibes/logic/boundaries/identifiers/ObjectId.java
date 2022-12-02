@@ -4,7 +4,7 @@ import tlvibes.logic.infrastructure.IdGenerator;
 
 public class ObjectId {
 	String supperApp;
-	String internalObjectId; // TODO  to be String
+	String internalObjectId;
 	
 	public ObjectId()
 	{
