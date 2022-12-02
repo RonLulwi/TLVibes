@@ -1,5 +1,7 @@
 package demo.enums;
 
-public final class Role {
-	public static final String STUDENT = "Student";
+public enum Role {
+	MINIAPP_USER,
+	SUPERAPP_USER,
+	ADMIN
 }
