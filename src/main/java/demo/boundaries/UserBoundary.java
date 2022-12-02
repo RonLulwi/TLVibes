@@ -5,13 +5,13 @@ import demo.enums.Role;
 
 public class UserBoundary {
 	private UserId userId;
-	private String role;
+	private Role role;
 	private String username;
 	private String avatar;
 	
 	public UserBoundary() {
 		this.userId = new UserId();
-		this.role=Role.STUDENT;
+		this.role = Role.MINIAPP_USER;
 		this.username="Jane Roe";
 		this.avatar="J";
 
@@ -24,7 +24,7 @@ public class UserBoundary {
 	}
 
 	
-	public UserBoundary(UserId userId,String role,String userName, String avatar)
+	public UserBoundary(UserId userId,Role role,String userName, String avatar)
 	{
 		this.userId = userId;
 		this.role=role;
@@ -33,11 +33,11 @@ public class UserBoundary {
 	}
 	
 
-	public String getrole() {
+	public Role getrole() {
 		return role;
 	}
 
-	public void setrole(String role) {
+	public void setrole(Role role) {
 		this.role = role;
 	}
 
