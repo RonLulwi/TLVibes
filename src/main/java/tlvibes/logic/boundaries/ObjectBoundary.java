@@ -18,7 +18,7 @@ public class ObjectBoundary{
 	private ObjectId objectId;
 	private String type;
 	private String alias;
-	private boolean active;
+	private Boolean active;
 	private Date creationTimestamp;
 	private UserId createdBy;
 	private Map<String, Object> objectDetails;	
@@ -80,11 +80,11 @@ public class ObjectBoundary{
 		this.alias = alias;
 	}
 
-	public boolean getActive() {
+	public Boolean getActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 
