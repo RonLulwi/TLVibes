@@ -9,6 +9,7 @@ import tlvibes.logic.boundaries.identifiers.UserId;
 
 public class SuperAppObjectEntity {
 	
+	
 	private ObjectId objectId;
 	private String type;
 	private String alias;

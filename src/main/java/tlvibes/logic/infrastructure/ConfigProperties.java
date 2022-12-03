@@ -9,9 +9,7 @@ public class ConfigProperties {
 	@Value("${spring.application.name}")
 	private String superAppName;
 	
-	
-	
-	
+
 	public String getSuperAppName() {
 		return superAppName;
 	}

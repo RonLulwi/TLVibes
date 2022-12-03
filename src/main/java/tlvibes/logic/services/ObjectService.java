@@ -3,6 +3,7 @@ package tlvibes.logic.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import tlvibes.logic.interfaces.ObjectsService;
 @Service
 public class ObjectService implements ObjectsService {
 	
+	
 	private ObjectConvertor convertor;
 	private List<SuperAppObjectEntity> objects;
 	
@@ -30,32 +32,31 @@ public class ObjectService implements ObjectsService {
 	}
 	
 	
-	
 	@PostConstruct
 	public void init() {
 		this.objects = Collections.synchronizedList(new ArrayList<>());
 	}
 	
 	@Override
-	public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objectBoundary) {
+	public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objWithotId) {
 		
 		//TODO : store object to DB
-		
-
-		
-		objectBoundary.setCreationTimestamp(new Date());
-		SuperAppObjectEntity entity = this.convertor.toEntity(objectBoundary);
+		SuperAppObjectEntity entity = new SuperAppObjectEntity();
 		entity.setObjectId(new ObjectId());
+		entity.setType(objWithotId.getType());
+		entity.setAlias(objWithotId.getAlias());
+		entity.setActive(objWithotId.getActive()!=null? objWithotId.getActive() : true);
+		entity.setCreationTimestamp(new Date());
+		entity.setCreatedBy(objWithotId.getCreatedBy());
+		entity.setObjectDetails(objWithotId.getObjectDetails()!=null ? objWithotId.getObjectDetails() : new HashMap<String,Object>());
 		this.objects.add(entity);
-		System.err.println("entity:" + entity);
-		SuperAppObjectBoundary boundary = this.convertor.toBoundary(entity);
-		System.err.println("boundary:" + boundary);
 		
-		return boundary;
+		return this.convertor.toBoundary(entity);
 	}
 	@Override
 	public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary objectBoundary) {
 		SuperAppObjectEntity entity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp, internalObjectId);
+		
 		boolean isDirty = false;
 		if(objectBoundary.getActive() != null && objectBoundary.getActive()!= entity.getActive()) {
 			entity.setActive(objectBoundary.getActive());
@@ -65,7 +66,7 @@ public class ObjectService implements ObjectsService {
 			entity.setAlias(objectBoundary.getAlias());
 			isDirty = true;
 		}
-		if(objectBoundary.getObjectDetails().equals(entity.getObjectDetails())) {
+		if(objectBoundary.getObjectDetails()!= null && !objectBoundary.getObjectDetails().equals(entity.getObjectDetails())) {
 			entity.setObjectDetails(objectBoundary.getObjectDetails());
 			isDirty = true;
 		}
@@ -73,9 +74,15 @@ public class ObjectService implements ObjectsService {
 			entity.setType(objectBoundary.getType());
 			isDirty = true;
 		}
+		if(objectBoundary.getCreatedBy()!=null && !objectBoundary.getCreatedBy().equals(entity.getCreatedBy())) {
+			entity.setCreatedBy(objectBoundary.getCreatedBy());
+			isDirty = true;
+		}
 		
 		if(isDirty) {
-			//TODO: update DB
+			//TODO: Store in DB
+			entity.setCreationTimestamp(new Date());
+			this.objects.add(entity);
 		}
 		
 		return this.convertor.toBoundary(entity);
