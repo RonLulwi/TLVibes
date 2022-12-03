@@ -1,7 +1,6 @@
 package tlvibes.logic.controllers;
 
-import java.util.Date;
-import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import tlvibes.logic.boundaries.SuperAppObjectBoundary;
-import tlvibes.logic.boundaries.identifiers.ObjectId;
+import tlvibes.logic.interfaces.ObjectsService;
 import tlvibes.logic.services.ObjectService;
 
 @RestController
 public class ObjectController {
 
-	private ObjectService objectService;
+	private ObjectsService objectService;
 	
 	@Autowired
 	public void setObjectService(ObjectService objectService) {
@@ -60,6 +59,7 @@ public class ObjectController {
 		
 		var l = this.objectService.getAllObjects();
 		SuperAppObjectBoundary[] objs = new SuperAppObjectBoundary[l.size()];
+		
 		for(int i = 0; i < objs.length; ++i) {
 			objs[i] = l.get(i);
 		}
@@ -72,13 +72,13 @@ public class ObjectController {
 			method = RequestMethod.POST,
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public SuperAppObjectBoundary createObject (@RequestBody SuperAppObjectBoundary obj) {
+	public SuperAppObjectBoundary createObject (@RequestBody SuperAppObjectBoundary objWithoutId) {
 		
 //		SuperAppObjectBoundary copy =  new SuperAppObjectBoundary(obj);
 //		copy.setObjectId(new ObjectId());
 //		copy.setCreationTimestamp(new Date());
 //		return copy;
-		return this.objectService.createObject(obj);
+		return this.objectService.createObject(objWithoutId);
 		
 	}
 
@@ -96,7 +96,8 @@ public class ObjectController {
 		// TODO update message if exists at database
 		//System.err.println(update.getObjectId().getInternalObjectId());
 		
-		this.objectService.updateObject(superapp, InternalObjectId, update); //TODO: figure bug
+		SuperAppObjectBoundary updated = this.objectService.updateObject(superapp, InternalObjectId, update); //TODO: figure bug
+		System.err.println(updated);
 		
 	}
 

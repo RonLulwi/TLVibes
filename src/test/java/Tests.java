@@ -15,7 +15,7 @@ public class Tests {
 	{
 		//Arrange
 		var update = new UserBoundary(new UserId("newFirst newLast","testMail"),Role.ADMIN,"newUserName","newAvatar");
-		var currentUser = new UserBoundary(new UserId("testUser","testMail"));
+		var currentUser = new UserBoundary(new UserId("testUser","myMail"));
 		var userService = new UserService();
 		
 		userService.createUser(currentUser);

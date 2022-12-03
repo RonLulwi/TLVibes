@@ -28,7 +28,7 @@ public class ObjectConvertor {
 		boundary.setActive(entity.getActive());
 		boundary.setAlias(entity.getAlias());
 		boundary.setCreatedBy(entity.getCreatedBy());
-		boundary.setCreationTimestamp(new Date()); //TODO : should changed?
+		boundary.setCreationTimestamp(entity.getCreationTimestamp()); //TODO : should changed?
 		boundary.setObjectDetails(entity.getObjectDetails());
 		boundary.setObjectId(entity.getObjectId());
 		boundary.setType(entity.getType());
