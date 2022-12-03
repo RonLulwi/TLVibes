@@ -99,7 +99,7 @@ public class ObjectService implements ObjectsService {
 			String objectSuperApp, String internalObjectId) {
 		for(SuperAppObjectEntity entity : this.objects) {
 			if(entity.getObjectId().getInternalObjectId().equals(internalObjectId)
-					&& entity.getObjectId().getSupperApp().equals(objectSuperApp)) {
+					&& entity.getObjectId().getSuperApp().equals(objectSuperApp)) {
 				return entity;
 			}
 		}

@@ -3,34 +3,34 @@ package tlvibes.logic.boundaries.identifiers;
 import tlvibes.logic.infrastructure.IdGenerator;
 
 public class ObjectId {
-	String supperApp;
+	String superApp;
 	String internalObjectId;
 	
 	public ObjectId()
 	{
-		setSupperApp("2023a.demo");
+		setSuperApp("2023a.demo");
 		setInternalObjectId(Integer.toString(IdGenerator.GenerateIntID()));
 	}
 
 	public ObjectId(String superApp)
 	{
 		this();
-		setSupperApp(superApp);
+		setSuperApp(superApp);
 	}
 	
 	public ObjectId(String superApp, String internalObjectId)
 	{
-		setSupperApp(superApp);
+		setSuperApp(superApp);
 		setInternalObjectId(internalObjectId);
 	}
 
-	public String getSupperApp() {
-		return supperApp;
+	public String getSuperApp() {
+		return superApp;
 	}
 
 	
-	public void setSupperApp(String supperApp) {
-		this.supperApp = supperApp;
+	public void setSuperApp(String supperApp) {
+		this.superApp = supperApp;
 	}
 
 	public String getInternalObjectId() {

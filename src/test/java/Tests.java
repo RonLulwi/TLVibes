@@ -1,4 +1,3 @@
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +8,7 @@ import tlvibes.logic.boundaries.identifiers.UserId;
 import tlvibes.logic.services.UserService;
 
 public class Tests {
+	
 	
 	@Test
 	public void UpdateUserEntityFromUserBoundery_OnlyMutableFieldsAreUpdated()
@@ -22,7 +22,7 @@ public class Tests {
 		
 		//Act
 		userService.updateUser(null, currentUser.getUserId().getEmail(), update);
-		var currentUserAfterUpdate = userService.getAllUsers().get(0);
+		UserBoundary currentUserAfterUpdate = userService.getAllUsers().get(0);
 		
 		//Assert
 		assertFalse(currentUserAfterUpdate.getUserId().equals(update.getUserId()));
