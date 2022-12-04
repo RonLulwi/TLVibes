@@ -1,8 +1,10 @@
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
 import tlvibes.data.enums.Role;
 import tlvibes.logic.boundaries.UserBoundary;
 import tlvibes.logic.boundaries.identifiers.UserId;
