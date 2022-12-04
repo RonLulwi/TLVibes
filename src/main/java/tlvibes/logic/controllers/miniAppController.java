@@ -28,7 +28,6 @@ public class miniAppController {
 		public Object invokeMiniAppCommand(
 				@PathVariable("miniAppName") String miniAppName,
 				@RequestBody MiniAppCommandBoundary boundary) {
-			// TODO test if massage is in the database
 			if(boundary.getCommandId() == null)
 				boundary.setCommandId(new CommandId());
 			boundary.getCommandId().setMiniApp(miniAppName);
