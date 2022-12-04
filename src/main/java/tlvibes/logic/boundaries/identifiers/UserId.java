@@ -14,6 +14,11 @@ public class UserId {
 		this.email = "jane@demo.org";
 	}
 	
+	public UserId(String email) {
+		this.email = email;
+	}
+
+	
 	public UserId(String superApp, String email) {
 		this();
 		

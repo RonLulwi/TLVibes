@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tlvibes.logic.boundaries.NewUserBoundary;
 import tlvibes.logic.boundaries.UserBoundary;
 import tlvibes.logic.boundaries.identifiers.UserId;
 
@@ -30,10 +29,9 @@ public class UserController {
 			produces = {MediaType.APPLICATION_JSON_VALUE},
 			consumes = {MediaType.APPLICATION_JSON_VALUE})
 		public UserBoundary createUser(
-				@RequestBody NewUserBoundary message) {
-		 	String superApp="2023a.demo";
-		 	String email=message.getemail();
-			return new UserBoundary(new UserId(superApp,email));
+				@RequestBody UserBoundary newUserBoundary) {
+		 	String email=newUserBoundary.getUserId().getEmail();
+			return new UserBoundary(new UserId(email));
 		}
 	
 	@RequestMapping(
