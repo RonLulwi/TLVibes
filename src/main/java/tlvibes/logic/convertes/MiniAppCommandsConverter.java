@@ -27,6 +27,13 @@ public class MiniAppCommandsConverter {
 	public MiniAppCommandBoundary toBoundary(MiniAppCommandEntity entity) {
 		MiniAppCommandBoundary boundary =  new MiniAppCommandBoundary();
 		
+		boundary.setCommandId(entity.getCommandId());
+		boundary.setInvocationTimestamp(entity.getInvocationTimestamp());
+		boundary.setCommand(entity.getCommand());
+		boundary.setTargetObject(entity.getTargetObject());
+		boundary.setInvokedBy(entity.getInvokedBy());
+		boundary.setCommandAttributes(entity.getCommandAttributes());
+		
 		return boundary;
 	}
 

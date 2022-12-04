@@ -64,8 +64,8 @@ public class MockupMiniAppCommandsService implements MiniAppCommandsService {
 		if(targetObject.getInternalObjectId() == null)                             
 			throw new RuntimeException("targetObject.internalObjectId is missing");
 		
-		if(targetObject.getSupperApp() == null)
-			throw new RuntimeException("targetObject.supperApp is missing");
+		if(targetObject.getSuperApp() == null)
+			throw new RuntimeException("targetObject.superApp is missing");
 				
 		if(boundary.getInvokedBy() == null)
 			throw new RuntimeException("invokedBy is missing");
@@ -73,8 +73,7 @@ public class MockupMiniAppCommandsService implements MiniAppCommandsService {
 		if(boundary.getInvokedBy().getEmail() == null)
 			throw new RuntimeException("invokedBy.email is missing");
 		
-		if(boundary.getInvokedBy().getSuperApp() == null)
-			throw new RuntimeException("invokedBy.supperApp is missing");
+		boundary.getInvokedBy().setSuperApp(configProperties.getSuperAppName());
 		
 		MiniAppCommandEntity entity = converter.toEntity(boundary);
 		demoes.add(entity);
@@ -84,7 +83,6 @@ public class MockupMiniAppCommandsService implements MiniAppCommandsService {
 
 	@Override
 	public List<MiniAppCommandBoundary> getAllCommands() {	
-		//TODO test getAllCommands function
 		return this.demoes 
 				.stream()
 				.map(this.converter::toBoundary)
@@ -93,7 +91,6 @@ public class MockupMiniAppCommandsService implements MiniAppCommandsService {
 
 	@Override
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {
-		//TODO test getAllMiniAppCommands function
 		return this.demoes
 				.stream()
 				.filter(demo->demo.getCommandId().getMiniApp().equals(miniAppName))
@@ -103,7 +100,6 @@ public class MockupMiniAppCommandsService implements MiniAppCommandsService {
 
 	@Override
 	public void deleteAllCommands() {
-		//TODO test deleteAllCommands function
 		this.demoes.clear();
 
 	}

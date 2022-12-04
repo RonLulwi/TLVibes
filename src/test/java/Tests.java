@@ -1,5 +1,4 @@
 
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,19 +11,20 @@ import tlvibes.logic.services.UserService;
 
 public class Tests {
 	
+	
 	@Test
 	public void UpdateUserEntityFromUserBoundery_OnlyMutableFieldsAreUpdated()
 	{
 		//Arrange
 		var update = new UserBoundary(new UserId("newFirst newLast","testMail"),Role.ADMIN,"newUserName","newAvatar");
-		var currentUser = new UserBoundary(new UserId("testUser","testMail"));
+		var currentUser = new UserBoundary(new UserId("testUser","myMail"));
 		var userService = new UserService();
 		
 		userService.createUser(currentUser);
 		
 		//Act
 		userService.updateUser(null, currentUser.getUserId().getEmail(), update);
-		var currentUserAfterUpdate = userService.getAllUsers().get(0);
+		UserBoundary currentUserAfterUpdate = userService.getAllUsers().get(0);
 		
 		//Assert
 		assertFalse(currentUserAfterUpdate.getUserId().equals(update.getUserId()));

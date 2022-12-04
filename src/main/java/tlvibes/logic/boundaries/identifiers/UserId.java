@@ -1,15 +1,17 @@
 package tlvibes.logic.boundaries.identifiers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import tlvibes.logic.infrastructure.ImutableObject;
 
 @ImutableObject
 public class UserId {
-	String superApp;
-	String email;
+	
+	private String superApp;
+	private String email;
 
+	@Autowired
 	public UserId() {
-		superApp = "2023a.demo";
-		email = "jane@demo.org";
+		this.email = "jane@demo.org";
 	}
 	
 	public UserId(String superApp, String email) {
@@ -23,6 +25,10 @@ public class UserId {
 		{			
 			this.email = email;	
 		}
+	}
+	
+	public void setSuperApp(String superApp) {
+		this.superApp = superApp;
 	}
 
 	public String getSuperApp() {
