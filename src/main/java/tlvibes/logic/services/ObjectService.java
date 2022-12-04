@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tlvibes.data.entities.SuperAppObjectEntity;
-import tlvibes.logic.boundaries.SuperAppObjectBoundary;
+import tlvibes.logic.boundaries.ObjectBoundary;
 import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.convertes.ObjectConvertor;
 import tlvibes.logic.interfaces.ObjectsService;
@@ -38,7 +38,7 @@ public class ObjectService implements ObjectsService {
 	}
 	
 	@Override
-	public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objWithotId) {
+	public ObjectBoundary createObject(ObjectBoundary objWithotId) {
 		
 		//TODO : store object to DB
 		SuperAppObjectEntity entity = new SuperAppObjectEntity();
@@ -54,7 +54,7 @@ public class ObjectService implements ObjectsService {
 		return this.convertor.toBoundary(entity);
 	}
 	@Override
-	public SuperAppObjectBoundary updateObject(String objectSuperApp, String internalObjectId, SuperAppObjectBoundary objectBoundary) {
+	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary) {
 		SuperAppObjectEntity entity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp, internalObjectId);
 		
 		boolean isDirty = false;
@@ -88,7 +88,7 @@ public class ObjectService implements ObjectsService {
 		return this.convertor.toBoundary(entity);
 	}
 	@Override
-	public SuperAppObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {
+	public ObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {
 		SuperAppObjectEntity entity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp,internalObjectId);
 		return this.convertor.toBoundary(entity);
 	}
@@ -109,7 +109,7 @@ public class ObjectService implements ObjectsService {
 
 
 	@Override
-	public List<SuperAppObjectBoundary> getAllObjects() {
+	public List<ObjectBoundary> getAllObjects() {
 		return this.objects.stream().map(this.convertor::toBoundary).collect(Collectors.toList());
 	}
 	@Override

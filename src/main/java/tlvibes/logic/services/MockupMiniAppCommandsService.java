@@ -17,6 +17,7 @@ import tlvibes.logic.boundaries.MiniAppCommandBoundary;
 import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.convertes.MiniAppCommandsConverter;
 import tlvibes.logic.infrastructure.ConfigProperties;
+import tlvibes.logic.infrastructure.Guard;
 import tlvibes.logic.interfaces.MiniAppCommandsService;
 
 @Service
@@ -42,37 +43,15 @@ public class MockupMiniAppCommandsService implements MiniAppCommandsService {
 	@Override
 	public Object invokeCommand(MiniAppCommandBoundary boundary) {
 		
-		if(boundary.getCommandId() == null) 
-			throw new RuntimeException("commandId is missing");
-		
+		Guard.AgainstNull(boundary.getCommandId(), boundary.getCommandId().getClass().getName());
+		Guard.AgainstNull(boundary.getCommand(), boundary.getCommand().getClass().getName());
+		Guard.AgainstNull(boundary.getInvokedBy(), boundary.getInvokedBy().getClass().getName());
+		Guard.AgainstNull(boundary.getCommand(), boundary.getCommand().getClass().getName());
+		Guard.AgainstNull(boundary.getTargetObject(), boundary.getTargetObject().getClass().getName());
+
 		boundary.getCommandId().setSupperApp(this.configProperties.getSuperAppName());
 		boundary.getCommandId().setInternalCommanId(UUID.randomUUID().toString());
-		
-		if(boundary.getCommandId().getMiniApp() == null)
-			throw new RuntimeException("commandId.miniApp is missing");
-				
 		boundary.setInvocationTimestamp(new Date());
-		
-		if(boundary.getCommand() == null)
-			throw new RuntimeException("command is missing");
-		
-		ObjectId targetObject = boundary.getTargetObject();
-		
-		if(targetObject == null) 
-			throw new RuntimeException("targetObject is missing");
-		
-		if(targetObject.getInternalObjectId() == null)                             
-			throw new RuntimeException("targetObject.internalObjectId is missing");
-		
-		if(targetObject.getSuperApp() == null)
-			throw new RuntimeException("targetObject.superApp is missing");
-				
-		if(boundary.getInvokedBy() == null)
-			throw new RuntimeException("invokedBy is missing");
-		
-		if(boundary.getInvokedBy().getEmail() == null)
-			throw new RuntimeException("invokedBy.email is missing");
-		
 		boundary.getInvokedBy().setSuperApp(configProperties.getSuperAppName());
 		
 		MiniAppCommandEntity entity = converter.toEntity(boundary);

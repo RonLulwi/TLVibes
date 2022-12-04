@@ -18,15 +18,19 @@ public class MiniAppCommandBoundary {
 	private Map<String, Object> commandAttributes;
 
 	public MiniAppCommandBoundary() {
-		this.commandId = new CommandId();	
-		this.targetObject = new ObjectId();
-		this.invokedBy = new UserId();		
-
 		this.command = "doSomething";
 		this.invocationTimestamp = new Date();
 		this.commandAttributes = new HashMap<>();
 		this.commandAttributes.put("key1", "can be anything you wish, even a nested json");		
 	}
+	
+	public MiniAppCommandBoundary(CommandId commandId,ObjectId targetObject,UserId invokedBy) {
+		this();
+		this.commandId = commandId;	
+		this.targetObject = targetObject;
+		this.invokedBy = invokedBy;
+	}
+
 
 	public MiniAppCommandBoundary(String miniAppName) {
 		this();

@@ -1,15 +1,15 @@
 package tlvibes.logic.interfaces;
 
 import java.util.List;
-import tlvibes.logic.boundaries.SuperAppObjectBoundary;
+import tlvibes.logic.boundaries.ObjectBoundary;
 
 
 public interface ObjectsService {
 	
-	public SuperAppObjectBoundary createObject(SuperAppObjectBoundary objWithotId);
-	public SuperAppObjectBoundary updateObject(String objectSuperApp,String internalObjectId, SuperAppObjectBoundary objectBoundary);
-	public SuperAppObjectBoundary getSpecificObject(String objectSuperApp,String internalObjectId);
-	public List<SuperAppObjectBoundary> getAllObjects();
+	public ObjectBoundary createObject(ObjectBoundary objWithotId);
+	public ObjectBoundary updateObject(String objectSuperApp,String internalObjectId, ObjectBoundary objectBoundary);
+	public ObjectBoundary getSpecificObject(String objectSuperApp,String internalObjectId);
+	public List<ObjectBoundary> getAllObjects();
 	public void deleteAllObjects();
 	
 	

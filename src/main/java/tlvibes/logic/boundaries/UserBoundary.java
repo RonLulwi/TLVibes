@@ -12,7 +12,6 @@ public class UserBoundary {
 	private String avatar;
 	
 	public UserBoundary() {
-		this.userId = new UserId();
 		this.role = Role.MINIAPP_USER;
 		this.username="Jane Roe";
 		this.avatar="J";

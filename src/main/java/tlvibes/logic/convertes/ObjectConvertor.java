@@ -6,13 +6,14 @@ import java.util.HashMap;
 import org.springframework.stereotype.Component;
 
 import tlvibes.data.entities.SuperAppObjectEntity;
-import tlvibes.logic.boundaries.SuperAppObjectBoundary;
+import tlvibes.logic.boundaries.ObjectBoundary;
 
 @Component
 public class ObjectConvertor {
 
-	public SuperAppObjectEntity toEntity(SuperAppObjectBoundary boundary) {
+	public SuperAppObjectEntity toEntity(ObjectBoundary boundary) {
 		SuperAppObjectEntity entity = new SuperAppObjectEntity();
+		
 		entity.setActive(boundary.getActive() != null ? boundary.getActive() : false);
 		entity.setAlias(boundary.getAlias());
 		entity.setCreatedBy(boundary.getCreatedBy());
@@ -20,11 +21,13 @@ public class ObjectConvertor {
 		entity.setObjectDetails(boundary.getObjectDetails() != null ? boundary.getObjectDetails() : new HashMap<String,Object>());
 		entity.setObjectId(boundary.getObjectId());
 		entity.setType(boundary.getType());
+		
 		return entity;
 	}
 	
-	public SuperAppObjectBoundary toBoundary(SuperAppObjectEntity entity) {
-		SuperAppObjectBoundary boundary = new SuperAppObjectBoundary();
+	public ObjectBoundary toBoundary(SuperAppObjectEntity entity) {
+		ObjectBoundary boundary = new ObjectBoundary();
+		
 		boundary.setActive(entity.getActive());
 		boundary.setAlias(entity.getAlias());
 		boundary.setCreatedBy(entity.getCreatedBy());
@@ -32,6 +35,7 @@ public class ObjectConvertor {
 		boundary.setObjectDetails(entity.getObjectDetails());
 		boundary.setObjectId(entity.getObjectId());
 		boundary.setType(entity.getType());
+		
 		return boundary;	
 	}
 }

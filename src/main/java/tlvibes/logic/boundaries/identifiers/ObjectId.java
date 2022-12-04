@@ -1,14 +1,16 @@
 package tlvibes.logic.boundaries.identifiers;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import tlvibes.logic.infrastructure.IdGenerator;
 
 public class ObjectId {
+	@Value("${spring.application.name}")
 	String superApp;
 	String internalObjectId;
 	
 	public ObjectId()
 	{
-		setSuperApp("2023a.demo");
 		setInternalObjectId(Integer.toString(IdGenerator.GenerateIntID()));
 	}
 

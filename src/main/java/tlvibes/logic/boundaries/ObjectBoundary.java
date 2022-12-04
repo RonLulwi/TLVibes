@@ -8,12 +8,14 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import tlvibes.data.enums.ObjectAlias;
 import tlvibes.data.enums.ObjectType;
 import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.boundaries.identifiers.UserId;
 
-public class SuperAppObjectBoundary{
+public class ObjectBoundary{
 	
 	private ObjectId objectId;
 	private String type;
@@ -23,22 +25,23 @@ public class SuperAppObjectBoundary{
 	private UserId createdBy;
 	private Map<String, Object> objectDetails;	
 
-	public SuperAppObjectBoundary() {
-		this.objectId = new ObjectId();
+	public ObjectBoundary() {
 		this.type = ObjectType.DUMMY;
 		this.alias = ObjectAlias.DUMMY;
 		this.active = true;
 		this.creationTimestamp = new Date();
-		this.createdBy = new UserId();
 		this.objectDetails = new  HashMap<String, Object>();
 	}
 
-	public SuperAppObjectBoundary(ObjectId objectId) {
+
+	public ObjectBoundary(ObjectId objectId, UserId createdBy) {
 		this();
 		this.objectId = objectId;
-	}
+		this.createdBy = createdBy;
+		}
 
-	public SuperAppObjectBoundary(SuperAppObjectBoundary other) {
+
+	public ObjectBoundary(ObjectBoundary other) {
 		this.objectId = other.getObjectId();
 		this.type = other.getType();
 		this.alias = other.getAlias();
