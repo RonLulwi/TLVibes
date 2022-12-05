@@ -1,30 +1,21 @@
 package tlvibes.logic.boundaries.identifiers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import tlvibes.logic.infrastructure.ImutableObject;
 
 @ImutableObject
-public class UserId {
+public class UserId{
 	
 	private String superApp;
 	private String email;
-
-	@Autowired
-	public UserId() {
-		this.email = "jane@demo.org";
-	}
 	
+	public UserId() {
+	}
+
 	public UserId(String superApp, String email) {
-		this();
+		this.superApp = superApp;				
+		this.email = email;	
 		
-		if(superApp != null) {
-			this.superApp = superApp;				
-		}
-		
-		if(email != null)
-		{			
-			this.email = email;	
-		}
 	}
 	
 	public void setSuperApp(String superApp) {
@@ -44,5 +35,24 @@ public class UserId {
 		return "UserId [superApp=" + superApp + ", email=" + email + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this)
+			return true;
+		UserId userId = (UserId) obj;
+        return Equals(userId);
+	}
+
+	private boolean Equals(UserId userId) {
+		return this.superApp.equals(userId.getSuperApp()) &&
+				this.email.equals(userId.getEmail());
+	}
+
+	
 
 }

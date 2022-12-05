@@ -3,6 +3,7 @@ package tlvibes.data.entities;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import tlvibes.logic.boundaries.identifiers.CommandId;
 import tlvibes.logic.boundaries.identifiers.ObjectId;
@@ -19,13 +20,17 @@ public class MiniAppCommandEntity {
 	
 	
 	public MiniAppCommandEntity() {	
-		this.commandId = new CommandId();
-		this.targetObject = new ObjectId();
-		this.invokedBy = new UserId();		
 		this.command = "doSomething";
 		this.invocationTimestamp = new Date();
 		this.commandAttributes = new HashMap<>();
 		this.commandAttributes.put("key1", "can be anything you wish, even a nested json");		
+	}
+	
+	public MiniAppCommandEntity(CommandId commandId,ObjectId targetObject,UserId invokedBy) {	
+		this();
+		this.commandId = commandId;
+		this.targetObject = targetObject;
+		this.invokedBy = invokedBy;		
 	}
 
 	public String getCommand() {
@@ -107,10 +112,23 @@ public class MiniAppCommandEntity {
 				+ ", commandAttributes=" + commandAttributes + "]";
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(command, commandAttributes, commandId, invocationTimestamp, invokedBy, targetObject);
+	}
 
-
-	
-	
-	
-
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MiniAppCommandEntity other = (MiniAppCommandEntity) obj;
+		return Objects.equals(command, other.command) && Objects.equals(commandAttributes, other.commandAttributes)
+				&& Objects.equals(commandId, other.commandId)
+				&& Objects.equals(invocationTimestamp, other.invocationTimestamp)
+				&& Objects.equals(invokedBy, other.invokedBy) && Objects.equals(targetObject, other.targetObject);
+	}
 }

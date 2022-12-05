@@ -3,40 +3,75 @@ package tlvibes.logic.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import tlvibes.data.entities.UserEntity;
+import tlvibes.logic.boundaries.NewUserBoundary;
 import tlvibes.logic.boundaries.UserBoundary;
+import tlvibes.logic.boundaries.identifiers.UserId;
 import tlvibes.logic.convertes.UserConvertor;
+import tlvibes.logic.infrastructure.ConfigProperties;
+import tlvibes.logic.infrastructure.Guard;
 import tlvibes.logic.infrastructure.ImutableField;
-import tlvibes.logic.infrastructure.ImutableObject;
 import tlvibes.logic.interfaces.UsersService;
 
+@Service
 public class UserService implements UsersService {
 	
-	List<UserEntity> UserEntities = Collections.synchronizedList(new ArrayList<>());
-	List<UserBoundary> UserBoundaries = Collections.synchronizedList(new ArrayList<>());
-	UserConvertor convertor = new UserConvertor();
+    private ConfigProperties configProperties;
+    private UserConvertor convertor;
+	private List<UserEntity> UserEntities;
 
+	@Autowired
+	public UserService(ConfigProperties configProperties,UserConvertor convertor)
+	{
+		this.configProperties = configProperties;
+		this.convertor = convertor;
+	}
+	
+	@PostConstruct
+	public void init() {
+		UserEntities = Collections.synchronizedList(new ArrayList<>());
+	}
+	
 	@Override
-	public UserBoundary createUser(UserBoundary user) {
-		var entity = convertor.UserBoundaryToEntity(user);
+	public UserBoundary createUser(NewUserBoundary user) {
+		
+		Guard.AgainstNull(user, user.getClass().getName());
+		
+		UserBoundary boundary = user.ToUserBoudary(new UserId(configProperties.getSuperAppName(), user.getEmail()));
+		
+		var entity = convertor.UserBoundaryToEntity(boundary);
+				
 		UserEntities.add(entity);
-		UserBoundaries.add(user);
-		return user;
+		
+		return boundary;
 	}
 
 	@Override
 	public UserBoundary login(String userSuperApp, String userEmail) {
-		// TODO Auto-generated method stub
-		return null;
+		Guard.AgainstNull(userSuperApp, "userSuperApp");
+		Guard.AgainstNull(userEmail, "userEmail");
+
+		UserEntity retrivedEntiry = GetUserEntityById(new UserId(userSuperApp,userEmail));
+		
+		return convertor.UserEntityToBoundary(retrivedEntiry);
 	}
 
 	@Override
 	public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 		
+		Guard.AgainstNull(userSuperApp, "userSuperApp");
+		Guard.AgainstNull(userEmail, "userEmail");
+
 		UserEntity updateAsEntity = convertor.UserBoundaryToEntity(update);
 		
-		UserEntity currentUser = GetUserEntityBy(userSuperApp,userEmail);
+		UserEntity currentUser = GetUserEntityById(new UserId(userSuperApp,userEmail));
 		
 		for (var field : currentUser.getClass().getDeclaredFields()) {
 			if(!(field.isAnnotationPresent(ImutableField.class)))
@@ -51,29 +86,25 @@ public class UserService implements UsersService {
 		}
 		
 		UserBoundary updatedUser = convertor.UserEntityToBoundary(currentUser);
-		
-		if(UserBoundaries.removeIf(user -> user.getUserId().equals(updatedUser.getUserId())))
-		{
-			UserBoundaries.add(updatedUser);
-		}
+		System.err.println(updatedUser);
 		
 		return updatedUser;
 	}
 
-	private UserEntity GetUserEntityBy(String userSuperApp, String userEmail) {
-		return UserEntities.get(0);
-	}
 
 	@Override
 	public List<UserBoundary> getAllUsers() {
-		// TODO Auto-generated method stub
-		return UserBoundaries;
+		return this.UserEntities.stream().map(this.convertor::UserEntityToBoundary).collect(Collectors.toList());
 	}
 
 	@Override
 	public void deleteAllUsers() {
-		// TODO Auto-generated method stub
-		
+		 UserEntities.clear();
 	}
+	
+	private UserEntity GetUserEntityById(UserId id) {
+		return UserEntities.stream().filter(e -> e.getUserId().equals(id)).findFirst().get();	
+	}
+
 
 }

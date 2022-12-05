@@ -3,6 +3,7 @@ package tlvibes.data.entities;
 import tlvibes.data.enums.Role;
 import tlvibes.logic.boundaries.identifiers.UserId;
 import tlvibes.logic.infrastructure.ImutableField;
+import tlvibes.logic.infrastructure.Utilities;
 
 public class UserEntity {
 	@ImutableField
@@ -10,6 +11,17 @@ public class UserEntity {
 	private Role role;
 	private String username;
 	private String avatar;
+	
+	public UserEntity(UserId userId) {
+		this();
+		this.userId = userId;	
+	}
+	
+	public UserEntity() {
+		this.role = Role.UNDEFINED;
+		this.username = Utilities.GeneratingRandomString();
+		this.avatar = Utilities.GeneratingRandomString(1);
+	}
 	
 	public UserId getUserId() {
 		return userId;

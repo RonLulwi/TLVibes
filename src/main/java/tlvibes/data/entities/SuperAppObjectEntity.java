@@ -1,28 +1,42 @@
 package tlvibes.data.entities;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+
 
 import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.boundaries.identifiers.UserId;
+import tlvibes.logic.infrastructure.ImutableField;
 
 
 public class SuperAppObjectEntity {
 	
-	
+	@ImutableField
 	private ObjectId objectId;
 	private String type;
 	private String alias;
 	private boolean active;
+	@ImutableField
 	private Date creationTimestamp;
+	@ImutableField
 	private UserId createdBy;
 	private Map<String, Object> objectDetails;
 	
 	
 	public SuperAppObjectEntity() {
-	
+		this.type = "undefined";
+		this.alias = "undefined";
+		this.active = false;
+		this.objectDetails = new HashMap<String, Object>();
 	}
-
+	
+	public SuperAppObjectEntity(ObjectId objectId, UserId createdBy) {
+		this();
+		this.objectId = objectId;
+		this.createdBy = createdBy;
+		this.creationTimestamp = new Date();
+	}
 
 	public ObjectId getObjectId() {
 		return objectId;
@@ -70,7 +84,10 @@ public class SuperAppObjectEntity {
 
 
 	public void setCreationTimestamp(Date creationTimestamp) {
-		this.creationTimestamp = creationTimestamp;
+		if(this.creationTimestamp == null) {
+			this.creationTimestamp = creationTimestamp;
+		}
+		
 	}
 
 

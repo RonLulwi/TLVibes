@@ -1,6 +1,6 @@
 package tlvibes.logic.boundaries.identifiers;
 
-import tlvibes.logic.infrastructure.IdGenerator;
+
 
 public class ObjectId {
 	String superApp;
@@ -8,26 +8,19 @@ public class ObjectId {
 	
 	public ObjectId()
 	{
-		setSuperApp("2023a.demo");
-		setInternalObjectId(Integer.toString(IdGenerator.GenerateIntID()));
-	}
-
-	public ObjectId(String superApp)
-	{
-		this();
-		setSuperApp(superApp);
+		this.internalObjectId = "Undefind";
+		this.superApp = "Undefind";
 	}
 	
 	public ObjectId(String superApp, String internalObjectId)
 	{
-		setSuperApp(superApp);
-		setInternalObjectId(internalObjectId);
+		this.internalObjectId = internalObjectId;
+		this.superApp = superApp;
 	}
 
 	public String getSuperApp() {
 		return superApp;
 	}
-
 	
 	public void setSuperApp(String supperApp) {
 		this.superApp = supperApp;
@@ -40,5 +33,24 @@ public class ObjectId {
 	public void setInternalObjectId(String internalObjectId) {
 		this.internalObjectId = internalObjectId;
 	}	
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == this)
+			return true;
+		ObjectId objectId = (ObjectId) obj;
+        return Equals(objectId);
+	}
+
+	private boolean Equals(ObjectId objectId) {
+		return this.superApp.equals(objectId.getSuperApp()) &&
+				this.internalObjectId.equals(objectId.getInternalObjectId());
+	}
+
 }
 

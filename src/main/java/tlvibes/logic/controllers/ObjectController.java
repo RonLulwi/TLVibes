@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tlvibes.logic.boundaries.SuperAppObjectBoundary;
+import tlvibes.logic.boundaries.ObjectBoundary;
 import tlvibes.logic.interfaces.ObjectsService;
 import tlvibes.logic.services.ObjectService;
 
@@ -28,11 +28,10 @@ public class ObjectController {
 			method = RequestMethod.GET,
 			path = "/superapp/objects/{superapp}/{InternalObjectId}",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public SuperAppObjectBoundary retriveObject (
+	public ObjectBoundary retriveObject (
 			@PathVariable("superapp") String superapp,
 			@PathVariable("InternalObjectId") String InternalObjectId
 			){
-		//return new SuperAppObjectBoundary(new ObjectId(superapp,InternalObjectId));
 		return this.objectService.getSpecificObject(superapp, InternalObjectId);
 	}
 
@@ -41,24 +40,10 @@ public class ObjectController {
 			method = RequestMethod.GET,
 			path = "/superapp/objects",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public SuperAppObjectBoundary[] retriveAllObjects (){
-		
-//		SuperAppObjectBoundary[] objs = new SuperAppObjectBoundary[3];
-//		for(int i = 0; i < objs.length; i++) {
-//			
-//			//objectId.setInternalObjectId(String.valueOf(100 + i));
-//			objs[i] = new SuperAppObjectBoundary(new ObjectId());
-//		}
-//		return objs;
-		
-//		SuperAppObjectBoundary[] objs = new SuperAppObjectBoundary[2];
-//		List<SuperAppObjectBoundary> l = this.objectService.getAllObjects();
-//		objs[0] = l.get(0);
-//		objs[1] = l.get(1);
-		//return objs;
-		
+	public ObjectBoundary[] retriveAllObjects (){
+				
 		var l = this.objectService.getAllObjects();
-		SuperAppObjectBoundary[] objs = new SuperAppObjectBoundary[l.size()];
+		ObjectBoundary[] objs = new ObjectBoundary[l.size()];
 		
 		for(int i = 0; i < objs.length; ++i) {
 			objs[i] = l.get(i);
@@ -72,14 +57,8 @@ public class ObjectController {
 			method = RequestMethod.POST,
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public SuperAppObjectBoundary createObject (@RequestBody SuperAppObjectBoundary objWithoutId) {
-		
-//		SuperAppObjectBoundary copy =  new SuperAppObjectBoundary(obj);
-//		copy.setObjectId(new ObjectId());
-//		copy.setCreationTimestamp(new Date());
-//		return copy;
-		return this.objectService.createObject(objWithoutId);
-		
+	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId) {
+			return this.objectService.createObject(objWithoutId);
 	}
 
 
@@ -92,18 +71,10 @@ public class ObjectController {
 	public void updateObject (
 			@PathVariable("superapp") String superapp,
 			@PathVariable("InternalObjectId") String InternalObjectId, 
-			@RequestBody SuperAppObjectBoundary update) {
+			@RequestBody ObjectBoundary update) {
 		// TODO update message if exists at database
-		//System.err.println(update.getObjectId().getInternalObjectId());
-		
-		SuperAppObjectBoundary updated = this.objectService.updateObject(superapp, InternalObjectId, update); //TODO: figure bug
+		ObjectBoundary updated = this.objectService.updateObject(superapp, InternalObjectId, update); //TODO: figure bug
 		System.err.println(updated);
 		
 	}
-
-
-
-
-
-
 }

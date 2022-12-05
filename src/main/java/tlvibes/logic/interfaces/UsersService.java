@@ -2,11 +2,12 @@ package tlvibes.logic.interfaces;
 
 import java.util.List;
 
+import tlvibes.logic.boundaries.NewUserBoundary;
 import tlvibes.logic.boundaries.UserBoundary;
 
 public interface UsersService {
 	
-	public UserBoundary createUser(UserBoundary user);
+	public UserBoundary createUser(NewUserBoundary user);
 	
 	public UserBoundary login(String userSuperApp , String userEmail);
 	
