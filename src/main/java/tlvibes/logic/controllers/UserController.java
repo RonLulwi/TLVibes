@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tlvibes.logic.boundaries.NewUserBoundary;
 import tlvibes.logic.boundaries.UserBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
-import tlvibes.logic.services.ObjectService;
 import tlvibes.logic.services.UserService;
 
 @RestController

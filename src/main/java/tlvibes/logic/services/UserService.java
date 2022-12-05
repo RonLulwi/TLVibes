@@ -3,7 +3,6 @@ package tlvibes.logic.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -19,7 +18,6 @@ import tlvibes.logic.convertes.UserConvertor;
 import tlvibes.logic.infrastructure.ConfigProperties;
 import tlvibes.logic.infrastructure.Guard;
 import tlvibes.logic.infrastructure.ImutableField;
-import tlvibes.logic.infrastructure.ImutableObject;
 import tlvibes.logic.interfaces.UsersService;
 
 @Service
@@ -46,7 +44,7 @@ public class UserService implements UsersService {
 		
 		Guard.AgainstNull(user, user.getClass().getName());
 		
-		UserBoundary boundary = user.ToUserBoudary(new UserId(configProperties.getSuperAppName(), user.getemail()));
+		UserBoundary boundary = user.ToUserBoudary(new UserId(configProperties.getSuperAppName(), user.getEmail()));
 		
 		var entity = convertor.UserBoundaryToEntity(boundary);
 				
