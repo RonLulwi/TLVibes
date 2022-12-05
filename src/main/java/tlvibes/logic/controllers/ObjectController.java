@@ -77,10 +77,4 @@ public class ObjectController {
 		System.err.println(updated);
 		
 	}
-
-
-
-
-
-
 }

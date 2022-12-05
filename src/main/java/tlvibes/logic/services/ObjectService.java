@@ -17,18 +17,25 @@ import tlvibes.data.entities.SuperAppObjectEntity;
 import tlvibes.logic.boundaries.ObjectBoundary;
 import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.convertes.ObjectConvertor;
+import tlvibes.logic.infrastructure.ConfigProperties;
+import tlvibes.logic.infrastructure.Guard;
+import tlvibes.logic.infrastructure.IdGenerator;
+import tlvibes.logic.infrastructure.ImutableField;
 import tlvibes.logic.interfaces.ObjectsService;
 
 @Service
 public class ObjectService implements ObjectsService {
 	
-	
+	private ConfigProperties configProperties;
 	private ObjectConvertor convertor;
+	private IdGenerator idGenerator;
 	private List<SuperAppObjectEntity> objects;
 	
 	@Autowired
-	public ObjectService(ObjectConvertor convertor) {
+	public ObjectService(ObjectConvertor convertor,ConfigProperties configProperties,IdGenerator idGenerator) {
 		this.convertor = convertor;
+		this.configProperties = configProperties;
+		this.idGenerator = idGenerator;
 	}
 	
 	
@@ -38,45 +45,59 @@ public class ObjectService implements ObjectsService {
 	}
 	
 	@Override
-	public ObjectBoundary createObject(ObjectBoundary objWithotId) {
+	public ObjectBoundary createObject(ObjectBoundary objWithoutId) {
 		
 		//TODO : store object to DB
+		Guard.AgainstNull(objWithoutId, objWithoutId.getClass().getName());
+		Guard.AgainstNull(objWithoutId.getCreatedBy(), objWithoutId.getCreatedBy().getClass().getName());
+		Guard.AgainstNull(objWithoutId.getActive(), objWithoutId.getActive().toString());
+		Guard.AgainstNull(objWithoutId.getType(), objWithoutId.getType());
+		Guard.AgainstNull(objWithoutId.getAlias(), objWithoutId.getAlias());
+		Guard.AgainstNull(objWithoutId.getObjectDetails(), objWithoutId.getObjectDetails().getClass().getName());
+		
 		SuperAppObjectEntity entity = new SuperAppObjectEntity();
-		entity.setObjectId(new ObjectId());
-		entity.setType(objWithotId.getType());
-		entity.setAlias(objWithotId.getAlias());
-		entity.setActive(objWithotId.getActive()!=null? objWithotId.getActive() : true);
+		var id = new ObjectId(configProperties.getSuperAppName(),idGenerator.GenerateUUID().toString());
+		
+		entity.setObjectId(id);
+		entity.setType(objWithoutId.getType());
+		entity.setAlias(objWithoutId.getAlias());
+		entity.setActive(objWithoutId.getActive());
 		entity.setCreationTimestamp(new Date());
-		entity.setCreatedBy(objWithotId.getCreatedBy());
-		entity.setObjectDetails(objWithotId.getObjectDetails()!=null ? objWithotId.getObjectDetails() : new HashMap<String,Object>());
+		entity.setCreatedBy(objWithoutId.getCreatedBy());
+		entity.setObjectDetails(objWithoutId.getObjectDetails());
+		
 		this.objects.add(entity);
 		
 		return this.convertor.toBoundary(entity);
 	}
 	@Override
 	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary) {
+	
+		Guard.AgainstNull(objectSuperApp, objectSuperApp);
+		Guard.AgainstNull(internalObjectId, internalObjectId);
+		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
+		
 		SuperAppObjectEntity entity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp, internalObjectId);
 		
+		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary);
+		
+		if(entity.equals(EntityUpdate)){
+			return objectBoundary;
+		}
+		
 		boolean isDirty = false;
-		if(objectBoundary.getActive() != null && objectBoundary.getActive()!= entity.getActive()) {
-			entity.setActive(objectBoundary.getActive());
-			isDirty = true;
-		}
-		if(objectBoundary.getAlias()!=null && !objectBoundary.getAlias().equals(entity.getAlias())) {
-			entity.setAlias(objectBoundary.getAlias());
-			isDirty = true;
-		}
-		if(objectBoundary.getObjectDetails()!= null && !objectBoundary.getObjectDetails().equals(entity.getObjectDetails())) {
-			entity.setObjectDetails(objectBoundary.getObjectDetails());
-			isDirty = true;
-		}
-		if(objectBoundary.getType()!=null && !objectBoundary.getType().equals(entity.getType())) {
-			entity.setType(objectBoundary.getType());
-			isDirty = true;
-		}
-		if(objectBoundary.getCreatedBy()!=null && !objectBoundary.getCreatedBy().equals(entity.getCreatedBy())) {
-			entity.setCreatedBy(objectBoundary.getCreatedBy());
-			isDirty = true;
+		
+		for (var field : entity.getClass().getDeclaredFields()) {
+			if(!(field.isAnnotationPresent(ImutableField.class)))
+			{
+			    field.setAccessible(true);
+				try {
+					field.set(entity, field.get(EntityUpdate));
+					isDirty = true;
+				} catch (Exception e) {
+					e.printStackTrace();
+				} 
+			}
 		}
 		
 		if(isDirty) {

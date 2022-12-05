@@ -101,7 +101,7 @@ public class UserService implements UsersService {
 
 	@Override
 	public void deleteAllUsers() {
-		 UserEntities = Collections.synchronizedList(new ArrayList<>());
+		 UserEntities.clear();
 	}
 	
 	private UserEntity GetUserEntityById(UserId id) {
