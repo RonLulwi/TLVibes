@@ -7,19 +7,15 @@ import java.util.Map;
 
 import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.boundaries.identifiers.UserId;
-import tlvibes.logic.infrastructure.ImutableField;
 
 
 public class SuperAppObjectEntity {
 	
-	@ImutableField
 	private ObjectId objectId;
 	private String type;
 	private String alias;
 	private boolean active;
-	@ImutableField
 	private Date creationTimestamp;
-	@ImutableField
 	private UserId createdBy;
 	private Map<String, Object> objectDetails;
 	

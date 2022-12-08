@@ -1,11 +1,17 @@
 package tlvibes.logic.boundaries.identifiers;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class CommandId {
+import javax.persistence.Embeddable;
+
+@Embeddable
+public class CommandId implements Serializable{
+	private static final long serialVersionUID = 1L;
 	String supperApp;
 	String miniApp;
 	String internalCommanId;
+
 
 	public CommandId() {
 		this.supperApp = "undefined";
