@@ -1,11 +1,13 @@
 package tlvibes.logic.boundaries.identifiers;
 
 
-import tlvibes.logic.infrastructure.ImutableObject;
+import java.io.Serializable;
 
-@ImutableObject
-public class UserId{
-	
+import javax.persistence.Embeddable;
+
+@Embeddable
+public class UserId implements Serializable{
+    private static final long serialVersionUID = 1L;
 	private String superApp;
 	private String email;
 	
@@ -18,16 +20,20 @@ public class UserId{
 		
 	}
 	
+	public String getSuperApp() {
+		return superApp;
+	}
+	public String getEmail() {
+		return email;
+	}
+
 	public void setSuperApp(String superApp) {
 		this.superApp = superApp;
 	}
 
-	public String getSuperApp() {
-		return superApp;
-	}
-
-	public String getEmail() {
-		return email;
+	
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	@Override
