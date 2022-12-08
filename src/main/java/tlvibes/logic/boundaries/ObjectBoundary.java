@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import tlvibes.data.enums.ObjectAlias;
 import tlvibes.data.enums.ObjectType;
 import tlvibes.logic.boundaries.identifiers.ObjectId;

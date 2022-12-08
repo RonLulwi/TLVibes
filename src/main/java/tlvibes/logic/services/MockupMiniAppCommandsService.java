@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import tlvibes.data.entities.MiniAppCommandEntity;
 import tlvibes.logic.boundaries.MiniAppCommandBoundary;
-import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.convertes.MiniAppCommandsConverter;
 import tlvibes.logic.infrastructure.ConfigProperties;
 import tlvibes.logic.infrastructure.Guard;

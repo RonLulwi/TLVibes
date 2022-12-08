@@ -1,6 +1,6 @@
 
 
-
+/*
 
 import tlvibes.data.enums.Role;
 import tlvibes.logic.boundaries.UserBoundary;
@@ -21,7 +21,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 
-/*
+
 @EnableConfigurationProperties(value = ConfigProperties.class)
 //@SpringJUnitConfig(initializers = ConfigProperties.class)
 @TestPropertySource("classpath:application.properties")
