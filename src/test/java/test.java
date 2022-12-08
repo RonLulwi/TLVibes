@@ -1,8 +1,8 @@
 
 
 /*
-
 import tlvibes.data.enums.Role;
+import tlvibes.logic.boundaries.NewUserBoundary;
 import tlvibes.logic.boundaries.UserBoundary;
 import tlvibes.logic.boundaries.identifiers.UserId;
 import tlvibes.logic.infrastructure.ConfigProperties;
@@ -14,20 +14,22 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.springframework.test.context.junit4.SpringRunner;
+
 
 
 @EnableConfigurationProperties(value = ConfigProperties.class)
 //@SpringJUnitConfig(initializers = ConfigProperties.class)
 @TestPropertySource("classpath:application.properties")
+
+@SpringBootTest
 public class test {
 	
-
+	@Autowired
+	private UserService userService;
+	@Autowired
+	private ConfigProperties configProperties;
 
 	@Test
 	public void UserIdCreatedWithDefaultAppNameAndEmail()
@@ -46,13 +48,15 @@ public class test {
 	{
 		//Arrange
 		var update = new UserBoundary(new UserId("newFirst newLast","testMail"),Role.ADMIN,"newUserName","newAvatar");
-		var currentUser = new UserBoundary(new UserId("testUser","myMail"));
-		var userService = new UserService();
+		var userWithDefualtValues = new NewUserBoundary();
+		var userWithNewValues = new NewUserBoundary();
+		userWithNewValues.setAvatar("new avatar");
+		userWithNewValues.setRole(Role.ADMIN);
 		
-		userService.createUser(currentUser);
+		userService.createUser(userWithDefualtValues);
 		
 		//Act
-		userService.updateUser(null, currentUser.getUserId().getEmail(), update);
+		userService.updateUser(configProperties.getSuperAppName(), userWithDefualtValues.getEmail(), update);
 		UserBoundary currentUserAfterUpdate = userService.getAllUsers().get(0);
 		
 		//Assert
@@ -64,4 +68,5 @@ public class test {
 	}
 
 }
+
 */

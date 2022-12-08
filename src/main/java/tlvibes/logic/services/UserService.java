@@ -44,7 +44,7 @@ public class UserService implements UsersService {
 		
 		Guard.AgainstNull(user, user.getClass().getName());
 		
-		UserBoundary boundary = user.ToUserBoudary(new UserId(configProperties.getSuperAppName(), user.getemail()));
+		UserBoundary boundary = user.ToUserBoudary(new UserId(configProperties.getSuperAppName(), user.getEmail()));
 		
 		var entity = convertor.UserBoundaryToEntity(boundary);
 				
@@ -99,7 +99,7 @@ public class UserService implements UsersService {
 
 	@Override
 	public void deleteAllUsers() {
-		 UserEntities = Collections.synchronizedList(new ArrayList<>());
+		 UserEntities.clear();
 	}
 	
 	private UserEntity GetUserEntityById(UserId id) {

@@ -1,13 +1,23 @@
 package tlvibes.logic.boundaries.identifiers;
 
+import java.util.Objects;
 
 public class CommandId {
 	String supperApp;
 	String miniApp;
 	String internalCommanId;
 
-	public CommandId() {}
+	public CommandId() {
+		this.supperApp = "undefined";
+		this.miniApp = "undefined";
+		this.internalCommanId = "undefind";
+	}
 
+	public CommandId(String internalCommanId, String supperApp, String miniApp ) {
+		this.internalCommanId = internalCommanId;
+		this.supperApp = supperApp;
+		this.miniApp = miniApp;
+	}
 
 	public String getSupperApp() {
 		return supperApp;
@@ -32,4 +42,24 @@ public class CommandId {
 	public void setInternalCommanId(String internalCommanId) {
 		this.internalCommanId = internalCommanId;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(internalCommanId, miniApp, supperApp);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CommandId other = (CommandId) obj;
+		return Objects.equals(internalCommanId, other.internalCommanId) && Objects.equals(miniApp, other.miniApp)
+				&& Objects.equals(supperApp, other.supperApp);
+	}
+	
+	
 }

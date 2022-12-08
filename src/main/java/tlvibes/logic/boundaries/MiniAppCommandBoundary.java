@@ -60,7 +60,8 @@ public class MiniAppCommandBoundary {
 	public void setTargetObject(ObjectId targetObject) {
 		this.targetObject = targetObject;
 	}
-
+	
+	
 	public String getCommand() { return command; }
 	
 	public void setCommand(String command) { this.command = command; }
