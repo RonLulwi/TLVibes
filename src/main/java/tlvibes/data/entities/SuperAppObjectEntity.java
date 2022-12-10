@@ -4,19 +4,35 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.persistence.Convert;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.Lob;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import tlvibes.logic.boundaries.identifiers.ObjectId;
-import tlvibes.logic.boundaries.identifiers.UserId;
+import tlvibes.logic.infrastructure.SuperAppMapToJsonConverter;
 
-
+@Entity
 public class SuperAppObjectEntity {
 	
-	private ObjectId objectId;
+	@EmbeddedId private ObjectId objectId;
 	private String type;
 	private String alias;
 	private boolean active;
 	private Date creationTimestamp;
-	private UserId createdBy;
+	@JoinColumns({
+		  @JoinColumn(name = "INVOKER_USER_SUPERAPP", referencedColumnName = "superApp"),
+		  @JoinColumn(name = "INVOKER_USER_EMAIL", referencedColumnName = "email")
+		 })
+	@OneToOne
+	private UserEntity createdBy;
+	@Lob
+	@Convert(converter = SuperAppMapToJsonConverter.class)
 	private Map<String, Object> objectDetails;
 	
 	
@@ -27,7 +43,7 @@ public class SuperAppObjectEntity {
 		this.objectDetails = new HashMap<String, Object>();
 	}
 	
-	public SuperAppObjectEntity(ObjectId objectId, UserId createdBy) {
+	public SuperAppObjectEntity(ObjectId objectId, UserEntity createdBy) {
 		this();
 		this.objectId = objectId;
 		this.createdBy = createdBy;
@@ -73,11 +89,10 @@ public class SuperAppObjectEntity {
 		this.active = active;
 	}
 
-
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationTimestamp() {
 		return creationTimestamp;
 	}
-
 
 	public void setCreationTimestamp(Date creationTimestamp) {
 		if(this.creationTimestamp == null) {
@@ -86,16 +101,19 @@ public class SuperAppObjectEntity {
 		
 	}
 
-
-	public UserId getCreatedBy() {
+//	@JoinColumns({
+//		  @JoinColumn(name = "CREATED_BY_USER_SUPERAPP", referencedColumnName = "superApp"),
+//		  @JoinColumn(name = "CREATED_BY_USER_EMAIL", referencedColumnName = "email")
+//		 })
+//	@OneToOne
+	public UserEntity getCreatedBy() {
 		return createdBy;
 	}
 
 
-	public void setCreatedBy(UserId createdBy) {
+	public void setCreatedBy(UserEntity createdBy) {
 		this.createdBy = createdBy;
 	}
-
 
 	public Map<String, Object> getObjectDetails() {
 		return objectDetails;

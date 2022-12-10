@@ -6,30 +6,41 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tlvibes.data.enums.Role;
 import tlvibes.logic.boundaries.MiniAppCommandBoundary;
 import tlvibes.logic.boundaries.UserBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
+import tlvibes.logic.services.MiniAppCommandService;
+import tlvibes.logic.services.ObjectService;
+import tlvibes.logic.services.UserService;
 
 @RestController
 public class AdminController {
+	private UserService userService;
+	private ObjectService objectService;
+	private MiniAppCommandService commandService;
+	
+	public AdminController(UserService userService, ObjectService objectService, MiniAppCommandService commandService){
+		this.commandService = commandService;
+		this.objectService = objectService;
+		this.userService = userService;
+	}
+	
 	@RequestMapping(
 			path= {"/superapp/admin/users"},
 			method = {RequestMethod.DELETE})
 	public void DeleteAllUsers() {
-		// TODO delete all users in database
+		userService.deleteAllUsers();
 	}
 	@RequestMapping(
 			path= {"/superapp/admin/objects"},
 			method = {RequestMethod.DELETE})
 	public void DeleteAllObjects() {
-		// TODO delete all objects in database
+		objectService.deleteAllObjects();
 	}
 	@RequestMapping(
 			path= {"/superapp/admin/miniapp"},
 			method = {RequestMethod.DELETE})
 	public void DeleteCommandHistory() {
-		//TODO delete later
+		commandService.deleteAllCommands();
 	}
 
 	@RequestMapping(
@@ -37,21 +48,19 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public MiniAppCommandBoundary[] One_Command(
-			@PathVariable("selectedappname") String selectedappname
+			@PathVariable("selectedappname") String selectedAppname
 			) {
-		return new MiniAppCommandBoundary[] {new MiniAppCommandBoundary(selectedappname)};
+		return commandService.getAllMiniAppCommands(selectedAppname)
+				.toArray(new MiniAppCommandBoundary[0]);
 	}
 
 	@RequestMapping(
 			path= {"/superapp/admin/miniapp"},
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public MiniAppCommandBoundary[] Commands() {
-		MiniAppCommandBoundary command_1=new MiniAppCommandBoundary("miniApp1");
-		MiniAppCommandBoundary command_2=new MiniAppCommandBoundary("miniApp2");
-		MiniAppCommandBoundary command_3=new MiniAppCommandBoundary("miniApp3");
-		MiniAppCommandBoundary[] allCommands = {command_1,command_2,command_3};
-		return allCommands;
+	public MiniAppCommandBoundary[] GetAllCommands() {
+		return commandService.getAllCommands()
+				.toArray(new MiniAppCommandBoundary[0]);
 	}
 
 	@RequestMapping(
@@ -59,18 +68,8 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public UserBoundary[] GetAllUsers() {
-		UserBoundary[] users = new UserBoundary[3];
-		for(int i = 0; i <3 ; i++) {
-			String miniAppName = "miniApp" + i;
-			String userName = "User" + i;
-			users[i] = new UserBoundary(
-					new UserId(userName, userName + "@demo.com"),
-					Role.MINIAPP_USER,
-					miniAppName,
-					Character.toString(65 + i)
-					);
-		}
-		return users;
+		return userService.getAllUsers()
+				.toArray(new UserBoundary[0]);
 	}
 
 }

@@ -2,6 +2,8 @@ package tlvibes.logic.controllers;
 
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,15 +42,8 @@ public class ObjectController {
 			method = RequestMethod.GET,
 			path = "/superapp/objects",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public ObjectBoundary[] retriveAllObjects (){
-				
-		var l = this.objectService.getAllObjects();
-		ObjectBoundary[] objs = new ObjectBoundary[l.size()];
-		
-		for(int i = 0; i < objs.length; ++i) {
-			objs[i] = l.get(i);
-		}
-		return objs;
+	public List<ObjectBoundary> retriveAllObjects (){
+		return this.objectService.getAllObjects();
 	}
 
 
@@ -72,9 +67,7 @@ public class ObjectController {
 			@PathVariable("superapp") String superapp,
 			@PathVariable("InternalObjectId") String InternalObjectId, 
 			@RequestBody ObjectBoundary update) {
-		// TODO update message if exists at database
-		ObjectBoundary updated = this.objectService.updateObject(superapp, InternalObjectId, update); //TODO: figure bug
-		System.err.println(updated);
+		this.objectService.updateObject(superapp, InternalObjectId, update);
 		
 	}
 }

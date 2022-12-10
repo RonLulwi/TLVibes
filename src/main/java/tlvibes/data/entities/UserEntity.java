@@ -2,14 +2,13 @@ package tlvibes.data.entities;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-
 import tlvibes.data.enums.Role;
 import tlvibes.logic.boundaries.identifiers.UserId;
 import tlvibes.logic.infrastructure.Utilities;
 
 @Entity
 public class UserEntity {
-    @EmbeddedId	private UserId userId;
+   	@EmbeddedId private UserId userId;
 	private Role role;
 	private String username;
 	private String avatar;

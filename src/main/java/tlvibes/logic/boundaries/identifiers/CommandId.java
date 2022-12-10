@@ -8,9 +8,9 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class CommandId implements Serializable{
 	private static final long serialVersionUID = 1L;
-	String supperApp;
-	String miniApp;
-	String internalCommanId;
+    String supperApp;
+    String miniApp;
+    String internalCommanId;
 
 
 	public CommandId() {
