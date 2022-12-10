@@ -133,13 +133,13 @@ public class ObjectService implements ObjectsService {
 	private SuperAppObjectEntity getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(String objectSuperApp, String internalObjectId) {
 		
 		var id = new ObjectId();
-		id.setSuperApp(objectSuperApp);
+		id.setSuperapp(objectSuperApp);
 		id.setInternalObjectId(internalObjectId);
 
 		SuperAppObjectEntity dbSuperAppObject = this.objectsRepositoy.findById(id).get();
 		
 		if(dbSuperAppObject == null) {
-			throw new RuntimeException("Cannot find for app: " + id.getSuperApp() + ", user with id: " + id.getInternalObjectId());			
+			throw new RuntimeException("Cannot find for app: " + id.getSuperapp() + ", user with id: " + id.getInternalObjectId());			
 		}
 		
 		return dbSuperAppObject;

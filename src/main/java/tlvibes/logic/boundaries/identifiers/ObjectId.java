@@ -7,27 +7,27 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class ObjectId implements Serializable {
     private static final long serialVersionUID = 1L;
-	String superApp;
+	String superapp;
 	String internalObjectId;
 	
 	public ObjectId()
 	{
 		this.internalObjectId = "Undefind";
-		this.superApp = "Undefind";
+		this.superapp = "Undefind";
 	}
 	
 	public ObjectId(String superApp, String internalObjectId)
 	{
 		this.internalObjectId = internalObjectId;
-		this.superApp = superApp;
+		this.superapp = superApp;
 	}
 
-	public String getSuperApp() {
-		return superApp;
+	public String getSuperapp() {
+		return superapp;
 	}
 	
-	public void setSuperApp(String supperApp) {
-		this.superApp = supperApp;
+	public void setSuperapp(String supperApp) {
+		this.superapp = supperApp;
 	}
 
 	public String getInternalObjectId() {
@@ -52,7 +52,7 @@ public class ObjectId implements Serializable {
 	}
 
 	private boolean Equals(ObjectId objectId) {
-		return this.superApp.equals(objectId.getSuperApp()) &&
+		return this.superapp.equals(objectId.getSuperapp()) &&
 				this.internalObjectId.equals(objectId.getInternalObjectId());
 	}
 

@@ -65,7 +65,7 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 		
 		String internalCommandId = idGenerator.GenerateUUID().toString();
 		
-		boundary.setCommandId(new CommandId(internalCommandId, this.configProperties.getSuperAppName(),boundary.getCommandId().getMiniApp()));
+		boundary.setCommandId(new CommandId(internalCommandId, this.configProperties.getSuperAppName(),boundary.getCommandId().getMiniapp()));
 		boundary.setInvocationTimestamp(new Date());
 		
 		MiniAppCommandEntity entity = converter.toEntity(boundary,targetObject,invoker);
@@ -88,7 +88,7 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {	
 		return StreamSupport
 				.stream(this.commandRepository.findAll().spliterator(), false)
-				.filter(command -> command.getCommandId().getMiniApp().equals(miniAppName))
+				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
 				.map(this.converter::toBoundary)
 				.collect(Collectors.toList());
 

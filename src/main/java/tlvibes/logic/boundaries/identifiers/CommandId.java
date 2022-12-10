@@ -8,37 +8,37 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class CommandId implements Serializable{
 	private static final long serialVersionUID = 1L;
-    String supperApp;
-    String miniApp;
+    String supperapp;
+    String miniapp;
     String internalCommanId;
 
 
 	public CommandId() {
-		this.supperApp = "undefined";
-		this.miniApp = "undefined";
+		this.supperapp = "undefined";
+		this.miniapp = "undefined";
 		this.internalCommanId = "undefind";
 	}
 
 	public CommandId(String internalCommanId, String supperApp, String miniApp ) {
 		this.internalCommanId = internalCommanId;
-		this.supperApp = supperApp;
-		this.miniApp = miniApp;
+		this.supperapp = supperApp;
+		this.miniapp = miniApp;
 	}
 
-	public String getSupperApp() {
-		return supperApp;
+	public String getSupperapp() {
+		return supperapp;
 	}
 
-	public void setSupperApp(String supperApp) {
-		this.supperApp = supperApp;
+	public void setSupperapp(String supperApp) {
+		this.supperapp = supperApp;
 	}
 
-	public String getMiniApp() {
-		return miniApp;
+	public String getMiniapp() {
+		return miniapp;
 	}
 
-	public void setMiniApp(String miniApp) {
-		this.miniApp = miniApp;
+	public void setMiniapp(String miniApp) {
+		this.miniapp = miniApp;
 	}
 
 	public String getInternalCommanId() {
@@ -51,7 +51,7 @@ public class CommandId implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(internalCommanId, miniApp, supperApp);
+		return Objects.hash(internalCommanId, miniapp, supperapp);
 	}
 
 	@Override
@@ -63,8 +63,8 @@ public class CommandId implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		CommandId other = (CommandId) obj;
-		return Objects.equals(internalCommanId, other.internalCommanId) && Objects.equals(miniApp, other.miniApp)
-				&& Objects.equals(supperApp, other.supperApp);
+		return Objects.equals(internalCommanId, other.internalCommanId) && Objects.equals(miniapp, other.miniapp)
+				&& Objects.equals(supperapp, other.supperapp);
 	}
 	
 	

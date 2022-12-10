@@ -30,7 +30,7 @@ public class miniAppController {
 				@RequestBody MiniAppCommandBoundary boundary) {
 			if(boundary.getCommandId() == null)
 				boundary.setCommandId(new CommandId());
-			boundary.getCommandId().setMiniApp(miniAppName);
+			boundary.getCommandId().setMiniapp(miniAppName);
 			return this.MiniAppCommand.invokeCommand(boundary);
 		}
 	
