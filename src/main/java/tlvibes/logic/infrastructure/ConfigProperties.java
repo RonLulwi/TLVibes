@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 
-//@ConfigurationProperties
 @Component
 @Configuration
 public class ConfigProperties {

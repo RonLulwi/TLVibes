@@ -1,8 +1,12 @@
 package tlvibes.logic.boundaries.identifiers;
 
+import java.io.Serializable;
 
+import javax.persistence.Embeddable;
 
-public class ObjectId {
+@Embeddable
+public class ObjectId implements Serializable {
+    private static final long serialVersionUID = 1L;
 	String superApp;
 	String internalObjectId;
 	

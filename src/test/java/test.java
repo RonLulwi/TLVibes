@@ -1,4 +1,6 @@
 
+
+/*
 import tlvibes.data.enums.Role;
 import tlvibes.logic.boundaries.NewUserBoundary;
 import tlvibes.logic.boundaries.UserBoundary;
@@ -16,6 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
+
+@EnableConfigurationProperties(value = ConfigProperties.class)
+//@SpringJUnitConfig(initializers = ConfigProperties.class)
+@TestPropertySource("classpath:application.properties")
 
 @SpringBootTest
 public class test {
@@ -63,3 +69,4 @@ public class test {
 
 }
 
+*/

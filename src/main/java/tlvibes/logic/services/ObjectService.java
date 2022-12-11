@@ -1,25 +1,23 @@
 package tlvibes.logic.services;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import tlvibes.data.entities.SuperAppObjectEntity;
+import tlvibes.data.entities.UserEntity;
+import tlvibes.data.interfaces.SuperAppObjectRepository;
+import tlvibes.data.interfaces.UserEntityRepository;
 import tlvibes.logic.boundaries.ObjectBoundary;
 import tlvibes.logic.boundaries.identifiers.ObjectId;
 import tlvibes.logic.convertes.ObjectConvertor;
 import tlvibes.logic.infrastructure.ConfigProperties;
 import tlvibes.logic.infrastructure.Guard;
 import tlvibes.logic.infrastructure.IdGenerator;
-import tlvibes.logic.infrastructure.ImutableField;
 import tlvibes.logic.interfaces.ObjectsService;
 
 @Service
@@ -28,115 +26,126 @@ public class ObjectService implements ObjectsService {
 	private ConfigProperties configProperties;
 	private ObjectConvertor convertor;
 	private IdGenerator idGenerator;
-	private List<SuperAppObjectEntity> objects;
+	private SuperAppObjectRepository objectsRepositoy;
+	private UserEntityRepository userRepository;
 	
 	@Autowired
-	public ObjectService(ObjectConvertor convertor,ConfigProperties configProperties,IdGenerator idGenerator) {
+	public ObjectService(ObjectConvertor convertor,ConfigProperties configProperties,
+			IdGenerator idGenerator, SuperAppObjectRepository objectsRepositoy,
+			UserEntityRepository userRepository) {
 		this.convertor = convertor;
 		this.configProperties = configProperties;
 		this.idGenerator = idGenerator;
+		this.objectsRepositoy = objectsRepositoy;
+		this.userRepository = userRepository;
 	}
 	
-	
-	@PostConstruct
-	public void init() {
-		this.objects = Collections.synchronizedList(new ArrayList<>());
-	}
-	
-	@Override
-	public ObjectBoundary createObject(ObjectBoundary objWithoutId) {
 		
-		//TODO : store object to DB
+	@Override
+	@Transactional
+	public ObjectBoundary createObject(ObjectBoundary objWithoutId) {
 		Guard.AgainstNull(objWithoutId, objWithoutId.getClass().getName());
 		Guard.AgainstNull(objWithoutId.getCreatedBy(), objWithoutId.getCreatedBy().getClass().getName());
 		Guard.AgainstNull(objWithoutId.getActive(), objWithoutId.getActive().toString());
 		Guard.AgainstNull(objWithoutId.getType(), objWithoutId.getType());
 		Guard.AgainstNull(objWithoutId.getAlias(), objWithoutId.getAlias());
 		Guard.AgainstNull(objWithoutId.getObjectDetails(), objWithoutId.getObjectDetails().getClass().getName());
+				
+		UserEntity createdBy = userRepository.findById(objWithoutId.getCreatedBy()).get();
 		
-		SuperAppObjectEntity entity = new SuperAppObjectEntity();
+		Guard.AgainstNull(createdBy, createdBy.getClass().getName());
+		
+		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId,createdBy);
+		
 		var id = new ObjectId(configProperties.getSuperAppName(),idGenerator.GenerateUUID().toString());
 		
 		entity.setObjectId(id);
-		entity.setType(objWithoutId.getType());
-		entity.setAlias(objWithoutId.getAlias());
-		entity.setActive(objWithoutId.getActive());
-		entity.setCreationTimestamp(new Date());
-		entity.setCreatedBy(objWithoutId.getCreatedBy());
-		entity.setObjectDetails(objWithoutId.getObjectDetails());
 		
-		this.objects.add(entity);
+		SuperAppObjectEntity returned = this.objectsRepositoy.save(entity);
 		
-		return this.convertor.toBoundary(entity);
+		return this.convertor.toBoundary(returned);
 	}
 	@Override
+	@Transactional
 	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary) {
 	
 		Guard.AgainstNull(objectSuperApp, objectSuperApp);
 		Guard.AgainstNull(internalObjectId, internalObjectId);
 		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
 		
-		SuperAppObjectEntity entity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp, internalObjectId);
+		SuperAppObjectEntity objectEntity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp, internalObjectId);
+				
+		UserEntity createdBy = retrivedUserFromDatabaseIfNotEquals(objectBoundary, objectEntity);
+				
+		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,createdBy);
 		
-		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary);
-		
-		if(entity.equals(EntityUpdate)){
+		if(objectEntity.equals(EntityUpdate)){
 			return objectBoundary;
 		}
 		
-		boolean isDirty = false;
-		
-		for (var field : entity.getClass().getDeclaredFields()) {
-			if(!(field.isAnnotationPresent(ImutableField.class)))
-			{
-			    field.setAccessible(true);
-				try {
-					field.set(entity, field.get(EntityUpdate));
-					isDirty = true;
-				} catch (Exception e) {
-					e.printStackTrace();
-				} 
-			}
-		}
-		
-		if(isDirty) {
-			//TODO: Store in DB
-			entity.setCreationTimestamp(new Date());
-			this.objects.add(entity);
-		}
-		
-		return this.convertor.toBoundary(entity);
+		SuperAppObjectEntity returned = this.objectsRepositoy.save(objectEntity);
+
+		return this.convertor.toBoundary(returned);
 	}
+
+
+	private UserEntity retrivedUserFromDatabaseIfNotEquals(ObjectBoundary objectBoundary, SuperAppObjectEntity entity) {
+		UserEntity createdBy;
+		if(!entity.getCreatedBy().getUserId().equals(objectBoundary.getCreatedBy()))
+		{
+			createdBy = userRepository.findById(objectBoundary.getCreatedBy()).get();
+			
+			Guard.AgainstNull(createdBy, createdBy.getClass().getName());
+			
+		}
+		else
+		{
+			createdBy = entity.getCreatedBy();
+		}
+		return createdBy;
+	}
+	
 	@Override
-	public ObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {
-		SuperAppObjectEntity entity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp,internalObjectId);
+	@Transactional(readOnly = true)
+	public ObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {		
+		SuperAppObjectEntity entity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp, internalObjectId);
 		return this.convertor.toBoundary(entity);
 	}
 	
 	
 	
-	private SuperAppObjectEntity getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(
-			String objectSuperApp, String internalObjectId) {
-		for(SuperAppObjectEntity entity : this.objects) {
-			if(entity.getObjectId().getInternalObjectId().equals(internalObjectId)
-					&& entity.getObjectId().getSuperApp().equals(objectSuperApp)) {
-				return entity;
-			}
-		}
-		throw new RuntimeException("Cannot find for app: " + objectSuperApp + ", user with id: " + internalObjectId);
-	}
-
-
-
 	@Override
 	public List<ObjectBoundary> getAllObjects() {
-		return this.objects.stream().map(this.convertor::toBoundary).collect(Collectors.toList());
+		return StreamSupport
+				.stream(this.objectsRepositoy.findAll().spliterator(), false)
+				.map(this.convertor::toBoundary)
+				.collect(Collectors.toList());
+
 	}
 	@Override
 	public void deleteAllObjects() {
-		
-		this.objects.clear();
+		if(this.objectsRepositoy.count() == 0) {
+			return;
+		}
+		this.objectsRepositoy.deleteAll();
 	}
+	
+	private SuperAppObjectEntity getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(String objectSuperApp, String internalObjectId) {
+		
+		var id = new ObjectId();
+		id.setSuperApp(objectSuperApp);
+		id.setInternalObjectId(internalObjectId);
+
+		SuperAppObjectEntity dbSuperAppObject = this.objectsRepositoy.findById(id).get();
+		
+		if(dbSuperAppObject == null) {
+			throw new RuntimeException("Cannot find for app: " + id.getSuperApp() + ", user with id: " + id.getInternalObjectId());			
+		}
+		
+		return dbSuperAppObject;
+	}
+
+
 
 	
 }
