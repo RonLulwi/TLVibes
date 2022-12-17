@@ -5,18 +5,18 @@ import java.io.Serializable;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class ObjectId implements Serializable {
+public class SuperAppObjectIdBoundary implements Serializable {
     private static final long serialVersionUID = 1L;
 	String superapp;
 	String internalObjectId;
 	
-	public ObjectId()
+	public SuperAppObjectIdBoundary()
 	{
 		this.internalObjectId = "Undefind";
 		this.superapp = "Undefind";
 	}
 	
-	public ObjectId(String superApp, String internalObjectId)
+	public SuperAppObjectIdBoundary(String superApp, String internalObjectId)
 	{
 		this.internalObjectId = internalObjectId;
 		this.superapp = superApp;
@@ -47,14 +47,20 @@ public class ObjectId implements Serializable {
 	public boolean equals(Object obj) {
 		if(obj == this)
 			return true;
-		ObjectId objectId = (ObjectId) obj;
+		SuperAppObjectIdBoundary objectId = (SuperAppObjectIdBoundary) obj;
         return Equals(objectId);
 	}
 
-	private boolean Equals(ObjectId objectId) {
+	private boolean Equals(SuperAppObjectIdBoundary objectId) {
 		return this.superapp.equals(objectId.getSuperapp()) &&
 				this.internalObjectId.equals(objectId.getInternalObjectId());
 	}
 
+	@Override
+	public String toString() {
+		return "SuperAppObjectIdBoundary [superapp=" + superapp + ", internalObjectId=" + internalObjectId + "]";
+	}
+
+	
 }
 

@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import tlvibes.logic.boundaries.identifiers.CommandId;
-import tlvibes.logic.boundaries.identifiers.ObjectId;
+import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import tlvibes.logic.boundaries.identifiers.UserId;
 
 public class MiniAppCommandBoundary {
 
 	private CommandId commandId;
 	private String command;
-	private ObjectId targetObject;
+	private SuperAppObjectIdBoundary targetObject;
 	private Date invocationTimestamp;
 	private UserId invokedBy;
 	private Map<String, Object> commandAttributes;
@@ -21,10 +21,9 @@ public class MiniAppCommandBoundary {
 		this.command = "doSomething";
 		this.invocationTimestamp = new Date();
 		this.commandAttributes = new HashMap<>();
-		this.commandAttributes.put("key1", "can be anything you wish, even a nested json");		
 	}
 	
-	public MiniAppCommandBoundary(CommandId commandId,ObjectId targetObject,UserId invokedBy) {
+	public MiniAppCommandBoundary(CommandId commandId,SuperAppObjectIdBoundary targetObject,UserId invokedBy) {
 		this();
 		this.commandId = commandId;	
 		this.targetObject = targetObject;
@@ -53,11 +52,11 @@ public class MiniAppCommandBoundary {
 		this.invokedBy = invokedBy;
 	}
 
-	public ObjectId getTargetObject() {
+	public SuperAppObjectIdBoundary getTargetObject() {
 		return targetObject;
 	}
 
-	public void setTargetObject(ObjectId targetObject) {
+	public void setTargetObject(SuperAppObjectIdBoundary targetObject) {
 		this.targetObject = targetObject;
 	}
 	

@@ -3,35 +3,30 @@ package tlvibes.logic.boundaries;
 
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import tlvibes.data.enums.ObjectAlias;
-import tlvibes.data.enums.ObjectType;
-import tlvibes.logic.boundaries.identifiers.ObjectId;
+import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import tlvibes.logic.boundaries.identifiers.UserId;
 
 public class ObjectBoundary{
 	
-	private ObjectId objectId;
+	private SuperAppObjectIdBoundary objectId;
 	private String type;
 	private String alias;
 	private Boolean active;
 	private Date creationTimestamp;
 	private UserId createdBy;
-	private Map<String, Object> objectDetails;	
-
+	private Map<String, Object> objectDetails;
+	private Set<SuperAppObjectIdBoundary> childerns;
+	private SuperAppObjectIdBoundary parent;
+	
 	public ObjectBoundary() {
-		this.type = ObjectType.DUMMY;
-		this.alias = ObjectAlias.DUMMY;
-		this.active = true;
-		this.creationTimestamp = new Date();
-		this.objectDetails = new  HashMap<String, Object>();
 	}
 
 
-	public ObjectBoundary(ObjectId objectId, UserId createdBy) {
+	public ObjectBoundary(SuperAppObjectIdBoundary objectId, UserId createdBy) {
 		this();
 		this.objectId = objectId;
 		this.createdBy = createdBy;
@@ -56,11 +51,11 @@ public class ObjectBoundary{
 		this.objectDetails.put("key4", true);
 	}
 
-	public ObjectId getObjectId() {
+	public SuperAppObjectIdBoundary getObjectId() {
 		return objectId;
 	}
 
-	public void setObjectId(ObjectId objectId) {
+	public void setObjectId(SuperAppObjectIdBoundary objectId) {
 		this.objectId = objectId;
 	}
 
@@ -111,6 +106,27 @@ public class ObjectBoundary{
 	public void setObjectDetails(Map<String, Object> objectDetails) {
 		this.objectDetails = objectDetails;
 	}
+
+	
+	public Set<SuperAppObjectIdBoundary> getChilderns() {
+		return childerns;
+	}
+
+
+	public void setChilderns(Set<SuperAppObjectIdBoundary> childerns) {
+		this.childerns = childerns;
+	}
+
+
+	public SuperAppObjectIdBoundary getParent() {
+		return parent;
+	}
+
+
+	public void setParent(SuperAppObjectIdBoundary parent) {
+		this.parent = parent;
+	}
+
 
 	@Override
 	public String toString() {

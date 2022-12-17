@@ -6,6 +6,8 @@ import tlvibes.data.entities.MiniAppCommandEntity;
 import tlvibes.data.entities.SuperAppObjectEntity;
 import tlvibes.data.entities.UserEntity;
 import tlvibes.logic.boundaries.MiniAppCommandBoundary;
+import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import tlvibes.logic.boundaries.identifiers.UserId;
 
 @Component
 public class MiniAppCommandsConverter {
@@ -26,14 +28,14 @@ public class MiniAppCommandsConverter {
 	 
 
 	
-	public MiniAppCommandBoundary toBoundary(MiniAppCommandEntity entity) {
+	public MiniAppCommandBoundary toBoundary(MiniAppCommandEntity entity,SuperAppObjectIdBoundary targetId, UserId invokerId) {
 		MiniAppCommandBoundary boundary =  new MiniAppCommandBoundary();
 		
 		boundary.setCommandId(entity.getCommandId());
 		boundary.setInvocationTimestamp(entity.getInvocationTimestamp());
 		boundary.setCommand(entity.getCommand());
-		boundary.setTargetObject(entity.getTargetObject().getObjectId());
-		boundary.setInvokedBy(entity.getInvokedBy().getUserId());
+		boundary.setTargetObject(targetId);
+		boundary.setInvokedBy(invokerId);
 		boundary.setCommandAttributes(entity.getCommandAttributes());
 		
 		return boundary;

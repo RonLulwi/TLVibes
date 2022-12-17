@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import tlvibes.logic.boundaries.MiniAppCommandBoundary;
-import tlvibes.logic.boundaries.identifiers.CommandId;
 import tlvibes.logic.interfaces.MiniAppCommandsService;
 
 @RestController
@@ -28,9 +27,6 @@ public class miniAppController {
 		public Object invokeMiniAppCommand(
 				@PathVariable("miniAppName") String miniAppName,
 				@RequestBody MiniAppCommandBoundary boundary) {
-			if(boundary.getCommandId() == null)
-				boundary.setCommandId(new CommandId());
-			boundary.getCommandId().setMiniapp(miniAppName);
 			return this.MiniAppCommand.invokeCommand(boundary);
 		}
 	

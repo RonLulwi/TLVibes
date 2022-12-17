@@ -3,24 +3,28 @@ package tlvibes.data.entities;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.Convert;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import tlvibes.logic.boundaries.identifiers.ObjectId;
+import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import tlvibes.logic.infrastructure.SuperAppMapToJsonConverter;
 
 @Entity
 public class SuperAppObjectEntity {
 	
-	@EmbeddedId private ObjectId objectId;
+	@EmbeddedId private SuperAppObjectIdBoundary objectId;
 	private String type;
 	private String alias;
 	private boolean active;
@@ -35,6 +39,15 @@ public class SuperAppObjectEntity {
 	@Convert(converter = SuperAppMapToJsonConverter.class)
 	private Map<String, Object> objectDetails;
 	
+    @OneToMany(mappedBy="parent",fetch = FetchType.LAZY)
+	private Set<SuperAppObjectEntity> childrens;
+	
+    @ManyToOne
+	@JoinColumns({
+		  @JoinColumn(name = "PARENT_USER_SUPERAPP", referencedColumnName = "superApp"),
+		  @JoinColumn(name = "PARENT_INTERNAL_ID", referencedColumnName = "internalObjectId")
+		 })
+    private SuperAppObjectEntity parent;
 	
 	public SuperAppObjectEntity() {
 		this.type = "undefined";
@@ -43,19 +56,19 @@ public class SuperAppObjectEntity {
 		this.objectDetails = new HashMap<String, Object>();
 	}
 	
-	public SuperAppObjectEntity(ObjectId objectId, UserEntity createdBy) {
+	public SuperAppObjectEntity(SuperAppObjectIdBoundary objectId, UserEntity createdBy) {
 		this();
 		this.objectId = objectId;
 		this.createdBy = createdBy;
 		this.creationTimestamp = new Date();
 	}
 
-	public ObjectId getObjectId() {
+	public SuperAppObjectIdBoundary getObjectId() {
 		return objectId;
 	}
 
 
-	public void setObjectId(ObjectId objectId) {
+	public void setObjectId(SuperAppObjectIdBoundary objectId) {
 		this.objectId = objectId;
 	}
 
@@ -101,11 +114,6 @@ public class SuperAppObjectEntity {
 		
 	}
 
-//	@JoinColumns({
-//		  @JoinColumn(name = "CREATED_BY_USER_SUPERAPP", referencedColumnName = "superApp"),
-//		  @JoinColumn(name = "CREATED_BY_USER_EMAIL", referencedColumnName = "email")
-//		 })
-//	@OneToOne
 	public UserEntity getCreatedBy() {
 		return createdBy;
 	}
@@ -124,6 +132,28 @@ public class SuperAppObjectEntity {
 		this.objectDetails = objectDetails;
 	}
 
+	public Set<SuperAppObjectEntity> getChildrens() {
+		return childrens;
+	}
+
+	public void setChildrens(Set<SuperAppObjectEntity> childrens) {
+		this.childrens = childrens;
+	}
+	
+
+	public void BindChild(SuperAppObjectEntity child) {
+		this.childrens.add(child);
+	}
+
+
+
+	public SuperAppObjectEntity getParent() {
+		return parent;
+	}
+
+	public void setParent(SuperAppObjectEntity parent) {
+		this.parent = parent;
+	}
 
 	@Override
 	public String toString() {
@@ -131,6 +161,7 @@ public class SuperAppObjectEntity {
 				+ active + ", creationTimestamp=" + creationTimestamp + ", createdBy=" + createdBy + ", objectDetails="
 				+ objectDetails + "]";
 	}
+
 	
 	
 

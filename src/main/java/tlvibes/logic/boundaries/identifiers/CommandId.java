@@ -66,6 +66,14 @@ public class CommandId implements Serializable{
 		return Objects.equals(internalCommanId, other.internalCommanId) && Objects.equals(miniapp, other.miniapp)
 				&& Objects.equals(supperapp, other.supperapp);
 	}
+
+	@Override
+	public String toString() {
+		return "CommandId [supperapp=" + supperapp + ", miniapp=" + miniapp + ", internalCommanId=" + internalCommanId
+				+ "]";
+	}
+	
+	
 	
 	
 }

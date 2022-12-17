@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tlvibes.data.entities.UserEntity;
+import tlvibes.data.enums.Role;
 import tlvibes.data.interfaces.UserEntityRepository;
 import tlvibes.logic.boundaries.NewUserBoundary;
 import tlvibes.logic.boundaries.UserBoundary;
@@ -42,7 +43,13 @@ public class UserService implements UsersService {
 	public UserBoundary createUser(NewUserBoundary user) {
 		
 		Guard.AgainstNull(user, user.getClass().getName());
-		
+		Guard.AgainstNull(user.getEmail(), user.getEmail().getClass().getName());
+		Guard.AgainstNull(user.getUsername(), user.getUsername().getClass().getName());
+		Guard.AgainstNull(user.getRole(), user.getRole().getClass().getName());
+		Guard.AgainstNull(user.getAvatar(), user.getAvatar().getClass().getName());
+
+		Role.ValidateEnumThrowsIfNotExists(user.getRole());
+
 		UserBoundary boundary = user.ToUserBoudary(new UserId(configProperties.getSuperAppName(), user.getEmail()));
 		
 		UserEntity entity = convertor.UserBoundaryToEntity(boundary);

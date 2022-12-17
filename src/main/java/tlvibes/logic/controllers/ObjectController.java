@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import tlvibes.logic.boundaries.ObjectBoundary;
-import tlvibes.logic.interfaces.ObjectsService;
-import tlvibes.logic.services.ObjectService;
+import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import tlvibes.logic.interfaces.EnhancedObjectsService;
 
 @RestController
 public class ObjectController {
 
-	private ObjectsService objectService;
+	private EnhancedObjectsService  enhancedObjectsService;
 	
 	@Autowired
-	public void setObjectService(ObjectService objectService) {
-		this.objectService = objectService;
+	public void setObjectService(EnhancedObjectsService enhancedObjectsService) {
+		this.enhancedObjectsService = enhancedObjectsService;
 	}
 
 	@RequestMapping(
@@ -34,7 +34,7 @@ public class ObjectController {
 			@PathVariable("superapp") String superapp,
 			@PathVariable("InternalObjectId") String InternalObjectId
 			){
-		return this.objectService.getSpecificObject(superapp, InternalObjectId);
+		return this.enhancedObjectsService.getSpecificObject(superapp, InternalObjectId);
 	}
 
 
@@ -43,7 +43,7 @@ public class ObjectController {
 			path = "/superapp/objects",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<ObjectBoundary> retriveAllObjects (){
-		return this.objectService.getAllObjects();
+		return this.enhancedObjectsService.getAllObjects();
 	}
 
 
@@ -53,10 +53,8 @@ public class ObjectController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId) {
-			return this.objectService.createObject(objWithoutId);
+			return this.enhancedObjectsService.createObject(objWithoutId);
 	}
-
-
 
 
 	@RequestMapping(
@@ -67,7 +65,18 @@ public class ObjectController {
 			@PathVariable("superapp") String superapp,
 			@PathVariable("InternalObjectId") String InternalObjectId, 
 			@RequestBody ObjectBoundary update) {
-		this.objectService.updateObject(superapp, InternalObjectId, update);
+		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update);
+		}
 		
+		@RequestMapping(
+				path = "/superapp/objects/{superapp}/{InternalObjectId}/children",
+				method = RequestMethod.PUT,
+				consumes = MediaType.APPLICATION_JSON_VALUE)
+		public void updateObject (
+				@PathVariable("superapp") String superapp,
+				@PathVariable("InternalObjectId") String InternalObjectId, 
+				@RequestBody SuperAppObjectIdBoundary update) {
+			this.enhancedObjectsService.BindExistingObjectToAnExisitingChild(superapp, InternalObjectId, update);
+
 	}
 }

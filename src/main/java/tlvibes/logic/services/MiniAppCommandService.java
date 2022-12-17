@@ -16,6 +16,8 @@ import tlvibes.data.interfaces.SuperAppObjectRepository;
 import tlvibes.data.interfaces.UserEntityRepository;
 import tlvibes.logic.boundaries.MiniAppCommandBoundary;
 import tlvibes.logic.boundaries.identifiers.CommandId;
+import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import tlvibes.logic.boundaries.identifiers.UserId;
 import tlvibes.logic.convertes.MiniAppCommandsConverter;
 import tlvibes.logic.infrastructure.ConfigProperties;
 import tlvibes.logic.infrastructure.Guard;
@@ -41,7 +43,7 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 			MiniAppCommandRepository commandRepository) {
 		this.converter = converter;
 		this.configProperties = configProperties;
-		this.setIdGenerator(idGenerator);
+		this.idGenerator = idGenerator;
 		this.userEntityRepository = userEntityRepository;
 		this.superAppObjectRepositoy = superAppObjectRepositoy;
 		this.commandRepository = commandRepository;
@@ -50,11 +52,28 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	@Override
 	public Object invokeCommand(MiniAppCommandBoundary boundary) {
 		
+		Guard.AgainstNull(boundary, boundary.getClass().getName());
 		Guard.AgainstNull(boundary.getCommand(), boundary.getCommand().getClass().getName());
 		Guard.AgainstNull(boundary.getInvokedBy(), boundary.getInvokedBy().getClass().getName());
 		Guard.AgainstNull(boundary.getTargetObject(), boundary.getTargetObject().getClass().getName());
-		Guard.AgainstNull(boundary.getCommandAttributes(), boundary.getCommandAttributes().getClass().getName());
 
+		MiniAppCommandEntity entity = ConvertCommandEnityToBoundary(boundary);
+		
+		var returned = commandRepository.save(entity);
+			
+		return ConvertCommandBoundaryToEntity(returned);
+	}
+
+	private MiniAppCommandBoundary ConvertCommandBoundaryToEntity(MiniAppCommandEntity entity) {
+
+		SuperAppObjectIdBoundary targetId = entity.getTargetObject().getObjectId();
+		
+		UserId invokerId = entity.getInvokedBy().getUserId();
+
+		return converter.toBoundary(entity, targetId, invokerId);
+	}
+
+	private MiniAppCommandEntity ConvertCommandEnityToBoundary(MiniAppCommandBoundary boundary) {
 		SuperAppObjectEntity targetObject = superAppObjectRepositoy.findById(boundary.getTargetObject()).get();
 		
 		Guard.AgainstNull(targetObject, targetObject.getClass().getName());
@@ -66,12 +85,11 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 		String internalCommandId = idGenerator.GenerateUUID().toString();
 		
 		boundary.setCommandId(new CommandId(internalCommandId, this.configProperties.getSuperAppName(),boundary.getCommandId().getMiniapp()));
+		
 		boundary.setInvocationTimestamp(new Date());
 		
 		MiniAppCommandEntity entity = converter.toEntity(boundary,targetObject,invoker);
 		
-		commandRepository.save(entity);
-			
 		return entity;
 	}
 
@@ -79,7 +97,7 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	public List<MiniAppCommandBoundary> getAllCommands() {			
 		return StreamSupport
 				.stream(this.commandRepository.findAll().spliterator(), false)
-				.map(this.converter::toBoundary)
+				.map(entity -> ConvertCommandBoundaryToEntity(entity))
 				.collect(Collectors.toList());
 
 	}
@@ -89,7 +107,7 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 		return StreamSupport
 				.stream(this.commandRepository.findAll().spliterator(), false)
 				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
-				.map(this.converter::toBoundary)
+				.map(entity -> ConvertCommandBoundaryToEntity(entity))
 				.collect(Collectors.toList());
 
 	}
@@ -97,14 +115,6 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	@Override
 	public void deleteAllCommands() {
 		this.commandRepository.deleteAll();;
-	}
-
-	public IdGenerator getIdGenerator() {
-		return idGenerator;
-	}
-
-	public void setIdGenerator(IdGenerator idGenerator) {
-		this.idGenerator = idGenerator;
 	}
 
 }

@@ -2,17 +2,21 @@ package tlvibes.logic.convertes;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
 import tlvibes.data.entities.SuperAppObjectEntity;
 import tlvibes.data.entities.UserEntity;
 import tlvibes.logic.boundaries.ObjectBoundary;
+import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import tlvibes.logic.boundaries.identifiers.UserId;
 
 @Component
 public class ObjectConvertor {
-
-	public SuperAppObjectEntity toEntity(ObjectBoundary boundary, UserEntity userEntity) {
+	
+	public SuperAppObjectEntity toEntity(ObjectBoundary boundary, UserEntity userEntity,
+			Set<SuperAppObjectEntity> childrens, SuperAppObjectEntity parent) {
 		SuperAppObjectEntity entity = new SuperAppObjectEntity();
 		
 		entity.setActive(boundary.getActive() != null ? boundary.getActive() : false);
@@ -22,20 +26,25 @@ public class ObjectConvertor {
 		entity.setObjectDetails(boundary.getObjectDetails() != null ? boundary.getObjectDetails() : new HashMap<String,Object>());
 		entity.setObjectId(boundary.getObjectId());
 		entity.setType(boundary.getType());
+		entity.setParent(parent);
+		entity.setChildrens(childrens);
 		
 		return entity;
 	}
 	
-	public ObjectBoundary toBoundary(SuperAppObjectEntity entity) {
+	public ObjectBoundary toBoundary(SuperAppObjectEntity entity,Set<SuperAppObjectIdBoundary> chiledrens,
+			UserId createdBy, SuperAppObjectIdBoundary parent) {
 		ObjectBoundary boundary = new ObjectBoundary();
 		
 		boundary.setActive(entity.getActive());
 		boundary.setAlias(entity.getAlias());
-		boundary.setCreatedBy(entity.getCreatedBy().getUserId());
+		boundary.setCreatedBy(createdBy);
 		boundary.setCreationTimestamp(entity.getCreationTimestamp()); //TODO : should changed?
 		boundary.setObjectDetails(entity.getObjectDetails());
 		boundary.setObjectId(entity.getObjectId());
-		boundary.setType(entity.getType());
+		boundary.setType(entity.getType());		
+		boundary.setChilderns(chiledrens);
+		boundary.setParent(parent);
 		
 		return boundary;	
 	}
