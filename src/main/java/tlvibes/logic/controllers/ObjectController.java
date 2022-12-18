@@ -72,11 +72,31 @@ public class ObjectController {
 				path = "/superapp/objects/{superapp}/{InternalObjectId}/children",
 				method = RequestMethod.PUT,
 				consumes = MediaType.APPLICATION_JSON_VALUE)
-		public void updateObject (
+		public void bindChild (
 				@PathVariable("superapp") String superapp,
 				@PathVariable("InternalObjectId") String InternalObjectId, 
 				@RequestBody SuperAppObjectIdBoundary update) {
 			this.enhancedObjectsService.BindExistingObjectToAnExisitingChild(superapp, InternalObjectId, update);
+		}
+		
+		@RequestMapping(
+				path = "/superapp/objects/{superapp}/{InternalObjectId}/children",
+				method = RequestMethod.GET,
+				produces = MediaType.APPLICATION_JSON_VALUE)
+		public ObjectBoundary[] getChildrens (
+				@PathVariable("superapp") String superapp,
+				@PathVariable("InternalObjectId") String InternalObjectId) {
+			return this.enhancedObjectsService.GetAllChildrens(superapp, InternalObjectId);
+		}
+		
+		@RequestMapping(
+				path = "/superapp/objects/{superapp}/{InternalObjectId}/parents",
+				method = RequestMethod.GET,
+				produces = MediaType.APPLICATION_JSON_VALUE)
+		public ObjectBoundary[] getParents (
+				@PathVariable("superapp") String superapp,
+				@PathVariable("InternalObjectId") String InternalObjectId) {
+			return this.enhancedObjectsService.GetParent(superapp, InternalObjectId);
+		}
 
-	}
 }

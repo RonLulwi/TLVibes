@@ -164,7 +164,7 @@ public class ObjectService implements EnhancedObjectsService {
 		
 		Guard.AgainstNullOptinalIdNotFound(optionalEntity, optionalEntity.toString(), SuperAppObjectEntity.class.getName());
 
-		SuperAppObjectEntity entity = optionalEntity.get().getParent();
+		SuperAppObjectEntity entity = optionalEntity.get();
 
 		return new ObjectBoundary[] {convertObjectEntityToBoundary(entity)};
 	}
@@ -266,7 +266,7 @@ public class ObjectService implements EnhancedObjectsService {
 	
 	private Set<SuperAppObjectIdBoundary> GetEntityChildrens(SuperAppObjectEntity entity) {
 		
-		if(entity.getChildrens() == null || entity.getChildrens().isEmpty())
+		if(entity== null || entity.getChildrens() == null || entity.getChildrens().isEmpty())
 		{
 			return new HashSet<SuperAppObjectIdBoundary>();
 		}

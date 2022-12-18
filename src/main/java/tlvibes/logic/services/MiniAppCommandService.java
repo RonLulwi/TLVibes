@@ -7,6 +7,7 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import tlvibes.data.entities.MiniAppCommandEntity;
 import tlvibes.data.entities.SuperAppObjectEntity;
@@ -50,6 +51,7 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	}
 
 	@Override
+	@Transactional()
 	public Object invokeCommand(MiniAppCommandBoundary boundary) {
 		
 		Guard.AgainstNull(boundary, boundary.getClass().getName());
@@ -62,6 +64,34 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 		var returned = commandRepository.save(entity);
 			
 		return ConvertCommandBoundaryToEntity(returned);
+	}
+
+
+	@Override
+	@Transactional(readOnly = true)
+	public List<MiniAppCommandBoundary> getAllCommands() {			
+		return StreamSupport
+				.stream(this.commandRepository.findAll().spliterator(), false)
+				.map(entity -> ConvertCommandBoundaryToEntity(entity))
+				.collect(Collectors.toList());
+
+	}
+
+	@Override	
+	@Transactional(readOnly = true)
+	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {	
+		return StreamSupport
+				.stream(this.commandRepository.findAll().spliterator(), false)
+				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
+				.map(entity -> ConvertCommandBoundaryToEntity(entity))
+				.collect(Collectors.toList());
+
+	}
+
+	@Override
+	@Transactional
+	public void deleteAllCommands() {
+		this.commandRepository.deleteAll();;
 	}
 
 	private MiniAppCommandBoundary ConvertCommandBoundaryToEntity(MiniAppCommandEntity entity) {
@@ -91,30 +121,6 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 		MiniAppCommandEntity entity = converter.toEntity(boundary,targetObject,invoker);
 		
 		return entity;
-	}
-
-	@Override
-	public List<MiniAppCommandBoundary> getAllCommands() {			
-		return StreamSupport
-				.stream(this.commandRepository.findAll().spliterator(), false)
-				.map(entity -> ConvertCommandBoundaryToEntity(entity))
-				.collect(Collectors.toList());
-
-	}
-
-	@Override
-	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {	
-		return StreamSupport
-				.stream(this.commandRepository.findAll().spliterator(), false)
-				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
-				.map(entity -> ConvertCommandBoundaryToEntity(entity))
-				.collect(Collectors.toList());
-
-	}
-
-	@Override
-	public void deleteAllCommands() {
-		this.commandRepository.deleteAll();;
 	}
 
 }

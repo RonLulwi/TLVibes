@@ -116,7 +116,7 @@ public class MiniAppCommandEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(command, commandAttributes, commandId, invocationTimestamp, invokedBy, targetObject);
+		return Objects.hash(commandId);
 	}
 
 	@Override
@@ -128,9 +128,9 @@ public class MiniAppCommandEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		MiniAppCommandEntity other = (MiniAppCommandEntity) obj;
-		return Objects.equals(command, other.command) && Objects.equals(commandAttributes, other.commandAttributes)
-				&& Objects.equals(commandId, other.commandId)
-				&& Objects.equals(invocationTimestamp, other.invocationTimestamp)
-				&& Objects.equals(invokedBy, other.invokedBy) && Objects.equals(targetObject, other.targetObject);
+		return Objects.equals(commandId, other.commandId);
 	}
+	
+	
+
 }

@@ -3,6 +3,7 @@ package tlvibes.data.entities;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Convert;
@@ -161,6 +162,25 @@ public class SuperAppObjectEntity {
 				+ active + ", creationTimestamp=" + creationTimestamp + ", createdBy=" + createdBy + ", objectDetails="
 				+ objectDetails + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(objectId);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SuperAppObjectEntity other = (SuperAppObjectEntity) obj;
+		return Objects.equals(objectId, other.objectId);
+	}
+	
+	
 
 	
 	
