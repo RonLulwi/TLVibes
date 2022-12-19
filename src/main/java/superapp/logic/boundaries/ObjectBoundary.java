@@ -1,4 +1,4 @@
-package tlvibes.logic.boundaries;
+package superapp.logic.boundaries;
 
 
 
@@ -7,8 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
+
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 
 public class ObjectBoundary{
 	

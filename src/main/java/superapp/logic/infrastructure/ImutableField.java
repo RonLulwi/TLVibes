@@ -1,4 +1,4 @@
-package tlvibes.logic.infrastructure;
+package superapp.logic.infrastructure;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

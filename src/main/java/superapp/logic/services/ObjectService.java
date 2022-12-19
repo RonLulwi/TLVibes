@@ -1,4 +1,4 @@
-package tlvibes.logic.services;
+package superapp.logic.services;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,18 +12,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import tlvibes.data.entities.SuperAppObjectEntity;
-import tlvibes.data.entities.UserEntity;
-import tlvibes.data.interfaces.SuperAppObjectRepository;
-import tlvibes.data.interfaces.UserEntityRepository;
-import tlvibes.logic.boundaries.ObjectBoundary;
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
-import tlvibes.logic.convertes.ObjectConvertor;
-import tlvibes.logic.infrastructure.ConfigProperties;
-import tlvibes.logic.infrastructure.Guard;
-import tlvibes.logic.infrastructure.IdGenerator;
-import tlvibes.logic.interfaces.EnhancedObjectsService;
+import superapp.data.entities.SuperAppObjectEntity;
+import superapp.data.entities.UserEntity;
+import superapp.data.interfaces.SuperAppObjectRepository;
+import superapp.data.interfaces.UserEntityRepository;
+import superapp.logic.boundaries.ObjectBoundary;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
+import superapp.logic.convertes.ObjectConvertor;
+import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.Guard;
+import superapp.logic.infrastructure.IdGenerator;
+import superapp.logic.interfaces.EnhancedObjectsService;
 
 @Service
 public class ObjectService implements EnhancedObjectsService {

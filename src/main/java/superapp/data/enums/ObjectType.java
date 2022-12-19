@@ -1,4 +1,4 @@
-package tlvibes.data.enums;
+package superapp.data.enums;
 
 
 

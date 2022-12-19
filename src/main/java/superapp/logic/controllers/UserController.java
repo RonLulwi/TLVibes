@@ -1,19 +1,21 @@
-package tlvibes.logic.controllers;
+package superapp.logic.controllers;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tlvibes.logic.boundaries.NewUserBoundary;
-import tlvibes.logic.boundaries.UserBoundary;
-import tlvibes.logic.services.UserService;
+import superapp.logic.boundaries.NewUserBoundary;
+import superapp.logic.boundaries.UserBoundary;
+import superapp.logic.services.UserService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3001")
 public class UserController {
 	private UserService userService;
 	

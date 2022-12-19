@@ -1,10 +1,10 @@
-package tlvibes.logic.boundaries;
+package superapp.logic.boundaries;
 
 
 import java.util.Objects;
 
-import tlvibes.data.enums.Role;
-import tlvibes.logic.boundaries.identifiers.UserId;
+import superapp.data.enums.Role;
+import superapp.logic.boundaries.identifiers.UserId;
 
 public class NewUserBoundary {
 	

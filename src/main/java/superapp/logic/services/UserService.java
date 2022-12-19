@@ -1,4 +1,4 @@
-package tlvibes.logic.services;
+package superapp.logic.services;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,19 +6,20 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import superapp.data.entities.UserEntity;
+import superapp.data.enums.Role;
+import superapp.data.interfaces.UserEntityRepository;
+import superapp.logic.boundaries.NewUserBoundary;
+import superapp.logic.boundaries.UserBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
+import superapp.logic.convertes.UserConvertor;
+import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.Guard;
+import superapp.logic.interfaces.UsersService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import tlvibes.data.entities.UserEntity;
-import tlvibes.data.enums.Role;
-import tlvibes.data.interfaces.UserEntityRepository;
-import tlvibes.logic.boundaries.NewUserBoundary;
-import tlvibes.logic.boundaries.UserBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
-import tlvibes.logic.convertes.UserConvertor;
-import tlvibes.logic.infrastructure.ConfigProperties;
-import tlvibes.logic.infrastructure.Guard;
-import tlvibes.logic.interfaces.UsersService;
 
 
 

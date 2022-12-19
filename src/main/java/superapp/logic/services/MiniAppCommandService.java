@@ -1,4 +1,4 @@
-package tlvibes.logic.services;
+package superapp.logic.services;
 
 import java.util.Date;
 import java.util.List;
@@ -9,21 +9,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import tlvibes.data.entities.MiniAppCommandEntity;
-import tlvibes.data.entities.SuperAppObjectEntity;
-import tlvibes.data.entities.UserEntity;
-import tlvibes.data.interfaces.MiniAppCommandRepository;
-import tlvibes.data.interfaces.SuperAppObjectRepository;
-import tlvibes.data.interfaces.UserEntityRepository;
-import tlvibes.logic.boundaries.MiniAppCommandBoundary;
-import tlvibes.logic.boundaries.identifiers.CommandId;
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
-import tlvibes.logic.convertes.MiniAppCommandsConverter;
-import tlvibes.logic.infrastructure.ConfigProperties;
-import tlvibes.logic.infrastructure.Guard;
-import tlvibes.logic.infrastructure.IdGenerator;
-import tlvibes.logic.interfaces.MiniAppCommandsService;
+import superapp.data.entities.MiniAppCommandEntity;
+import superapp.data.entities.SuperAppObjectEntity;
+import superapp.data.entities.UserEntity;
+import superapp.data.interfaces.MiniAppCommandRepository;
+import superapp.data.interfaces.SuperAppObjectRepository;
+import superapp.data.interfaces.UserEntityRepository;
+import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.boundaries.identifiers.CommandId;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
+import superapp.logic.convertes.MiniAppCommandsConverter;
+import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.Guard;
+import superapp.logic.infrastructure.IdGenerator;
+import superapp.logic.interfaces.MiniAppCommandsService;
 
 @Service
 public class MiniAppCommandService implements MiniAppCommandsService {

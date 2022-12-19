@@ -1,4 +1,4 @@
-package tlvibes.logic.infrastructure;
+package superapp.logic.infrastructure;
 
 import java.util.Map;
 import java.util.Optional;

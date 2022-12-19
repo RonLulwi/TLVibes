@@ -1,4 +1,4 @@
-package tlvibes.logic.infrastructure;
+package superapp.logic.infrastructure;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -1,12 +1,12 @@
-package tlvibes.logic.boundaries;
+package superapp.logic.boundaries;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import tlvibes.logic.boundaries.identifiers.CommandId;
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
+import superapp.logic.boundaries.identifiers.CommandId;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 
 public class MiniAppCommandBoundary {
 

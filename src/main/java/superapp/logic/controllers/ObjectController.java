@@ -1,4 +1,4 @@
-package tlvibes.logic.controllers;
+package superapp.logic.controllers;
 
 
 
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tlvibes.logic.boundaries.ObjectBoundary;
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import tlvibes.logic.interfaces.EnhancedObjectsService;
+import superapp.logic.boundaries.ObjectBoundary;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.interfaces.EnhancedObjectsService;
 
 @RestController
 public class ObjectController {

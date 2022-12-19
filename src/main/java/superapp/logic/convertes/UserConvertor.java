@@ -1,11 +1,11 @@
-package tlvibes.logic.convertes;
+package superapp.logic.convertes;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import tlvibes.data.entities.UserEntity;
-import tlvibes.logic.boundaries.UserBoundary;
-import tlvibes.logic.infrastructure.EmailValidator;
+import superapp.data.entities.UserEntity;
+import superapp.logic.boundaries.UserBoundary;
+import superapp.logic.infrastructure.EmailValidator;
 
 @Component
 public class UserConvertor {

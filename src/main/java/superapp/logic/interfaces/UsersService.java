@@ -1,9 +1,9 @@
-package tlvibes.logic.interfaces;
+package superapp.logic.interfaces;
 
 import java.util.List;
 
-import tlvibes.logic.boundaries.NewUserBoundary;
-import tlvibes.logic.boundaries.UserBoundary;
+import superapp.logic.boundaries.NewUserBoundary;
+import superapp.logic.boundaries.UserBoundary;
 
 public interface UsersService {
 	
