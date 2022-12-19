@@ -15,7 +15,7 @@ import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.services.UserService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3001")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 	private UserService userService;
 	
