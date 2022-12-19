@@ -1,4 +1,4 @@
-package tlvibes.logic.infrastructure;
+package superapp.logic.infrastructure;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

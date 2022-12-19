@@ -1,9 +1,9 @@
-package tlvibes.data.interfaces;
+package superapp.data.interfaces;
 
 import org.springframework.data.repository.CrudRepository;
 
-import tlvibes.data.entities.UserEntity;
-import tlvibes.logic.boundaries.identifiers.UserId;
+import superapp.data.entities.UserEntity;
+import superapp.logic.boundaries.identifiers.UserId;
 
 public interface UserEntityRepository extends CrudRepository<UserEntity, UserId>{
 

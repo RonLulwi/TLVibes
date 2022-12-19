@@ -1,4 +1,4 @@
-package tlvibes.logic.boundaries.identifiers;
+package superapp.logic.boundaries.identifiers;
 
 import java.io.Serializable;
 import java.util.Objects;

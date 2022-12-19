@@ -1,4 +1,4 @@
-package tlvibes.logic.convertes;
+package superapp.logic.convertes;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -6,11 +6,11 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import tlvibes.data.entities.SuperAppObjectEntity;
-import tlvibes.data.entities.UserEntity;
-import tlvibes.logic.boundaries.ObjectBoundary;
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
+import superapp.data.entities.SuperAppObjectEntity;
+import superapp.data.entities.UserEntity;
+import superapp.logic.boundaries.ObjectBoundary;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 
 @Component
 public class ObjectConvertor {

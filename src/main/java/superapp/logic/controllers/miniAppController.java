@@ -1,4 +1,4 @@
-package tlvibes.logic.controllers;
+package superapp.logic.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import tlvibes.logic.boundaries.MiniAppCommandBoundary;
-import tlvibes.logic.interfaces.MiniAppCommandsService;
+
+import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.interfaces.MiniAppCommandsService;
 
 @RestController
 public class miniAppController {

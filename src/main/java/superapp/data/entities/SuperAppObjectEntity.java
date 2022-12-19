@@ -1,4 +1,4 @@
-package tlvibes.data.entities;
+package superapp.data.entities;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,8 +19,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import tlvibes.logic.infrastructure.SuperAppMapToJsonConverter;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.infrastructure.SuperAppMapToJsonConverter;
 
 @Entity
 public class SuperAppObjectEntity {

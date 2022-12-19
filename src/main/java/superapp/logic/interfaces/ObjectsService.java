@@ -1,7 +1,8 @@
-package tlvibes.logic.interfaces;
+package superapp.logic.interfaces;
 
 import java.util.List;
-import tlvibes.logic.boundaries.ObjectBoundary;
+
+import superapp.logic.boundaries.ObjectBoundary;
 
 
 public interface ObjectsService {

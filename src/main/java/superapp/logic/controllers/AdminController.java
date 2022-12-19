@@ -1,4 +1,4 @@
-package tlvibes.logic.controllers;
+package superapp.logic.controllers;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -6,11 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import tlvibes.logic.boundaries.MiniAppCommandBoundary;
-import tlvibes.logic.boundaries.UserBoundary;
-import tlvibes.logic.services.MiniAppCommandService;
-import tlvibes.logic.services.ObjectService;
-import tlvibes.logic.services.UserService;
+import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.boundaries.UserBoundary;
+import superapp.logic.services.MiniAppCommandService;
+import superapp.logic.services.ObjectService;
+import superapp.logic.services.UserService;
 
 @RestController
 public class AdminController {

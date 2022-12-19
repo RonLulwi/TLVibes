@@ -1,7 +1,7 @@
-package tlvibes.logic.interfaces;
+package superapp.logic.interfaces;
 
-import tlvibes.logic.boundaries.ObjectBoundary;
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.ObjectBoundary;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 
 public interface EnhancedObjectsService extends ObjectsService {
 	void BindExistingObjectToAnExisitingChild(String parentSuperApp, String parentInternalId, SuperAppObjectIdBoundary objectId);

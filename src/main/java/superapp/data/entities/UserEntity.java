@@ -1,12 +1,13 @@
-package tlvibes.data.entities;
+package superapp.data.entities;
 
 import java.util.Objects;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import tlvibes.data.enums.Role;
-import tlvibes.logic.boundaries.identifiers.UserId;
-import tlvibes.logic.infrastructure.Utilities;
+
+import superapp.data.enums.Role;
+import superapp.logic.boundaries.identifiers.UserId;
+import superapp.logic.infrastructure.Utilities;
 
 @Entity
 public class UserEntity {

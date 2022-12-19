@@ -1,13 +1,13 @@
-package tlvibes.logic.convertes;
+package superapp.logic.convertes;
 
 import org.springframework.stereotype.Component;
 
-import tlvibes.data.entities.MiniAppCommandEntity;
-import tlvibes.data.entities.SuperAppObjectEntity;
-import tlvibes.data.entities.UserEntity;
-import tlvibes.logic.boundaries.MiniAppCommandBoundary;
-import tlvibes.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import tlvibes.logic.boundaries.identifiers.UserId;
+import superapp.data.entities.MiniAppCommandEntity;
+import superapp.data.entities.SuperAppObjectEntity;
+import superapp.data.entities.UserEntity;
+import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 
 @Component
 public class MiniAppCommandsConverter {
