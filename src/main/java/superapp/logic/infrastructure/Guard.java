@@ -13,6 +13,14 @@ public class Guard {
         }
     }
     
+    public static void AgainstNullOrEmpty(String argument, String argumentName) throws RuntimeException   
+    {
+        if (argument == null || argument == "")
+        {
+            throw new RuntimeException(String.format("%s is null",argumentName));
+        }
+    }
+
     public static void AgainstNullRequest(Map<String,Object> keyValuePairs) throws RuntimeException   
     {
     	for (Map.Entry<String, Object> entry : keyValuePairs.entrySet()) {

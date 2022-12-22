@@ -8,29 +8,26 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class CommandId implements Serializable{
 	private static final long serialVersionUID = 1L;
-    String supperapp;
+    String superapp;
     String miniapp;
     String internalCommanId;
 
 
 	public CommandId() {
-		this.supperapp = "undefined";
-		this.miniapp = "undefined";
-		this.internalCommanId = "undefind";
 	}
 
 	public CommandId(String internalCommanId, String supperApp, String miniApp ) {
 		this.internalCommanId = internalCommanId;
-		this.supperapp = supperApp;
+		this.superapp = supperApp;
 		this.miniapp = miniApp;
 	}
 
 	public String getSupperapp() {
-		return supperapp;
+		return superapp;
 	}
 
 	public void setSupperapp(String supperApp) {
-		this.supperapp = supperApp;
+		this.superapp = supperApp;
 	}
 
 	public String getMiniapp() {
@@ -51,7 +48,7 @@ public class CommandId implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(internalCommanId, miniapp, supperapp);
+		return Objects.hash(internalCommanId, miniapp, superapp);
 	}
 
 	@Override
@@ -64,12 +61,12 @@ public class CommandId implements Serializable{
 			return false;
 		CommandId other = (CommandId) obj;
 		return Objects.equals(internalCommanId, other.internalCommanId) && Objects.equals(miniapp, other.miniapp)
-				&& Objects.equals(supperapp, other.supperapp);
+				&& Objects.equals(superapp, other.superapp);
 	}
 
 	@Override
 	public String toString() {
-		return "CommandId [supperapp=" + supperapp + ", miniapp=" + miniapp + ", internalCommanId=" + internalCommanId
+		return "CommandId [supperapp=" + superapp + ", miniapp=" + miniapp + ", internalCommanId=" + internalCommanId
 				+ "]";
 	}
 	

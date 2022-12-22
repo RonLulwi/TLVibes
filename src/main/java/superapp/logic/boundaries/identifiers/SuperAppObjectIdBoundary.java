@@ -1,6 +1,7 @@
 package superapp.logic.boundaries.identifiers;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
@@ -40,7 +41,7 @@ public class SuperAppObjectIdBoundary implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		return Objects.hash(superapp, internalObjectId);
 	}
 
 	@Override

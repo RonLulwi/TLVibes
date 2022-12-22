@@ -2,6 +2,7 @@ package superapp.logic.boundaries.identifiers;
 
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.Embeddable;
 
@@ -43,7 +44,7 @@ public class UserId implements Serializable{
 
 	@Override
 	public int hashCode() {
-		return super.hashCode();
+		return Objects.hash(email, superapp);
 	}
 
 	@Override
