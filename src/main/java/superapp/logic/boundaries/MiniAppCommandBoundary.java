@@ -18,7 +18,6 @@ public class MiniAppCommandBoundary {
 	private Map<String, Object> commandAttributes;
 
 	public MiniAppCommandBoundary() {
-		this.command = "doSomething";
 		this.invocationTimestamp = new Date();
 		this.commandAttributes = new HashMap<>();
 	}

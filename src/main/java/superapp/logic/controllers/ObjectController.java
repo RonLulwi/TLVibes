@@ -86,7 +86,8 @@ public class ObjectController {
 		public ObjectBoundary[] getChildrens (
 				@PathVariable("superapp") String superapp,
 				@PathVariable("InternalObjectId") String InternalObjectId) {
-			return this.enhancedObjectsService.GetAllChildrens(superapp, InternalObjectId);
+			return this.enhancedObjectsService.GetAllChildrens(superapp, InternalObjectId)
+					.toArray(new ObjectBoundary[0]);
 		}
 		
 		@RequestMapping(
@@ -96,7 +97,7 @@ public class ObjectController {
 		public ObjectBoundary[] getParents (
 				@PathVariable("superapp") String superapp,
 				@PathVariable("InternalObjectId") String InternalObjectId) {
-			return this.enhancedObjectsService.GetParent(superapp, InternalObjectId);
+			return this.enhancedObjectsService.GetParent(superapp, InternalObjectId)
+					.toArray(new ObjectBoundary[0]);
 		}
-
 }

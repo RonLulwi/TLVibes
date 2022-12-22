@@ -1,10 +1,7 @@
 package superapp.logic.boundaries;
 
-
-
 import java.util.Date;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -20,8 +17,6 @@ public class ObjectBoundary{
 	private Date creationTimestamp;
 	private UserId createdBy;
 	private Map<String, Object> objectDetails;
-	private Set<SuperAppObjectIdBoundary> childerns;
-	private SuperAppObjectIdBoundary parent;
 	
 	public ObjectBoundary() {
 	}
@@ -107,27 +102,6 @@ public class ObjectBoundary{
 	public void setObjectDetails(Map<String, Object> objectDetails) {
 		this.objectDetails = objectDetails;
 	}
-
-	
-	public Set<SuperAppObjectIdBoundary> getChilderns() {
-		return childerns;
-	}
-
-
-	public void setChilderns(Set<SuperAppObjectIdBoundary> childerns) {
-		this.childerns = childerns;
-	}
-
-
-	public SuperAppObjectIdBoundary getParent() {
-		return parent;
-	}
-
-
-	public void setParent(SuperAppObjectIdBoundary parent) {
-		this.parent = parent;
-	}
-
 
 	@Override
 	public String toString() {

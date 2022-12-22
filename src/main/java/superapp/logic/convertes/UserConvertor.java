@@ -17,7 +17,10 @@ public class UserConvertor {
 
 	public UserEntity UserBoundaryToEntity(UserBoundary boundary)	{
 		
-		emailValidator.validate(boundary.getUserId().getEmail());
+		if(!emailValidator.validate(boundary.getUserId().getEmail()))
+		{
+			throw new IllegalArgumentException("Invalid email");
+		}
 		
 		UserEntity entity = new UserEntity();
 		

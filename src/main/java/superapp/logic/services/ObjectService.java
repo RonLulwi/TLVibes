@@ -154,7 +154,8 @@ public class ObjectService implements EnhancedObjectsService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ObjectBoundary[] GetAllChildrens(String superApp, String internalId) {
+	public Set<SuperAppObjectIdBoundary> GetAllChildrens(String superApp, String internalId) {
+		
 		Guard.AgainstNull(superApp, superApp);
 		Guard.AgainstNull(internalId, internalId);
 		
@@ -166,13 +167,13 @@ public class ObjectService implements EnhancedObjectsService {
 
 		SuperAppObjectEntity entity = optionalEntity.get();
 
-		return new ObjectBoundary[] {convertObjectEntityToBoundary(entity)};
+		return GetEntityChildrens(entity);
 	}
 
 
 	@Override
 	@Transactional(readOnly = true)
-	public ObjectBoundary[] GetParent(String superApp, String internalId) {
+	public Set<SuperAppObjectIdBoundary> GetParent(String superApp, String internalId) {
 		Guard.AgainstNull(superApp, superApp);
 		Guard.AgainstNull(internalId, internalId);
 		
@@ -183,24 +184,19 @@ public class ObjectService implements EnhancedObjectsService {
 		Guard.AgainstNullOptinalIdNotFound(optionalParentEntity, entityId.toString(), SuperAppObjectEntity.class.getName());
 
 		SuperAppObjectEntity parent = optionalParentEntity.get().getParent();
-				
-		return new ObjectBoundary[] {convertObjectEntityToBoundary(parent)};
+			
+		var parents = new HashSet<SuperAppObjectIdBoundary>();
+
+		parents.add(convertObjectEntityToBoundary(parent).getObjectId());	
+		
+		return parents;
 	}
 
 	private ObjectBoundary convertObjectEntityToBoundary(SuperAppObjectEntity entity) {
 		
-		Set<SuperAppObjectIdBoundary> childrensAsBoundary = GetEntityChildrens(entity);
-
 		UserId createdBy = entity.getCreatedBy().getUserId();
-		
-		SuperAppObjectIdBoundary parentId = null;
-		
-		if(entity.getParent() != null)
-		{
-			parentId = entity.getParent().getObjectId();
-		}
-		
-		return this.convertor.toBoundary(entity,childrensAsBoundary,createdBy,parentId);
+			
+		return this.convertor.toBoundary(entity,createdBy);
 		
 	}
 	private SuperAppObjectEntity convertObjectBoundaryToEntity(ObjectBoundary objWithoutId) {
@@ -209,21 +205,8 @@ public class ObjectService implements EnhancedObjectsService {
 		Guard.AgainstNullOptinalIdNotFound(optionalCreatedBy,objWithoutId.getCreatedBy().toString(),UserEntity.class.getName());
 		
 		UserEntity createdBy = optionalCreatedBy.get();
-		
-		Set<SuperAppObjectEntity> chiledrens = getRecursiveChildrens(objWithoutId.getChilderns(), createdBy);
-
-		SuperAppObjectEntity parent = null;
-		
-		if(objWithoutId.getParent() != null)
-		{
-			Optional<SuperAppObjectEntity> optionalParent = objectsRepositoy.findById(objWithoutId.getParent());
-			
-			Guard.AgainstNullOptinalIdNotFound(optionalParent,objWithoutId.getParent().toString(),SuperAppObjectEntity.class.getName());
-			
-			parent = optionalParent.get();
-		}
-		
-		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId, createdBy, chiledrens, parent);
+				
+		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId, createdBy);
 		
 		return entity;
 	}

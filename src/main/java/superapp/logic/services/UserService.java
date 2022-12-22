@@ -44,10 +44,10 @@ public class UserService implements UsersService {
 	public UserBoundary createUser(NewUserBoundary user) {
 		
 		Guard.AgainstNull(user, user.getClass().getName());
-		Guard.AgainstNull(user.getEmail(), user.getEmail().getClass().getName());
-		Guard.AgainstNull(user.getUsername(), user.getUsername().getClass().getName());
 		Guard.AgainstNull(user.getRole(), user.getRole().getClass().getName());
-		Guard.AgainstNull(user.getAvatar(), user.getAvatar().getClass().getName());
+		Guard.AgainstNullOrEmpty(user.getEmail(), user.getEmail().getClass().getName());
+		Guard.AgainstNullOrEmpty(user.getUsername(), user.getUsername().getClass().getName());
+		Guard.AgainstNullOrEmpty(user.getAvatar(), user.getAvatar().getClass().getName());
 
 		Role.ValidateEnumThrowsIfNotExists(user.getRole());
 

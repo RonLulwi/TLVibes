@@ -1,6 +1,8 @@
 package superapp.logic.boundaries;
 
 
+import java.util.Objects;
+
 import superapp.data.enums.Role;
 import superapp.logic.boundaries.identifiers.UserId;
 
@@ -70,5 +72,24 @@ public class UserBoundary {
 		return "UserBoundary [userId=" + userId + ", role=" + role + ", username=" + username + ", avatar=" + avatar
 				+ "]";
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(avatar, role, userId, username);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserBoundary other = (UserBoundary) obj;
+		return Objects.equals(avatar, other.avatar) && role == other.role && Objects.equals(userId, other.userId)
+				&& Objects.equals(username, other.username);
+	}
+	
 	
 }
