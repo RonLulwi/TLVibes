@@ -2,11 +2,14 @@ package superapp.data.entities;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Convert;
+import javax.persistence.ElementCollection;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,6 +23,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.SuperAppMapToJsonConverter;
 
 @Entity
@@ -30,12 +34,8 @@ public class SuperAppObjectEntity {
 	private String alias;
 	private boolean active;
 	private Date creationTimestamp;
-	@JoinColumns({
-		  @JoinColumn(name = "INVOKER_USER_SUPERAPP", referencedColumnName = "superApp"),
-		  @JoinColumn(name = "INVOKER_USER_EMAIL", referencedColumnName = "email")
-		 })
-	@OneToOne
-	private UserEntity createdBy;
+	@Convert(converter = SuperAppMapToJsonConverter.class)
+	private Map<String, UserId> createdBy;
 	@Lob
 	@Convert(converter = SuperAppMapToJsonConverter.class)
 	private Map<String, Object> objectDetails;
@@ -51,17 +51,15 @@ public class SuperAppObjectEntity {
     private SuperAppObjectEntity parent;
 	
 	public SuperAppObjectEntity() {
-		this.type = "undefined";
-		this.alias = "undefined";
-		this.active = false;
+		this.creationTimestamp = new Date();
 		this.objectDetails = new HashMap<String, Object>();
+		this.createdBy = new HashMap<String,UserId>();
 	}
 	
-	public SuperAppObjectEntity(SuperAppObjectIdBoundary objectId, UserEntity createdBy) {
+	public SuperAppObjectEntity(SuperAppObjectIdBoundary objectId, Map<String,UserId> createdBy) {
 		this();
 		this.objectId = objectId;
 		this.createdBy = createdBy;
-		this.creationTimestamp = new Date();
 	}
 
 	public SuperAppObjectIdBoundary getObjectId() {
@@ -115,12 +113,12 @@ public class SuperAppObjectEntity {
 		
 	}
 
-	public UserEntity getCreatedBy() {
+	public Map<String,UserId> getCreatedBy() {
 		return createdBy;
 	}
 
 
-	public void setCreatedBy(UserEntity createdBy) {
+	public void setCreatedBy(Map<String,UserId> createdBy) {
 		this.createdBy = createdBy;
 	}
 

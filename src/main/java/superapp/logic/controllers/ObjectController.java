@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import superapp.data.enums.CreationEnum;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.interfaces.EnhancedObjectsService;
@@ -100,4 +102,23 @@ public class ObjectController {
 			return this.enhancedObjectsService.GetParent(superapp, InternalObjectId)
 					.toArray(new ObjectBoundary[0]);
 		}
+		
+		@RequestMapping(
+				path = "/superapp/objects/search/byCreation/{creationEnum}",
+				method = RequestMethod.GET,
+				produces = MediaType.APPLICATION_JSON_VALUE)
+		public ObjectBoundary[] searchObjectsByCreationTimeStamp (
+				@PathVariable("creationEnum") CreationEnum creation,
+				@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+				String userSuperApp, 
+				@RequestParam(name = "userEmail", required = false, defaultValue = "")
+				String userEmail,
+				@RequestParam(name = "page", required = false, defaultValue = "0") 
+				int page, 
+				@RequestParam(name = "size", required = false, defaultValue = "10")
+				int size) {
+			return this.enhancedObjectsService.SearchObjectsByCreationTimeStamp(creation, page, size)
+					.toArray(new ObjectBoundary[0]);
+		}
+
 }

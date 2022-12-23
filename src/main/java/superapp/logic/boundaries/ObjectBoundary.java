@@ -2,6 +2,7 @@ package superapp.logic.boundaries;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -15,14 +16,14 @@ public class ObjectBoundary{
 	private String alias;
 	private Boolean active;
 	private Date creationTimestamp;
-	private UserId createdBy;
+	private Map<String,UserId> createdBy;
 	private Map<String, Object> objectDetails;
 	
 	public ObjectBoundary() {
 	}
 
 
-	public ObjectBoundary(SuperAppObjectIdBoundary objectId, UserId createdBy) {
+	public ObjectBoundary(SuperAppObjectIdBoundary objectId,Map<String,UserId> createdBy) {
 		this();
 		this.objectId = objectId;
 		this.createdBy = createdBy;
@@ -87,11 +88,11 @@ public class ObjectBoundary{
 		this.creationTimestamp = creationTimestamp;
 	}
 
-	public UserId getCreatedBy() {
+	public Map<String,UserId> getCreatedBy() {
 		return createdBy;
 	}
 
-	public void setCreatedBy(UserId createdBy) {
+	public void setCreatedBy(Map<String,UserId> createdBy) {
 		this.createdBy = createdBy;
 	}
 

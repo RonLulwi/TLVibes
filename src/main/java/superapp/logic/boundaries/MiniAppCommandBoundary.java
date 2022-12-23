@@ -12,9 +12,9 @@ public class MiniAppCommandBoundary {
 
 	private CommandId commandId;
 	private String command;
-	private SuperAppObjectIdBoundary targetObject;
 	private Date invocationTimestamp;
-	private UserId invokedBy;
+	private Map<String,SuperAppObjectIdBoundary> targetObject;
+	private Map<String,UserId> invokedBy;
 	private Map<String, Object> commandAttributes;
 
 	public MiniAppCommandBoundary() {
@@ -22,17 +22,13 @@ public class MiniAppCommandBoundary {
 		this.commandAttributes = new HashMap<>();
 	}
 	
-	public MiniAppCommandBoundary(CommandId commandId,SuperAppObjectIdBoundary targetObject,UserId invokedBy) {
+	public MiniAppCommandBoundary(CommandId commandId,
+			Map<String,SuperAppObjectIdBoundary> targetObject,
+			Map<String,UserId> invokedBy) {
 		this();
 		this.commandId = commandId;	
 		this.targetObject = targetObject;
 		this.invokedBy = invokedBy;
-	}
-
-
-	public MiniAppCommandBoundary(String miniAppName) {
-		this();
-		this.commandId = new CommandId();
 	}
 	
 	public CommandId getCommandId() {
@@ -43,19 +39,19 @@ public class MiniAppCommandBoundary {
 		this.commandId = commandId;
 	}
 
-	public UserId getInvokedBy() {
+	public Map<String,UserId> getInvokedBy() {
 		return invokedBy;
 	}
 
-	public void setInvokedBy(UserId invokedBy) {
+	public void setInvokedBy(Map<String,UserId> invokedBy) {
 		this.invokedBy = invokedBy;
 	}
 
-	public SuperAppObjectIdBoundary getTargetObject() {
+	public Map<String,SuperAppObjectIdBoundary> getTargetObject() {
 		return targetObject;
 	}
 
-	public void setTargetObject(SuperAppObjectIdBoundary targetObject) {
+	public void setTargetObject(Map<String,SuperAppObjectIdBoundary> targetObject) {
 		this.targetObject = targetObject;
 	}
 	

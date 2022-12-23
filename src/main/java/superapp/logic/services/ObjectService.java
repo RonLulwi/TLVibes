@@ -1,5 +1,7 @@
 package superapp.logic.services;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -8,12 +10,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javax.management.RuntimeErrorException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import superapp.data.entities.SuperAppObjectEntity;
 import superapp.data.entities.UserEntity;
+import superapp.data.enums.CreationEnum;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.boundaries.ObjectBoundary;
@@ -32,7 +37,6 @@ public class ObjectService implements EnhancedObjectsService {
 	private ObjectConvertor convertor;
 	private IdGenerator idGenerator;
 	private SuperAppObjectRepository objectsRepositoy;
-	private UserEntityRepository userRepository;
 	
 	@Autowired
 	public ObjectService(ObjectConvertor convertor,ConfigProperties configProperties,
@@ -42,7 +46,6 @@ public class ObjectService implements EnhancedObjectsService {
 		this.configProperties = configProperties;
 		this.idGenerator = idGenerator;
 		this.objectsRepositoy = objectsRepositoy;
-		this.userRepository = userRepository;
 	}
 	
 		
@@ -56,7 +59,12 @@ public class ObjectService implements EnhancedObjectsService {
 			throw new RuntimeException("Invalid ObjectBoundary", e);
 		}
 		
-		SuperAppObjectEntity entity = convertObjectBoundaryToEntity(objWithoutId);
+		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+				configProperties.getSuperAppName(),
+				idGenerator.GenerateUUID().toString());
+		
+		
+		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId,objectId);
 		
 		var id = new SuperAppObjectIdBoundary(configProperties.getSuperAppName(),idGenerator.GenerateUUID().toString());
 		
@@ -64,7 +72,7 @@ public class ObjectService implements EnhancedObjectsService {
 		
 		SuperAppObjectEntity returned = this.objectsRepositoy.save(entity);
 		
-		return convertObjectEntityToBoundary(returned);
+		return convertor.toBoundary(returned);
 	}
 
 
@@ -77,28 +85,33 @@ public class ObjectService implements EnhancedObjectsService {
 		Guard.AgainstNull(internalObjectId, internalObjectId);
 		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
 		
-		SuperAppObjectEntity existingObjectEntity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound
-				(objectSuperApp, internalObjectId);
-						
-		SuperAppObjectEntity EntityUpdate = convertObjectBoundaryToEntity(objectBoundary);
-
-		if(existingObjectEntity.equals(EntityUpdate)){
-			return objectBoundary;
+		if(!objectsRepositoy.existsById(objectBoundary.getObjectId()))
+		{
+			throw new RuntimeException("Could not find user with id : " + objectBoundary.getObjectId());
 		}
+		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectBoundary.getObjectId());
 		
 		SuperAppObjectEntity returned = this.objectsRepositoy.save(EntityUpdate);
 				
-		return convertObjectEntityToBoundary(returned);
+		return convertor.toBoundary(returned);
 	}
 
 
 	
 	@Override
 	@Transactional(readOnly = true)
-	public ObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {		
-		SuperAppObjectEntity entity = this.getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(objectSuperApp, internalObjectId);
+	public ObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {	
 		
-		return convertObjectEntityToBoundary(entity);
+		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
+		
+		Optional<SuperAppObjectEntity> optional = this.objectsRepositoy.findById(objectId);
+		
+		if(optional.isEmpty())
+		{
+			throw new RuntimeException("could not find superAppObject with id : " + objectId.toString());
+		}
+		
+		return convertor.toBoundary(optional.get());
 		
 	}
 	
@@ -109,7 +122,7 @@ public class ObjectService implements EnhancedObjectsService {
 	public List<ObjectBoundary> getAllObjects() {
 		return StreamSupport
 				.stream(this.objectsRepositoy.findAll().spliterator(), false)
-				.map(entity -> convertObjectEntityToBoundary(entity))
+				.map(entity -> convertor.toBoundary(entity))
 				.collect(Collectors.toList());
 
 	}
@@ -187,43 +200,24 @@ public class ObjectService implements EnhancedObjectsService {
 			
 		var parents = new HashSet<SuperAppObjectIdBoundary>();
 
-		parents.add(convertObjectEntityToBoundary(parent).getObjectId());	
+		parents.add(convertor.toBoundary(parent).getObjectId());	
 		
 		return parents;
 	}
 
-	private ObjectBoundary convertObjectEntityToBoundary(SuperAppObjectEntity entity) {
+	@Override
+	@Transactional(readOnly = true)
+	public Set<ObjectBoundary> SearchObjectsByCreationTimeStamp(CreationEnum creation, int page, int size) {
+		Instant oneCreationUnitAgo = Instant.now().minus(1, CreationEnum.MapCreationEnumToChronoUnit(creation));
 		
-		UserId createdBy = entity.getCreatedBy().getUserId();
-			
-		return this.convertor.toBoundary(entity,createdBy);
+		List<SuperAppObjectEntity> entities = objectsRepositoy.
+				findBycreationTimestampAfter(oneCreationUnitAgo);
 		
-	}
-	private SuperAppObjectEntity convertObjectBoundaryToEntity(ObjectBoundary objWithoutId) {
-		Optional<UserEntity> optionalCreatedBy = userRepository.findById(objWithoutId.getCreatedBy());
-		
-		Guard.AgainstNullOptinalIdNotFound(optionalCreatedBy,objWithoutId.getCreatedBy().toString(),UserEntity.class.getName());
-		
-		UserEntity createdBy = optionalCreatedBy.get();
-				
-		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId, createdBy);
-		
-		return entity;
+		return entities.stream()
+				.map(e -> convertor.toBoundary(e))
+				.collect(Collectors.toSet());
 	}
 
-
-	private SuperAppObjectEntity getEntityByObjectSuperAppAndInternalObjectIdOrThrowExceptionIfNotFound(String objectSuperApp, String internalObjectId) {
-		
-		var id = new SuperAppObjectIdBoundary(objectSuperApp,internalObjectId);
-
-		Optional<SuperAppObjectEntity> dbSuperAppObject = this.objectsRepositoy.findById(id);
-		
-		if(dbSuperAppObject.isEmpty()) {
-			throw new RuntimeException("Cannot find for app: " + id.getSuperapp() + ", user with id: " + id.getInternalObjectId());			
-		}
-		
-		return dbSuperAppObject.get();
-	}
 	
 	private HashSet<SuperAppObjectEntity> getRecursiveChildrens(Set<SuperAppObjectIdBoundary> childernIds, UserEntity userEntity) {
 		
@@ -270,6 +264,8 @@ public class ObjectService implements EnhancedObjectsService {
 		
 		Guard.AgainstNullRequest(request);
 	}
+
+
 
 	
 }

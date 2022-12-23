@@ -21,8 +21,6 @@ import superapp.logic.interfaces.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-
 @Service
 public class UserService implements UsersService {
 	
@@ -51,13 +49,15 @@ public class UserService implements UsersService {
 
 		Role.ValidateEnumThrowsIfNotExists(user.getRole());
 
-		UserBoundary boundary = user.ToUserBoudary(new UserId(configProperties.getSuperAppName(), user.getEmail()));
+		UserBoundary boundary = user.ToUserBoudary(new UserId());
 		
-		UserEntity entity = convertor.UserBoundaryToEntity(boundary);
+		UserId userId = new UserId(configProperties.getSuperAppName(), user.getEmail());
+		
+		UserEntity entity = convertor.UserBoundaryToEntity(boundary,userId);
 				
-		UsersRepository.save(entity);
+		var response = UsersRepository.save(entity);
 		
-		return boundary;
+		return convertor.UserEntityToBoundary(response);
 	}
 
 	@Override
@@ -78,7 +78,12 @@ public class UserService implements UsersService {
 		Guard.AgainstNull(userSuperApp, "userSuperApp");
 		Guard.AgainstNull(userEmail, "userEmail");
 
-		UserEntity updateAsEntity = convertor.UserBoundaryToEntity(update);
+		if(!UsersRepository.existsById(update.getUserId()))
+		{
+			throw new RuntimeException("Could not find user with id : " + update.getUserId());
+		}
+		
+		UserEntity updateAsEntity = convertor.UserBoundaryToEntity(update,update.getUserId());
 		
 		UserEntity returned = UsersRepository.save(updateAsEntity);
 

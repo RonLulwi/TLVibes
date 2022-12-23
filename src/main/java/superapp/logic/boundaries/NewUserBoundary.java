@@ -14,15 +14,11 @@ public class NewUserBoundary {
 	private String avatar;
 	
 	public NewUserBoundary() {
-		this.avatar="J";
-		this.role=Role.MINIAPP_USER;
-
 	}
 
-	public NewUserBoundary(String superApp,String email) {
+	public NewUserBoundary(String email) {
 		this();
 		this.email=email;
-		this.username="Jane Roe";
 	}
 
 	public  String getEmail() {

@@ -16,25 +16,19 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import superapp.logic.boundaries.identifiers.CommandId;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.SuperAppMapToJsonConverter;
 
 @Entity
 public class MiniAppCommandEntity {
 	@EmbeddedId private CommandId commandId;
 	
-	@JoinColumns({
-		  @JoinColumn(name = "TARGET_OBJECT_SUPERAPP", referencedColumnName = "superApp"),
-		  @JoinColumn(name = "TARGET_OBJECT_INTERNAL_ID", referencedColumnName = "internalObjectId")
-		 })
-	@OneToOne
-	private SuperAppObjectEntity targetObject;
+	@Convert(converter = SuperAppMapToJsonConverter.class)
+	private Map<String,SuperAppObjectIdBoundary> targetObject;
 	
-	@JoinColumns({
-		  @JoinColumn(name = "INVOKER_USER_SUPERAPP", referencedColumnName = "superApp"),
-		  @JoinColumn(name = "INVOKER_USER_EMAIL", referencedColumnName = "email")
-		 })
-	@OneToOne
-	private UserEntity invokedBy;	
+	@Convert(converter = SuperAppMapToJsonConverter.class)
+	private Map<String,UserId> invokedBy;	
 	
 	@Lob
 	@Convert(converter = SuperAppMapToJsonConverter.class)
@@ -44,19 +38,14 @@ public class MiniAppCommandEntity {
 	private String command;
 
 	public MiniAppCommandEntity() {	
-		this.command = "doSomething";
 		this.invocationTimestamp = new Date();
 		this.commandAttributes = new HashMap<>();
-		this.commandAttributes.put("key1", "can be anything you wish, even a nested json");		
+		this.invokedBy = new HashMap<>();
+		this.targetObject = new HashMap<>();
 	}
 	
-	public MiniAppCommandEntity(CommandId commandId,SuperAppObjectEntity targetObject,UserEntity invokedBy) {	
-		this();
-		this.commandId = commandId;
-		this.targetObject = targetObject;
-		this.invokedBy = invokedBy;		
-	}
-
+	public void execute() {};
+	
 	public String getCommand() {
 		return command;
 	}
@@ -73,11 +62,11 @@ public class MiniAppCommandEntity {
 		this.command = command;
 	}
 
-	public SuperAppObjectEntity getTargetObject() {
+	public Map<String,SuperAppObjectIdBoundary> getTargetObject() {
 		return targetObject;
 	}
 
-	public void setTargetObject(SuperAppObjectEntity targetObject) {
+	public void setTargetObject(Map<String,SuperAppObjectIdBoundary> targetObject) {
 		this.targetObject = targetObject;
 	}
 
@@ -91,11 +80,11 @@ public class MiniAppCommandEntity {
 	}
 
 
-	public UserEntity getInvokedBy() {
+	public Map<String,UserId> getInvokedBy() {
 		return invokedBy;
 	}
 
-	public void setInvokedBy(UserEntity invokedBy) {
+	public void setInvokedBy(Map<String,UserId> invokedBy) {
 		this.invokedBy = invokedBy;
 	}
 	

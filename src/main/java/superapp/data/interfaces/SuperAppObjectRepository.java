@@ -1,10 +1,16 @@
 package superapp.data.interfaces;
 
-import org.springframework.data.repository.CrudRepository;
+import java.time.Instant;
+import java.util.List;
+
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import superapp.data.entities.SuperAppObjectEntity;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 
-public interface SuperAppObjectRepository extends CrudRepository<SuperAppObjectEntity,SuperAppObjectIdBoundary> {
+public interface SuperAppObjectRepository extends 
+	PagingAndSortingRepository<SuperAppObjectEntity,SuperAppObjectIdBoundary> {
+
+    List<SuperAppObjectEntity> findBycreationTimestampAfter(Instant createdAfter);
 
 }	

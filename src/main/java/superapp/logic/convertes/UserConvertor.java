@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import superapp.data.entities.UserEntity;
 import superapp.logic.boundaries.UserBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.EmailValidator;
 
 @Component
@@ -15,16 +16,16 @@ public class UserConvertor {
 		this.emailValidator = emailValidator;
 	}
 
-	public UserEntity UserBoundaryToEntity(UserBoundary boundary)	{
+	public UserEntity UserBoundaryToEntity(UserBoundary boundary, UserId userId)	{
 		
-		if(!emailValidator.validate(boundary.getUserId().getEmail()))
+		if(!emailValidator.validate(userId.getEmail()))
 		{
 			throw new IllegalArgumentException("Invalid email");
 		}
 		
 		UserEntity entity = new UserEntity();
 		
-		entity.setUserId(boundary.getUserId());
+		entity.setUserId(userId);
 		entity.setAvatar(boundary.getAvatar());
 		entity.setRole(boundary.getRole());
 		entity.setUsername(boundary.getUsername());
