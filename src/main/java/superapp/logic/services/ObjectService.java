@@ -1,7 +1,6 @@
 package superapp.logic.services;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import javax.management.RuntimeErrorException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,6 @@ import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
 import superapp.logic.infrastructure.Guard;

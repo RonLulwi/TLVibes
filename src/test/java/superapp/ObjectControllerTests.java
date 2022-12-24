@@ -28,6 +28,7 @@ public class ObjectControllerTests {
 		private String url;
 		private ConfigProperties configProperties;
 		private ObjectMapper jackson;
+		private ControllersTestsHelper helper;
 
 		@Autowired
 		public void setConfigProperties(ConfigProperties configProperties) {
@@ -36,6 +37,11 @@ public class ObjectControllerTests {
 		@Autowired
 		public void setConfigObjectMapper(ObjectMapper jackson) {
 			this.jackson = jackson;
+		}
+		
+		@Autowired
+		public void setHelper(ControllersTestsHelper helper) {
+			this.helper = helper;
 		}
 
 
@@ -62,7 +68,7 @@ public class ObjectControllerTests {
 		@Test
 		public void testCreateSuperAppObjectHappyFlow() throws JsonMappingException, JsonProcessingException
 		{
-			String objectboundaryAsString  = GetBaseObjectBoundartAsJson();
+			String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
 			
 			ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
 			
@@ -77,30 +83,7 @@ public class ObjectControllerTests {
 			assertThat(response.getCreationTimestamp().after(boundary.getCreationTimestamp()));
 
 		}
-		
-		private String GetBaseObjectBoundartAsJson() {
-			return "{\r\n"
-					+ "    \"objectId\": {\r\n"
-					+ "        \"superapp\" : \"nivsminiapp\",\r\n"
-					+ "        \"internalObjectId\": \"1000\"\r\n"
-					+ "    },\r\n"
-					+ "    \"type\": \"dummyType\",\r\n"
-					+ "    \"alias\": \"niv's demo instance\",\r\n"
-					+ "    \"active\": true,\r\n"
-					+ "    \"creationTimestamp\": \"2022-11-26T15:15:18.479+00:00\",\r\n"
-					+ "    \"objectDetails\": {\r\n"
-					+ "        \"key1\" : \"11\",\r\n"
-					+ "        \"key2\" : \"12\"\r\n"
-					+ "    },\r\n"
-					+ "    \"createdBy\": {\r\n"
-					+ "        \"userId\" : {\r\n"
-					+ "            \"superapp\": \"2023a.Assaf.Ariely\",\r\n"
-					+ "            \"email\": \"niv@demo.org\"\r\n"
-					+ "        }\r\n"
-					+ "    }\r\n"
-					+ "}";
-		}
-		
+				
 
 
 }

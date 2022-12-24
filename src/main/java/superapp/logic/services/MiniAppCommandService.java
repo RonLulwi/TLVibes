@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import superapp.data.entities.CommandFactory;
 import superapp.data.entities.MiniAppCommandEntity;
 import superapp.data.interfaces.MiniAppCommandRepository;
 import superapp.data.interfaces.SuperAppObjectRepository;
@@ -27,14 +28,14 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	private MiniAppCommandsConverter converter;
 	private ConfigProperties configProperties;
 	private IdGenerator idGenerator;
-
 	
 	@Autowired
 	public MiniAppCommandService(MiniAppCommandsConverter converter,
 			ConfigProperties configProperties,IdGenerator idGenerator,
 			UserEntityRepository userEntityRepository,
 			SuperAppObjectRepository superAppObjectRepositoy,
-			MiniAppCommandRepository commandRepository) {
+			MiniAppCommandRepository commandRepository,
+			CommandFactory commandFactory) {
 		this.converter = converter;
 		this.commandRepository = commandRepository;
 		this.idGenerator = idGenerator;
@@ -57,6 +58,8 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 				idGenerator.GenerateUUID().toString());
 		
 		MiniAppCommandEntity entity = converter.toEntity(boundary,commandId);
+		
+		entity.invoke();
 		
 		var returned = commandRepository.save(entity);
 			

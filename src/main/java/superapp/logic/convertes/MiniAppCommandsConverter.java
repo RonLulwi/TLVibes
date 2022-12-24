@@ -1,7 +1,9 @@
 package superapp.logic.convertes;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import superapp.data.entities.CommandFactory;
 import superapp.data.entities.MiniAppCommandEntity;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.identifiers.CommandId;
@@ -9,8 +11,16 @@ import superapp.logic.boundaries.identifiers.CommandId;
 @Component
 public class MiniAppCommandsConverter {
 
+	private CommandFactory commandFactory;
+	
+	@Autowired
+	public void setCommandFactory(CommandFactory commandFactory) {
+		this.commandFactory = commandFactory;
+	}
+
 	public MiniAppCommandEntity toEntity(MiniAppCommandBoundary boundary,CommandId commandId) {		
-		MiniAppCommandEntity entity =  new MiniAppCommandEntity();
+		
+		MiniAppCommandEntity entity =  commandFactory.GetCommand(boundary.getCommand());
 		
 		entity.setCommandId(commandId);
 		entity.setInvocationTimestamp(boundary.getInvocationTimestamp());
@@ -36,5 +46,7 @@ public class MiniAppCommandsConverter {
 		
 		return boundary;
 	}
+
+
 
 }

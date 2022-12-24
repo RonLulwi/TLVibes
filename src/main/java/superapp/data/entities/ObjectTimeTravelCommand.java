@@ -22,7 +22,7 @@ public class ObjectTimeTravelCommand extends MiniAppCommandEntity {
 	}
 
 	@Override
-	public void execute() {
+	public void invoke() {
 		
 		if(this.getCommand() != commandName)
 		{

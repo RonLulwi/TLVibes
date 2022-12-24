@@ -44,7 +44,7 @@ public class MiniAppCommandEntity {
 		this.targetObject = new HashMap<>();
 	}
 	
-	public void execute() {};
+	public void invoke() {};
 	
 	public String getCommand() {
 		return command;

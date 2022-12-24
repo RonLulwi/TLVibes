@@ -5,6 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
 import org.junit.jupiter.api.AfterEach;
@@ -19,8 +25,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import superapp.data.interfaces.MiniAppCommandRepository;
+import superapp.data.interfaces.SuperAppObjectRepository;
+import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.ObjectBoundary;
+import superapp.logic.boundaries.UserBoundary;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.ConfigProperties;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -28,9 +41,18 @@ public class CommandControllerTests {
 	private RestTemplate restTemplate;
 	private int port;
 	private String url;
+	private String baseUrl;
+	private String userPrefix;
 	private ConfigProperties configProperties;
 	private ObjectMapper jackson;
-
+	private ControllersTestsHelper helper;
+	private String objectPrefix;
+	
+	@Autowired
+	public void setHelper(ControllersTestsHelper helper) {
+		this.helper = helper;
+	}
+	
 	@Autowired
 	public void setConfigProperties(ConfigProperties configProperties) {
 		this.configProperties = configProperties;
@@ -45,11 +67,14 @@ public class CommandControllerTests {
 	public void setPort(int port) {
 		this.port = port;
 	}
-
+	
 	@PostConstruct
 	public void init() {
 		this.restTemplate = new RestTemplate();
-		this.url = "http://localhost:" + this.port + "/superapp/miniapp/" + configProperties.getSuperAppName();
+		this.baseUrl = "http://localhost:" + this.port;
+		this.url = this.baseUrl + "/superapp/miniapp/" + configProperties.getSuperAppName();
+		this.userPrefix = "/superapp/users/";
+		this.objectPrefix = "/superapp/objects/";
 	}
 
 	@AfterEach
@@ -63,7 +88,7 @@ public class CommandControllerTests {
 	@Test
 	public void testInvokeCommandHappyFlow() throws JsonMappingException, JsonProcessingException
 	{
-		String commandboundaryAsString  = GetBaseCommandBoundartAsJson();
+		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
 		MiniAppCommandBoundary boundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
@@ -81,33 +106,70 @@ public class CommandControllerTests {
 		assertThat(response.getInvocationTimestamp().after(boundary.getInvocationTimestamp()));
 
 	}
+	
+	@Test
+	public void InvokeObjectTimeTravelCommand_objectCreationDateHasChanged() throws JsonMappingException, JsonProcessingException
+	{
+		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
+		
+		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+		
+		var createUserResponse  = this.restTemplate
+				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
+		
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+		
+		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
 
-	private String GetBaseCommandBoundartAsJson() {
-		return "{\r\n"
-				+ "    \"commandId\" : {\r\n"
-				+ "        \"superapp\" : \"2023a.Assaf.Ariely\",\r\n"
-				+ "        \"miniapp\" : \"dummyApp\",\r\n"
-				+ "        \"internalCommandId\" : \"490edcaf-08db-4eac-a1e3-2cbf7932c412\"\r\n"
-				+ "    },\r\n"
-				+ "    \"command\" : \"doSomthing\",\r\n"
-				+ "    \"targetObject\" : {\r\n"
-				+ "        \"objectId\" : {\r\n"
-				+ "            \"superapp\": \"2023a.Assaf.Ariely\",\r\n"
-				+ "            \"internalObjectId\" : \"8a7257dd-b534-4747-ae3c-9f551f93eeaa\"\r\n"
-				+ "        }\r\n"
-				+ "    },\r\n"
-				+ "    \"invocationTimeStamp\" : \"2022-11-26T15:15:18.479+00:00\",\r\n"
-				+ "    \"invokedBy\" : {\r\n"
-				+ "        \"userId\" : {\r\n"
-				+ "            \"superapp\": \"2023a.Assaf.Ariely\",\r\n"
-				+ "            \"email\" : \"niv@demo.org\"\r\n"
-				+ "        }\r\n"
-				+ "    },\r\n"
-				+ "    \"commandAttributes\" : {\r\n"
-				+ "        \"key1\" : {\r\n"
-				+ "            \"key2subkey1\" : \"can be anything you wish, even a nested json\"\r\n"
-				+ "        }\r\n"
-				+ "    }\r\n"
-				+ "}\r\n";
+		Map<String,UserId> createdBy = new HashMap<>();
+		
+		createdBy.put("createdBy", createUserResponse.getUserId());
+		
+		objectboundary.setCreatedBy(createdBy);
+		
+		var createObjectResponse  = this.restTemplate
+				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+
+		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
+		
+		MiniAppCommandBoundary commandboundary = 
+				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		
+		
+		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
+		
+		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		
+		Map<String,Object> commandAttributes = new HashMap<>();
+		
+		commandAttributes.put("creationTimeStamp", Instant.now().minus(2,ChronoUnit.DAYS));
+
+		commandboundary.setTargetObject(targetObject);
+		
+		commandboundary.setInvokedBy(createdBy);
+		
+		commandboundary.setCommandAttributes(commandAttributes);
+
+		Date beforeInvoking = createObjectResponse.getCreationTimestamp();
+		
+		var commandResponse  = this.restTemplate
+				.postForObject(this.url, commandboundary, MiniAppCommandBoundary.class);
+
+		var getObjectByIdResponse  = this.restTemplate
+				.getForObject(
+						this.baseUrl + 
+						this.objectPrefix + 
+						createObjectResponse.getObjectId().getSuperapp() + "/" +
+						createObjectResponse.getObjectId().getInternalObjectId()
+						, ObjectBoundary.class);
+
+		
+		Date afterInvoking = getObjectByIdResponse.getCreationTimestamp();
+
+		assertThat(afterInvoking.before(beforeInvoking));
+
 	}
+
+	
+
 }
