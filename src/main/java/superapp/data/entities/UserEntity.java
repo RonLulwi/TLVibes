@@ -22,7 +22,7 @@ public class UserEntity {
 	}
 	
 	public UserEntity() {
-		this.role = Role.UNDEFINED;
+		this.role = Role.SUPERAPP_USER;
 		this.username = Utilities.GeneratingRandomString();
 		this.avatar = Utilities.GeneratingRandomString(1);
 	}
