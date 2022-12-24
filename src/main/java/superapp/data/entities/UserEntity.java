@@ -4,21 +4,27 @@ import java.util.Objects;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 
 import superapp.data.enums.Role;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.Utilities;
 
 @Entity
+@IdClass(UserId.class)
 public class UserEntity {
-   	@EmbeddedId private UserId userId;
+   	@Id private String superapp;
+   	@Id private String email;
 	private Role role;
 	private String username;
 	private String avatar;
 	
 	public UserEntity(UserId userId) {
 		this();
-		this.userId = userId;	
+		this.email = userId.getEmail();	
+		this.superapp = userId.getSuperapp();	
+
 	}
 	
 	public UserEntity() {
@@ -28,11 +34,14 @@ public class UserEntity {
 	}
 	
 	public UserId getUserId() {
-		return userId;
+		return new UserId(this.superapp,this.email);
 	}
+	
 	public void setUserId(UserId userId) {
-		this.userId = userId;
+		this.email = userId.getEmail();	
+		this.superapp = userId.getSuperapp();	
 	}
+	
 	public Role getRole() {
 		return role;
 	}
@@ -51,15 +60,10 @@ public class UserEntity {
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
-	@Override
-	public String toString() {
-		return "UserEntity [userId=" + userId + ", role=" + role + ", username=" + username + ", avatar=" + avatar
-				+ "]";
-	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(userId);
+		return Objects.hash(avatar, email, role, superapp, username);
 	}
 
 	@Override
@@ -71,8 +75,17 @@ public class UserEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		UserEntity other = (UserEntity) obj;
-		return Objects.equals(userId, other.userId);
+		return Objects.equals(avatar, other.avatar) && Objects.equals(email, other.email) && role == other.role
+				&& Objects.equals(superapp, other.superapp) && Objects.equals(username, other.username);
 	}
+
+	@Override
+	public String toString() {
+		return "UserEntity [email=" + email + ", superapp=" + superapp + ", role=" + role + ", username=" + username
+				+ ", avatar=" + avatar + "]";
+	}
+	
+	
 	
 	
 }

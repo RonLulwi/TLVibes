@@ -13,8 +13,6 @@ public class SuperAppObjectIdBoundary implements Serializable {
 	
 	public SuperAppObjectIdBoundary()
 	{
-		this.internalObjectId = "Undefind";
-		this.superapp = "Undefind";
 	}
 	
 	public SuperAppObjectIdBoundary(String superApp, String internalObjectId)
@@ -27,8 +25,8 @@ public class SuperAppObjectIdBoundary implements Serializable {
 		return superapp;
 	}
 	
-	public void setSuperapp(String supperApp) {
-		this.superapp = supperApp;
+	public void setSuperapp(String superApp) {
+		this.superapp = superApp;
 	}
 
 	public String getInternalObjectId() {

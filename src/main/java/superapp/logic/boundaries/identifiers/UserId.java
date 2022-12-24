@@ -4,13 +4,16 @@ package superapp.logic.boundaries.identifiers;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
-@Embeddable
+
+//@Entity
 public class UserId implements Serializable{
     private static final long serialVersionUID = 1L;
-    private String superapp;
-    private String email;
+
+	/*@Id*/ private String email;
+    /*@Id*/ private String superapp;
 	
 	public UserId() {
 	}

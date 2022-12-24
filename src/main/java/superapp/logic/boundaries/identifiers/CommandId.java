@@ -10,23 +10,23 @@ public class CommandId implements Serializable{
 	private static final long serialVersionUID = 1L;
     String superapp;
     String miniapp;
-    String internalCommanId;
+    String internalCommandId;
 
 
 	public CommandId() {
 	}
 
-	public CommandId(String internalCommanId, String supperApp, String miniApp ) {
-		this.internalCommanId = internalCommanId;
+	public CommandId(String supperApp, String miniApp,String internalCommanId ) {
 		this.superapp = supperApp;
 		this.miniapp = miniApp;
+		this.internalCommandId = internalCommanId;
 	}
 
-	public String getSupperapp() {
+	public String getSuperapp() {
 		return superapp;
 	}
 
-	public void setSupperapp(String supperApp) {
+	public void setSuperapp(String supperApp) {
 		this.superapp = supperApp;
 	}
 
@@ -38,17 +38,17 @@ public class CommandId implements Serializable{
 		this.miniapp = miniApp;
 	}
 
-	public String getInternalCommanId() {
-		return internalCommanId;
+	public String getInternalCommandId() {
+		return internalCommandId;
 	}
 
-	public void setInternalCommanId(String internalCommanId) {
-		this.internalCommanId = internalCommanId;
+	public void setInternalCommandId(String internalCommanId) {
+		this.internalCommandId = internalCommanId;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(internalCommanId, miniapp, superapp);
+		return Objects.hash(internalCommandId, miniapp, superapp);
 	}
 
 	@Override
@@ -60,13 +60,13 @@ public class CommandId implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		CommandId other = (CommandId) obj;
-		return Objects.equals(internalCommanId, other.internalCommanId) && Objects.equals(miniapp, other.miniapp)
+		return Objects.equals(internalCommandId, other.internalCommandId) && Objects.equals(miniapp, other.miniapp)
 				&& Objects.equals(superapp, other.superapp);
 	}
 
 	@Override
 	public String toString() {
-		return "CommandId [supperapp=" + superapp + ", miniapp=" + miniapp + ", internalCommanId=" + internalCommanId
+		return "CommandId [supperapp=" + superapp + ", miniapp=" + miniapp + ", internalCommanId=" + internalCommandId
 				+ "]";
 	}
 	
