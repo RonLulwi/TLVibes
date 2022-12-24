@@ -109,7 +109,7 @@ public class AdminController {
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size, 
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
-			int page) {
+			int page) { 
 	//TODO: Validate that the user is ADMIN
 		return userService.getAllUsers()
 				.toArray(new UserBoundary[0]);

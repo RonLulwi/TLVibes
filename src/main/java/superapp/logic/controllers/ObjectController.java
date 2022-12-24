@@ -67,7 +67,7 @@ public class ObjectController {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId) {
 			return this.enhancedObjectsService.createObject(objWithoutId);
-	}
+	} 
 
 
 	@RequestMapping(
