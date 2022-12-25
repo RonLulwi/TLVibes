@@ -13,6 +13,7 @@ public interface UsersService {
 	
 	public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update);
 	
+	@Deprecated
 	List<UserBoundary> getAllUsers();
 	
 	void deleteAllUsers();

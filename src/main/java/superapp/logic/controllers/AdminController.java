@@ -75,7 +75,7 @@ public class AdminController {
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page) {
 	//TODO: Validate that the user is ADMIN
-		return commandService.getAllMiniAppCommands(selectedAppname)
+		return commandService.getAllMiniAppCommands(selectedAppname,size, page)
 				.toArray(new MiniAppCommandBoundary[0]);
 	}
 
@@ -93,7 +93,7 @@ public class AdminController {
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page) {
 	//TODO: Validate that the user is ADMIN
-		return commandService.getAllCommands()
+		return commandService.getAllCommands(size,page)
 				.toArray(new MiniAppCommandBoundary[0]);
 	}
 
@@ -111,7 +111,7 @@ public class AdminController {
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page) { 
 	//TODO: Validate that the user is ADMIN
-		return userService.getAllUsers()
+		return userService.getAllUsers(size, page)
 				.toArray(new UserBoundary[0]);
 	}
 
