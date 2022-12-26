@@ -56,7 +56,8 @@ public class ObjectController {
 			int page, 
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size){
-		return this.enhancedObjectsService.getAllObjects();
+		//return this.enhancedObjectsService.getAllObjects();
+		return this.enhancedObjectsService.getAllObjects(page, size);
 	}
 
 
@@ -66,6 +67,7 @@ public class ObjectController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId) {
+		//TODO: Validate object
 			return this.enhancedObjectsService.createObject(objWithoutId);
 	} 
 
