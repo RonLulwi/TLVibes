@@ -12,8 +12,9 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.transaction.annotation.Transactional;
-
 import superapp.data.entities.SuperAppObjectEntity;
 import superapp.data.entities.UserEntity;
 import superapp.data.enums.CreationEnum;
@@ -112,11 +113,22 @@ public class ObjectService implements EnhancedObjectsService {
 		
 	}
 	
+	@Override
+	@Transactional(readOnly = true)
+	public List<ObjectBoundary> getAllObjects(int page, int size) {
+		return this.objectsRepositoy
+				.findAll(PageRequest.of(page, size, Direction.DESC,  "objectId"))
+				.stream()
+				.map(entity -> convertor.toBoundary(entity))
+				.collect(Collectors.toList());
+	}
 	
 	
 	@Override
 	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects() {
+		//TODO: Complete the throw exception
+		//throw new UnimplementedObjectRelatedOperationException();
 		return StreamSupport
 				.stream(this.objectsRepositoy.findAll().spliterator(), false)
 				.map(entity -> convertor.toBoundary(entity))
@@ -261,6 +273,9 @@ public class ObjectService implements EnhancedObjectsService {
 		
 		Guard.AgainstNullRequest(request);
 	}
+
+
+
 
 
 
