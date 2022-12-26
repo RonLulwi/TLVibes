@@ -107,7 +107,7 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName,int size,int page) {
 
 		return  this.commandRepository
-				.findAllByminiapp(miniAppName,PageRequest.of(page, size, Direction.DESC, "internalCommandId"))
+				.findAllByCommandId_Miniapp(miniAppName,PageRequest.of(page, size, Direction.DESC, "miniapp","internalCommandId"))
 				.stream()
 				.map(this.converter::toBoundary)
 				.collect(Collectors.toList());

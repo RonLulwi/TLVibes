@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.services.MiniAppCommandService;
+import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
 import superapp.logic.services.ObjectService;
 import superapp.logic.services.UserService;
 
@@ -17,9 +17,9 @@ import superapp.logic.services.UserService;
 public class AdminController {
 	private UserService userService;
 	private ObjectService objectService;
-	private MiniAppCommandService commandService;
+	private EnhancedMiniAppCommandsService commandService;
 	
-	public AdminController(UserService userService, ObjectService objectService, MiniAppCommandService commandService){
+	public AdminController(UserService userService, ObjectService objectService, EnhancedMiniAppCommandsService commandService){
 		this.commandService = commandService;
 		this.objectService = objectService;
 		this.userService = userService;
