@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +21,10 @@ import superapp.logic.convertes.MiniAppCommandsConverter;
 import superapp.logic.infrastructure.ConfigProperties;
 import superapp.logic.infrastructure.Guard;
 import superapp.logic.infrastructure.IdGenerator;
-import superapp.logic.interfaces.MiniAppCommandsService;
+import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
 
 @Service
-public class MiniAppCommandService implements MiniAppCommandsService {
+public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	
 	private MiniAppCommandRepository commandRepository;
 	private MiniAppCommandsConverter converter;
@@ -76,6 +78,18 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 				.collect(Collectors.toList());
 
 	}
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<MiniAppCommandBoundary> getAllCommands(int size ,int page) {			
+		return this.commandRepository
+				.findAll(PageRequest.of(page, size, Direction.DESC, "miniapp"))
+				.stream()
+				.map(this.converter::toBoundary)
+				.collect(Collectors.toList());
+
+	}
 
 	@Override	
 	@Transactional(readOnly = true)
@@ -86,6 +100,17 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 				.map(entity -> converter.toBoundary(entity))
 				.collect(Collectors.toList());
 
+	}
+	
+	@Override	
+	@Transactional(readOnly = true)
+	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName,int size,int page) {
+
+		return  this.commandRepository
+				.findAllByCommandId_Miniapp(miniAppName,PageRequest.of(page, size, Direction.DESC, "miniapp","internalCommandId"))
+				.stream()
+				.map(this.converter::toBoundary)
+				.collect(Collectors.toList());
 	}
 
 	@Override
