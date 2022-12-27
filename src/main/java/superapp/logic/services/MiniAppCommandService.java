@@ -84,7 +84,7 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllCommands(int size ,int page) {			
 		return this.commandRepository
-				.findAll(PageRequest.of(page, size, Direction.DESC, "commandId"))
+				.findAll(PageRequest.of(page, size, Direction.DESC, "miniapp"))
 				.stream()
 				.map(this.converter::toBoundary)
 				.collect(Collectors.toList());

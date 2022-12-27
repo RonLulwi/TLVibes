@@ -11,6 +11,6 @@ import superapp.logic.boundaries.identifiers.CommandId;
 
 public interface MiniAppCommandRepository extends PagingAndSortingRepository<MiniAppCommandEntity,CommandId> {
 	
-	List<MiniAppCommandEntity> findAllByCommandId_Miniapp(String miniapp,Pageable page);
+	List<MiniAppCommandEntity> findAllByCommandId_Miniapp(@Param("miniapp") String miniapp,Pageable page);
 
 }
