@@ -77,14 +77,17 @@ public class UserService implements EnhancedUsersService {
 	public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 		
 		Guard.AgainstNull(userSuperApp, "userSuperApp");
-		Guard.AgainstNull(userEmail, "userEmail");
-
-		if(!UsersRepository.existsById(update.getUserId()))
-		{
-			throw new RuntimeException("Could not find user with id : " + update.getUserId());
-		}
+		Guard.AgainstNull(userEmail, "userEmail");		
 		
-		UserEntity updateAsEntity = convertor.UserBoundaryToEntity(update,update.getUserId());
+		UserEntity updateAsEntity = convertor.UserBoundaryToEntity(update,
+				this.UsersRepository.
+				findById(new UserId(userSuperApp,userEmail))
+				.orElseThrow(() -> 
+				new EntityNotFoundException("Could not find user with id : " + 
+						new UserId(userSuperApp,userEmail)))
+				.getUserId()
+				);
+		
 		
 		UserEntity returned = UsersRepository.save(updateAsEntity);
 
