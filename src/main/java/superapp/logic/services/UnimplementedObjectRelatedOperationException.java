@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public class UnimplementedObjectRelatedOperationException extends Exception {
+public class UnimplementedObjectRelatedOperationException extends RuntimeException {
 
 
 	private static final long serialVersionUID = 4492063746557069240L;

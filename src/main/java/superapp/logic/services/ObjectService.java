@@ -128,12 +128,9 @@ public class ObjectService implements EnhancedObjectsService {
 	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects() {
 		//TODO: Complete the throw exception
-		//throw new UnimplementedObjectRelatedOperationException();
-		return StreamSupport
-				.stream(this.objectsRepositoy.findAll().spliterator(), false)
-				.map(entity -> convertor.toBoundary(entity))
-				.collect(Collectors.toList());
-
+		throw new UnimplementedObjectRelatedOperationException(
+				"This url for this function is no longer in use,"
+				+ " try to use pagination method instead");
 	}
 	@Override
 	@Transactional
