@@ -12,6 +12,8 @@ public interface EnhancedObjectsService extends ObjectsService {
 	Set<SuperAppObjectIdBoundary> GetAllChildrens(String parentSuperApp, String parentInternalId);
 	Set<SuperAppObjectIdBoundary> GetParent(String parentSuperApp, String parentInternalId);
 	Set<ObjectBoundary> SearchObjectsByCreationTimeStamp(CreationEnum creation, int page, int size);
+	ObjectBoundary updateObject(String objectSuperApp,String internalObjectId, ObjectBoundary objectBoundary
+			,String userSuperApp, String userEmail);
 	List<ObjectBoundary> getAllObjects(int page, int size);
 
 }

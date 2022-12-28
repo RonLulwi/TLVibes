@@ -84,8 +84,9 @@ public class ObjectController {
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
-		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update);
-		}
+		//this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update);
+		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update, userSuperApp, userEmail);
+	}
 		
 		@RequestMapping(
 				path = "/superapp/objects/{superapp}/{InternalObjectId}/children",
