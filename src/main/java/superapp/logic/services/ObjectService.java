@@ -18,10 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import superapp.data.entities.SuperAppObjectEntity;
 import superapp.data.entities.UserEntity;
 import superapp.data.enums.CreationEnum;
+import superapp.data.enums.Role;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
 import superapp.logic.infrastructure.Guard;
@@ -35,6 +37,7 @@ public class ObjectService implements EnhancedObjectsService {
 	private ObjectConvertor convertor;
 	private IdGenerator idGenerator;
 	private SuperAppObjectRepository objectsRepositoy;
+	private UserEntityRepository userRepository;
 	
 	@Autowired
 	public ObjectService(ObjectConvertor convertor,ConfigProperties configProperties,
@@ -44,6 +47,7 @@ public class ObjectService implements EnhancedObjectsService {
 		this.configProperties = configProperties;
 		this.idGenerator = idGenerator;
 		this.objectsRepositoy = objectsRepositoy;
+		this.userRepository = userRepository;
 	}
 	
 		
@@ -55,6 +59,15 @@ public class ObjectService implements EnhancedObjectsService {
 			validateObjectBoundary(objWithoutId);
 		} catch (Exception e) {
 			throw new RuntimeException("Invalid ObjectBoundary", e);
+		}
+		
+		UserId userId = objWithoutId.getCreatedBy().get("userId");
+		if (this.userRepository.findById(userId)
+			.orElseThrow(() -> 
+			new EntityNotFoundException("Could not find user with id : " + userId))
+			.getRole() != Role.SUPERAPP_USER)
+		{
+			throw new UnAuthoriezedRoleRequestException("Only SuperApp User can create objects");
 		}
 		
 		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
@@ -79,19 +92,20 @@ public class ObjectService implements EnhancedObjectsService {
 	@Transactional
 	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary) {
 	
-		Guard.AgainstNull(objectSuperApp, objectSuperApp);
-		Guard.AgainstNull(internalObjectId, internalObjectId);
-		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
-		
-		if(!objectsRepositoy.existsById(objectBoundary.getObjectId()))
-		{
-			throw new RuntimeException("Could not find user with id : " + objectBoundary.getObjectId());
-		}
-		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectBoundary.getObjectId());
-		
-		SuperAppObjectEntity returned = this.objectsRepositoy.save(EntityUpdate);
-				
-		return convertor.toBoundary(returned);
+//		Guard.AgainstNull(objectSuperApp, objectSuperApp);
+//		Guard.AgainstNull(internalObjectId, internalObjectId);
+//		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
+//		
+//		if(!objectsRepositoy.existsById(objectBoundary.getObjectId()))
+//		{
+//			throw new RuntimeException("Could not find user with id : " + objectBoundary.getObjectId());
+//		}
+//		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectBoundary.getObjectId());
+//		
+//		SuperAppObjectEntity returned = this.objectsRepositoy.save(EntityUpdate);
+//				
+//		return convertor.toBoundary(returned);
+		throw new UnimplementedObjectRelatedOperationException("Function is no longer in use");
 	}
 
 
@@ -269,6 +283,41 @@ public class ObjectService implements EnhancedObjectsService {
 		);
 		
 		Guard.AgainstNullRequest(request);
+	}
+
+
+	@Override
+	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary,
+			String userSuperApp, String userEmail) {
+		Guard.AgainstNull(objectSuperApp, objectSuperApp);
+		Guard.AgainstNull(internalObjectId, internalObjectId);
+		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
+		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
+		
+		if(!objectsRepositoy.existsById(objectId))
+		{
+			throw new EntityNotFoundException("Could not find object with id : " + objectId);
+		}
+		
+		UserId userId = objectBoundary.getCreatedBy().get("userId");
+		if (this.userRepository.findById(userId)
+			.orElseThrow(() -> 
+			new EntityNotFoundException("Could not find user with id : " + userId))
+			.getRole() != Role.SUPERAPP_USER)
+		{
+			throw new UnAuthoriezedRoleRequestException("Only SuperApp User can update objects");
+		}
+		
+		
+		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectId);
+		
+		//TODO: how to set createdBy without changes
+		
+		
+		
+		SuperAppObjectEntity returned = this.objectsRepositoy.save(EntityUpdate);
+				
+		return convertor.toBoundary(returned);
 	}
 
 
