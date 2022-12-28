@@ -49,7 +49,12 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	public Object invokeCommand(MiniAppCommandBoundary boundary) {
 		
 		Guard.AgainstNull(boundary, boundary.getClass().getName());
-		Guard.AgainstNull(boundary.getCommand(), boundary.getCommand().getClass().getName());
+		try {
+			Guard.AgainstNull(boundary.getCommand(), boundary.getCommand().getClass().getName());	
+		}
+		catch(Exception e) {
+			throw new MissingCommandOnPostRequestException("Command property is missing!");
+		}
 		Guard.AgainstNull(boundary.getInvokedBy(), boundary.getInvokedBy().getClass().getName());
 		Guard.AgainstNull(boundary.getTargetObject(), boundary.getTargetObject().getClass().getName());
 		Guard.AgainstNull(boundary.getCommandId().getMiniapp(), boundary.getCommandId().getMiniapp().getClass().getName());
