@@ -56,7 +56,6 @@ public class ObjectController {
 			int page, 
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size){
-		//return this.enhancedObjectsService.getAllObjects();
 		return this.enhancedObjectsService.getAllObjects(page, size);
 	}
 
@@ -84,7 +83,8 @@ public class ObjectController {
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
-		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update);
+		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update, userSuperApp, userEmail);
+		//this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update);
 		}
 		
 		@RequestMapping(
