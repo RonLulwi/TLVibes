@@ -16,7 +16,7 @@ public class UserConvertor {
 		this.emailValidator = emailValidator;
 	}
 
-	public UserEntity UserBoundaryToEntity(UserBoundary boundary, UserId userId)	{
+	public UserEntity toEntity(UserBoundary boundary, UserId userId)	{
 		
 		if(!emailValidator.validate(userId.getEmail()))
 		{
@@ -33,7 +33,7 @@ public class UserConvertor {
 		return entity;
 	}
 
-	public UserBoundary UserEntityToBoundary(UserEntity entity) {
+	public UserBoundary toBoundary(UserEntity entity) {
 		
 		UserBoundary boundary = new UserBoundary();
 		

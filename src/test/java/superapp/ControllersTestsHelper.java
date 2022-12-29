@@ -8,7 +8,7 @@ public class ControllersTestsHelper {
 	public String GetBaseUserBoundaryAsJson() {
 		return "{\r\n"
 				+ "    \"email\": \"niv@demo.org\",\r\n"
-				+ "    \"role\": \"ADMIN\",\r\n"
+				+ "    \"role\": \"SUPERAPP_USER\",\r\n"
 				+ "    \"username\": \"niv\",\r\n"
 				+ "    \"avatar\": \"N\"\r\n"
 				+ "}";

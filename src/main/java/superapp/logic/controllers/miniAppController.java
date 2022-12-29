@@ -90,13 +90,13 @@ public class miniAppController {
 			this.MiniAppCommand.deleteAllCommands();
 		}
 		
-	@RequestMapping(
-			path= {"/superapp/miniapp/TEST"},
-			method = {RequestMethod.POST},
-			produces = MediaType.APPLICATION_JSON_VALUE,
-			consumes = MediaType.APPLICATION_JSON_VALUE)
-		public Object objectTimeTravel(MiniAppCommandBoundary update) {
-			return this.MiniAppCommand.invokeCommand(update);
-		}
+//	@RequestMapping(
+//			path= {"/superapp/miniapp/TEST"},
+//			method = {RequestMethod.POST},
+//			produces = MediaType.APPLICATION_JSON_VALUE,
+//			consumes = MediaType.APPLICATION_JSON_VALUE)
+//		public Object objectTimeTravel(MiniAppCommandBoundary update) {
+//			return this.MiniAppCommand.invokeCommand(update);
+//		}
 
 }

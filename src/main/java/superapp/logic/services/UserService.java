@@ -54,11 +54,11 @@ public class UserService implements EnhancedUsersService {
 		
 		UserId userId = new UserId(configProperties.getSuperAppName(), user.getEmail());
 		
-		UserEntity entity = convertor.UserBoundaryToEntity(boundary,userId);
+		UserEntity entity = convertor.toEntity(boundary,userId);
 				
 		var response = UsersRepository.save(entity);
 		
-		return convertor.UserEntityToBoundary(response);
+		return convertor.toBoundary(response);
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class UserService implements EnhancedUsersService {
 
 		UserEntity retrivedEntiry = GetUserEntityById(new UserId(userSuperApp,userEmail));
 		
-		return convertor.UserEntityToBoundary(retrivedEntiry);
+		return convertor.toBoundary(retrivedEntiry);
 	}
 
 	@Override
@@ -79,7 +79,8 @@ public class UserService implements EnhancedUsersService {
 		Guard.AgainstNull(userSuperApp, "userSuperApp");
 		Guard.AgainstNull(userEmail, "userEmail");		
 		
-		UserEntity updateAsEntity = convertor.UserBoundaryToEntity(update,
+
+		UserEntity updateAsEntity = convertor.toEntity(update,
 				this.UsersRepository.
 				findById(new UserId(userSuperApp,userEmail))
 				.orElseThrow(() -> 
@@ -87,21 +88,16 @@ public class UserService implements EnhancedUsersService {
 						new UserId(userSuperApp,userEmail)))
 				.getUserId()
 				);
-		
-		
+				
 		UserEntity returned = UsersRepository.save(updateAsEntity);
 
-		return convertor.UserEntityToBoundary(returned);
+		return convertor.toBoundary(returned);
 	}
 
 
 	@Override
 	//@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers() {
-//		return StreamSupport
-//				.stream(this.UsersRepository.findAll().spliterator(), false)
-//				.map(this.convertor::UserEntityToBoundary)
-//				.collect(Collectors.toList());
 		throw new DeprecatedFunctionException("Unsupported paging getAllUsers function is deprecated ");
 	}
 	
@@ -112,7 +108,7 @@ public class UserService implements EnhancedUsersService {
 		return this.UsersRepository
 				.findAll(PageRequest.of(page, size, Direction.DESC, "email","superapp"))
 				.stream()
-				.map(this.convertor::UserEntityToBoundary)
+				.map(this.convertor::toBoundary)
 				.collect(Collectors.toList());
 	}
 	
