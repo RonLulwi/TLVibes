@@ -18,7 +18,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.ObjectBoundary;
+import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.infrastructure.ConfigProperties;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -29,6 +31,8 @@ public class ObjectControllerTests {
 		private ConfigProperties configProperties;
 		private ObjectMapper jackson;
 		private ControllersTestsHelper helper;
+		private String baseUrl;
+		private String userPrefix;
 
 		@Autowired
 		public void setConfigProperties(ConfigProperties configProperties) {
@@ -53,7 +57,11 @@ public class ObjectControllerTests {
 		@PostConstruct
 		public void init() {
 			this.restTemplate = new RestTemplate();
-			this.url = "http://localhost:" + this.port + "/superapp/objects/";
+			this.baseUrl = "http://localhost:" + this.port;
+			this.url = this.baseUrl + "/superapp/miniapp/" + configProperties.getSuperAppName();
+			this.userPrefix = "/superapp/users/";
+
+
 		}
 		
 		@AfterEach
@@ -68,6 +76,13 @@ public class ObjectControllerTests {
 		@Test
 		public void testCreateSuperAppObjectHappyFlow() throws JsonMappingException, JsonProcessingException
 		{
+			String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
+			
+			NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+			
+			var createUserResponse  = this.restTemplate
+					.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
+
 			String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
 			
 			ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);

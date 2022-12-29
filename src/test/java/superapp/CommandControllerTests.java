@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.security.InvalidParameterException;
 import java.sql.Time;
@@ -51,6 +52,8 @@ public class CommandControllerTests {
 	private ObjectMapper jackson;
 	private ControllersTestsHelper helper;
 	private String objectPrefix;
+	private String commandPrefix;
+	private String commandTestStr;
 	
 	@Autowired
 	public void setHelper(ControllersTestsHelper helper) {
@@ -79,6 +82,8 @@ public class CommandControllerTests {
 		this.url = this.baseUrl + "/superapp/miniapp/" + configProperties.getSuperAppName();
 		this.userPrefix = "/superapp/users/";
 		this.objectPrefix = "/superapp/objects/";
+		this.commandPrefix = "\"command\" :";
+		this.commandTestStr = " \"doSomthing\",\r\n";
 	}
 
 	@AfterEach
@@ -88,6 +93,8 @@ public class CommandControllerTests {
 		this.restTemplate.delete("http://localhost:" + this.port + "/superapp/admin/miniapp");
 
 	}
+	
+	
 	
 	@Test
 	public void testInvokeCommandHappyFlow() throws JsonMappingException, JsonProcessingException
@@ -110,6 +117,27 @@ public class CommandControllerTests {
 		assertThat(response.getInvocationTimestamp().after(boundary.getInvocationTimestamp()));
 
 	}
+	
+	@Test
+	public void testInvokeCommandWithoutCommand() throws JsonMappingException, JsonProcessingException
+	{
+		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson()
+				.replace(this.commandPrefix + this.commandTestStr, "");
+		
+		MiniAppCommandBoundary boundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		
+		MiniAppCommandBoundary response = null;
+		try {
+			response = this.restTemplate.postForObject(this.url, boundary, MiniAppCommandBoundary.class);
+		}
+		catch(Exception e)
+		{
+			
+		}
+		assertNull(response);
+		
+	}
+	
 	
 	@Test
 	public void InvokeObjectTimeTravelCommand_objectCreationDateHasChanged() throws JsonMappingException, JsonProcessingException

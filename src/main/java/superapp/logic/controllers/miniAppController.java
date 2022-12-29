@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.interfaces.MiniAppCommandsService;
+import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
 
 @RestController
 public class miniAppController {
-	private MiniAppCommandsService MiniAppCommand;
+	private EnhancedMiniAppCommandsService MiniAppCommand;
 
 	@Autowired
-	public void setMiniAppController(MiniAppCommandsService MiniAppService) {
+	public void setMiniAppController(EnhancedMiniAppCommandsService MiniAppService) {
 		this.MiniAppCommand = MiniAppService;
 	}
 	
@@ -29,7 +29,7 @@ public class miniAppController {
 		public Object invokeMiniAppCommand(
 				@PathVariable("miniAppName") String miniAppName,
 				@RequestBody MiniAppCommandBoundary boundary,
-				@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 				String userSuperApp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 				String userEmail) {
@@ -44,13 +44,17 @@ public class miniAppController {
 			path = "/superapp/miniapp/getAllCommands",
 			produces = MediaType.APPLICATION_JSON_VALUE)
 		public MiniAppCommandBoundary[] getAllCommands (
-				@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 				String userSuperApp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
-				String userEmail) {
+				String userEmail,
+				@RequestParam(name = "size", required = false, defaultValue = "10")
+				int size, 
+				@RequestParam(name = "page", required = false, defaultValue = "0") 
+				int page) {
 		//TODO: Validate that the user is ADMIN
 			return this.MiniAppCommand
-					.getAllCommands()
+					.getAllCommands(size, page)
 					.toArray(new MiniAppCommandBoundary[0]);
 		}
 	
@@ -60,13 +64,17 @@ public class miniAppController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 		public MiniAppCommandBoundary[] getAllCommandsOfSpecificMiniApp (
 				@PathVariable("miniAppName") String miniAppName,
-				@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 				String userSuperApp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
-				String userEmail) {
+				String userEmail,
+				@RequestParam(name = "size", required = false, defaultValue = "10")
+				int size, 
+				@RequestParam(name = "page", required = false, defaultValue = "0") 
+				int page) {
 		//TODO: Validate that the user is ADMIN
 			return this.MiniAppCommand
-					.getAllMiniAppCommands(miniAppName)
+					.getAllMiniAppCommands(miniAppName, size, page)
 					.toArray(new MiniAppCommandBoundary[0]);
 		}
 	
@@ -74,7 +82,7 @@ public class miniAppController {
 			path= {"/superapp/miniapp/deleteAllCommands"},
 			method = {RequestMethod.DELETE})
 		public void DeleteAllCommands(
-				@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 					String userSuperApp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 					String userEmail) {

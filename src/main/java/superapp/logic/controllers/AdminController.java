@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.services.MiniAppCommandService;
+import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
 import superapp.logic.services.ObjectService;
 import superapp.logic.services.UserService;
 
@@ -17,9 +17,9 @@ import superapp.logic.services.UserService;
 public class AdminController {
 	private UserService userService;
 	private ObjectService objectService;
-	private MiniAppCommandService commandService;
+	private EnhancedMiniAppCommandsService commandService;
 	
-	public AdminController(UserService userService, ObjectService objectService, MiniAppCommandService commandService){
+	public AdminController(UserService userService, ObjectService objectService, EnhancedMiniAppCommandsService commandService){
 		this.commandService = commandService;
 		this.objectService = objectService;
 		this.userService = userService;
@@ -29,7 +29,7 @@ public class AdminController {
 			path= {"/superapp/admin/users"},
 			method = {RequestMethod.DELETE})
 	public void DeleteAllUsers(
-			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
@@ -40,7 +40,7 @@ public class AdminController {
 			path= {"/superapp/admin/objects"},
 			method = {RequestMethod.DELETE})
 	public void DeleteAllObjects(
-			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
@@ -52,7 +52,7 @@ public class AdminController {
 			path= {"/superapp/admin/miniapp"},
 			method = {RequestMethod.DELETE})
 	public void DeleteCommandHistory(
-			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
@@ -69,9 +69,13 @@ public class AdminController {
 			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
-			String userEmail) {
+			String userEmail,
+			@RequestParam(name = "size", required = false, defaultValue = "10")
+			int size, 
+			@RequestParam(name = "page", required = false, defaultValue = "0") 
+			int page) {
 	//TODO: Validate that the user is ADMIN
-		return commandService.getAllMiniAppCommands(selectedAppname)
+		return commandService.getAllMiniAppCommands(selectedAppname,size, page)
 				.toArray(new MiniAppCommandBoundary[0]);
 	}
 
@@ -83,9 +87,13 @@ public class AdminController {
 			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
-			String userEmail) {
+			String userEmail,
+			@RequestParam(name = "size", required = false, defaultValue = "10")
+			int size, 
+			@RequestParam(name = "page", required = false, defaultValue = "0") 
+			int page) {
 	//TODO: Validate that the user is ADMIN
-		return commandService.getAllCommands()
+		return commandService.getAllCommands(size,page)
 				.toArray(new MiniAppCommandBoundary[0]);
 	}
 
@@ -97,9 +105,13 @@ public class AdminController {
 			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
-			String userEmail) {
+			String userEmail,
+			@RequestParam(name = "size", required = false, defaultValue = "10")
+			int size, 
+			@RequestParam(name = "page", required = false, defaultValue = "0") 
+			int page) { 
 	//TODO: Validate that the user is ADMIN
-		return userService.getAllUsers()
+		return userService.getAllUsers(size, page)
 				.toArray(new UserBoundary[0]);
 	}
 

@@ -34,8 +34,11 @@ public class ObjectController {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ObjectBoundary retriveObject (
 			@PathVariable("superapp") String superapp,
-			@PathVariable("InternalObjectId") String InternalObjectId
-			){
+			@PathVariable("InternalObjectId") String InternalObjectId,
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+			String userSuperApp, 
+			@RequestParam(name = "userEmail", required = false, defaultValue = "")
+			String userEmail){
 		return this.enhancedObjectsService.getSpecificObject(superapp, InternalObjectId);
 	}
 
@@ -44,8 +47,17 @@ public class ObjectController {
 			method = RequestMethod.GET,
 			path = "/superapp/objects",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<ObjectBoundary> retriveAllObjects (){
-		return this.enhancedObjectsService.getAllObjects();
+	public List<ObjectBoundary> retriveAllObjects (
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+			String userSuperApp, 
+			@RequestParam(name = "userEmail", required = false, defaultValue = "")
+			String userEmail,
+			@RequestParam(name = "page", required = false, defaultValue = "0") 
+			int page, 
+			@RequestParam(name = "size", required = false, defaultValue = "10")
+			int size){
+		//return this.enhancedObjectsService.getAllObjects();
+		return this.enhancedObjectsService.getAllObjects(page, size);
 	}
 
 
@@ -55,8 +67,9 @@ public class ObjectController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId) {
+		//TODO: Validate object
 			return this.enhancedObjectsService.createObject(objWithoutId);
-	}
+	} 
 
 
 	@RequestMapping(
@@ -66,9 +79,14 @@ public class ObjectController {
 	public void updateObject (
 			@PathVariable("superapp") String superapp,
 			@PathVariable("InternalObjectId") String InternalObjectId, 
-			@RequestBody ObjectBoundary update) {
-		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update);
-		}
+			@RequestBody ObjectBoundary update,
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+			String userSuperApp, 
+			@RequestParam(name = "userEmail", required = false, defaultValue = "")
+			String userEmail) {
+		//this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update);
+		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update, userSuperApp, userEmail);
+	}
 		
 		@RequestMapping(
 				path = "/superapp/objects/{superapp}/{InternalObjectId}/children",
@@ -77,7 +95,11 @@ public class ObjectController {
 		public void bindChild (
 				@PathVariable("superapp") String superapp,
 				@PathVariable("InternalObjectId") String InternalObjectId, 
-				@RequestBody SuperAppObjectIdBoundary update) {
+				@RequestBody SuperAppObjectIdBoundary update,
+				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+				String userSuperApp, 
+				@RequestParam(name = "userEmail", required = false, defaultValue = "")
+				String userEmail) {
 			this.enhancedObjectsService.BindExistingObjectToAnExisitingChild(superapp, InternalObjectId, update);
 		}
 		
@@ -87,8 +109,16 @@ public class ObjectController {
 				produces = MediaType.APPLICATION_JSON_VALUE)
 		public ObjectBoundary[] getChildrens (
 				@PathVariable("superapp") String superapp,
-				@PathVariable("InternalObjectId") String InternalObjectId) {
-			return this.enhancedObjectsService.GetAllChildrens(superapp, InternalObjectId)
+				@PathVariable("InternalObjectId") String InternalObjectId,
+				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+				String userSuperApp, 
+				@RequestParam(name = "userEmail", required = false, defaultValue = "")
+				String userEmail,
+				@RequestParam(name = "page", required = false, defaultValue = "0") 
+				int page, 
+				@RequestParam(name = "size", required = false, defaultValue = "10")
+				int size) {
+			return this.enhancedObjectsService.getAllChildrens(superapp, InternalObjectId, page, size)
 					.toArray(new ObjectBoundary[0]);
 		}
 		
@@ -98,8 +128,16 @@ public class ObjectController {
 				produces = MediaType.APPLICATION_JSON_VALUE)
 		public ObjectBoundary[] getParents (
 				@PathVariable("superapp") String superapp,
-				@PathVariable("InternalObjectId") String InternalObjectId) {
-			return this.enhancedObjectsService.GetParent(superapp, InternalObjectId)
+				@PathVariable("InternalObjectId") String InternalObjectId,
+				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+				String userSuperApp, 
+				@RequestParam(name = "userEmail", required = false, defaultValue = "")
+				String userEmail,
+				@RequestParam(name = "page", required = false, defaultValue = "0") 
+				int page, 
+				@RequestParam(name = "size", required = false, defaultValue = "10")
+				int size) {
+			return this.enhancedObjectsService.getParent(superapp, InternalObjectId,page,size)
 					.toArray(new ObjectBoundary[0]);
 		}
 		
@@ -109,7 +147,7 @@ public class ObjectController {
 				produces = MediaType.APPLICATION_JSON_VALUE)
 		public ObjectBoundary[] searchObjectsByCreationTimeStamp (
 				@PathVariable("creationEnum") CreationEnum creation,
-				@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 				String userSuperApp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 				String userEmail,
@@ -117,7 +155,7 @@ public class ObjectController {
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.SearchObjectsByCreationTimeStamp(creation, page, size)
+			return this.enhancedObjectsService.searchObjectsByCreationTimeStamp(creation, page, size)
 					.toArray(new ObjectBoundary[0]);
 		}
 

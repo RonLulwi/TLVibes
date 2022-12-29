@@ -3,8 +3,6 @@ package superapp.logic.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import superapp.data.entities.UserEntity;
@@ -15,14 +13,17 @@ import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.UserConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
-import superapp.logic.interfaces.UsersService;
+import superapp.logic.interfaces.EnhancedUsersService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService implements UsersService {
+public class UserService implements EnhancedUsersService {
 	
     private ConfigProperties configProperties;
     private UserConvertor convertor;
@@ -76,15 +77,18 @@ public class UserService implements UsersService {
 	public UserBoundary updateUser(String userSuperApp, String userEmail, UserBoundary update) {
 		
 		Guard.AgainstNull(userSuperApp, "userSuperApp");
-		Guard.AgainstNull(userEmail, "userEmail");
+		Guard.AgainstNull(userEmail, "userEmail");		
+		
 
-		if(!UsersRepository.existsById(update.getUserId()))
-		{
-			throw new RuntimeException("Could not find user with id : " + update.getUserId());
-		}
-		
-		UserEntity updateAsEntity = convertor.toEntity(update,update.getUserId());
-		
+		UserEntity updateAsEntity = convertor.toEntity(update,
+				this.UsersRepository.
+				findById(new UserId(userSuperApp,userEmail))
+				.orElseThrow(() -> 
+				new EntityNotFoundException("Could not find user with id : " + 
+						new UserId(userSuperApp,userEmail)))
+				.getUserId()
+				);
+				
 		UserEntity returned = UsersRepository.save(updateAsEntity);
 
 		return convertor.toBoundary(returned);
@@ -92,13 +96,22 @@ public class UserService implements UsersService {
 
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers() {
-		return StreamSupport
-				.stream(this.UsersRepository.findAll().spliterator(), false)
+		throw new DeprecatedFunctionException("Unsupported paging getAllUsers function is deprecated ");
+	}
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<UserBoundary> getAllUsers(int size,int page) {
+		return this.UsersRepository
+				.findAll(PageRequest.of(page, size, Direction.DESC, "email","superapp"))
+				.stream()
 				.map(this.convertor::toBoundary)
 				.collect(Collectors.toList());
 	}
+	
 
 	@Override
 	@Transactional

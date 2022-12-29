@@ -1,15 +1,12 @@
 package superapp.logic.services;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +18,14 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.identifiers.CommandId;
 import superapp.logic.convertes.MiniAppCommandsConverter;
 import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
 import superapp.logic.infrastructure.IdGenerator;
-import superapp.logic.interfaces.MiniAppCommandsService;
 import superapp.logic.superAppInvokables.CommandFactory;
+import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
 
 @Service
-public class MiniAppCommandService implements MiniAppCommandsService {
+public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	
 	private MiniAppCommandRepository commandRepository;
 	private MiniAppCommandsConverter converter;
@@ -58,7 +56,12 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	public Object invokeCommand(MiniAppCommandBoundary boundary) {
 		
 		Guard.AgainstNull(boundary, boundary.getClass().getName());
-		Guard.AgainstNull(boundary.getCommand(), boundary.getCommand().getClass().getName());
+		try {
+			Guard.AgainstNull(boundary.getCommand(), boundary.getCommand().getClass().getName());	
+		}
+		catch(Exception e) {
+			throw new MissingCommandOnPostRequestException("Command property is missing!");
+		}
 		Guard.AgainstNull(boundary.getInvokedBy(), boundary.getInvokedBy().getClass().getName());
 		Guard.AgainstNull(boundary.getTargetObject(), boundary.getTargetObject().getClass().getName());
 		Guard.AgainstNull(boundary.getCommandId().getMiniapp(), boundary.getCommandId().getMiniapp().getClass().getName());
@@ -84,9 +87,22 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllCommands() {			
-		return StreamSupport
-				.stream(this.commandRepository.findAll().spliterator(), false)
-				.map(entity -> converter.toBoundary(entity))
+//		return StreamSupport
+//				.stream(this.commandRepository.findAll().spliterator(), false)
+//				.map(entity -> converter.toBoundary(entity))
+//				.collect(Collectors.toList());
+
+		throw new DeprecatedFunctionException("Unsupported paging getAllCommands function is deprecated ");
+	}
+	
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<MiniAppCommandBoundary> getAllCommands(int size ,int page) {			
+		return this.commandRepository
+				.findAll(PageRequest.of(page, size, Direction.DESC, "miniapp"))
+				.stream()
+				.map(this.converter::toBoundary)
 				.collect(Collectors.toList());
 
 	}
@@ -94,12 +110,24 @@ public class MiniAppCommandService implements MiniAppCommandsService {
 	@Override	
 	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {	
-		return StreamSupport
-				.stream(this.commandRepository.findAll().spliterator(), false)
-				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
-				.map(entity -> converter.toBoundary(entity))
-				.collect(Collectors.toList());
+//		return StreamSupport
+//				.stream(this.commandRepository.findAll().spliterator(), false)
+//				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
+//				.map(entity -> converter.toBoundary(entity))
+//				.collect(Collectors.toList());
 
+		throw new DeprecatedFunctionException("Unsupported paging getAllMiniAppCommands function is deprecated ");
+	}
+	
+	@Override	
+	@Transactional(readOnly = true)
+	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName,int size,int page) {
+
+		return  this.commandRepository
+				.findAllByCommandId_Miniapp(miniAppName,PageRequest.of(page, size, Direction.DESC, "miniapp","internalCommandId"))
+				.stream()
+				.map(this.converter::toBoundary)
+				.collect(Collectors.toList());
 	}
 
 	@Override
