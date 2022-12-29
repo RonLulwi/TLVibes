@@ -34,7 +34,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import superapp.data.entities.MiniAppCommandEntity;
+import superapp.data.MiniAppCommandEntity;
 import superapp.data.interfaces.MiniAppCommandRepository;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;

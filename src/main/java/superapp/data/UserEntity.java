@@ -1,13 +1,11 @@
-package superapp.data.entities;
+package superapp.data;
 
 import java.util.Objects;
 
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 
-import superapp.data.enums.Role;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.Utilities;
 
@@ -16,7 +14,7 @@ import superapp.logic.infrastructure.Utilities;
 public class UserEntity {
    	@Id private String superapp;
    	@Id private String email;
-	private Role role;
+	private UserRole role;
 	private String username;
 	private String avatar;
 	
@@ -28,7 +26,7 @@ public class UserEntity {
 	}
 	
 	public UserEntity() {
-		this.role = Role.SUPERAPP_USER;
+		this.role = UserRole.SUPERAPP_USER;
 		this.username = Utilities.GeneratingRandomString();
 		this.avatar = Utilities.GeneratingRandomString(1);
 	}
@@ -42,10 +40,10 @@ public class UserEntity {
 		this.superapp = userId.getSuperapp();	
 	}
 	
-	public Role getRole() {
+	public UserRole getRole() {
 		return role;
 	}
-	public void setRole(Role role) {
+	public void setRole(UserRole role) {
 		this.role = role;
 	}
 	public String getUsername() {
@@ -63,7 +61,7 @@ public class UserEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(avatar, email, role, superapp, username);
+		return Objects.hash(email, superapp);
 	}
 
 	@Override
@@ -75,8 +73,7 @@ public class UserEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		UserEntity other = (UserEntity) obj;
-		return Objects.equals(avatar, other.avatar) && Objects.equals(email, other.email) && role == other.role
-				&& Objects.equals(superapp, other.superapp) && Objects.equals(username, other.username);
+		return Objects.equals(email, other.email) && Objects.equals(superapp, other.superapp);
 	}
 
 	@Override

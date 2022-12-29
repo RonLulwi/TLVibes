@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import superapp.logic.EnhancedMiniAppCommandsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
 
 @RestController
 public class miniAppController {

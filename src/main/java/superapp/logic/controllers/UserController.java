@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import superapp.logic.EnhancedUsersService;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.interfaces.EnhancedUsersService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")

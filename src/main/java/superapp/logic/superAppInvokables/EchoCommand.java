@@ -2,7 +2,7 @@ package superapp.logic.superAppInvokables;
 
 import org.springframework.stereotype.Component;
 
-import superapp.data.entities.MiniAppCommandEntity;
+import superapp.data.MiniAppCommandEntity;
 
 @Component("echo")
 public class EchoCommand implements ICommandInvokable{
@@ -12,7 +12,7 @@ public class EchoCommand implements ICommandInvokable{
 	public Object Invoke(MiniAppCommandEntity command) {
 		
 		
-		if(!command.getCommand().equalsIgnoreCase(commandName)){
+		if(!command.getCommand().equals(commandName)){
 			throw new RuntimeException("Invalid command name : " + commandName);
 		}
 		

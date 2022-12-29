@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
-import superapp.data.entities.MiniAppCommandEntity;
+import superapp.data.MiniAppCommandEntity;
 import superapp.logic.boundaries.identifiers.CommandId;
 
 public interface MiniAppCommandRepository extends PagingAndSortingRepository<MiniAppCommandEntity,CommandId> {

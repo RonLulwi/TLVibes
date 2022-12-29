@@ -5,9 +5,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
-import superapp.data.entities.UserEntity;
-import superapp.data.enums.Role;
+import superapp.data.UserEntity;
+import superapp.data.UserRole;
 import superapp.data.interfaces.UserEntityRepository;
+import superapp.logic.EnhancedUsersService;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
@@ -15,7 +16,6 @@ import superapp.logic.convertes.UserConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
 import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
-import superapp.logic.interfaces.EnhancedUsersService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -48,7 +48,7 @@ public class UserService implements EnhancedUsersService {
 		Guard.AgainstNullOrEmpty(user.getUsername(), user.getUsername().getClass().getName());
 		Guard.AgainstNullOrEmpty(user.getAvatar(), user.getAvatar().getClass().getName());
 
-		Role.ValidateEnumThrowsIfNotExists(user.getRole());
+		UserRole.ValidateEnumThrowsIfNotExists(user.getRole());
 
 		UserBoundary boundary = user.ToUserBoudary(new UserId());
 		

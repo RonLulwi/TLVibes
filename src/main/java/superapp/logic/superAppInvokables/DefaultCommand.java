@@ -2,7 +2,7 @@ package superapp.logic.superAppInvokables;
 
 import org.springframework.stereotype.Component;
 
-import superapp.data.entities.MiniAppCommandEntity;
+import superapp.data.MiniAppCommandEntity;
 
 @Component("defaultCommand")
 public class DefaultCommand implements ICommandInvokable{

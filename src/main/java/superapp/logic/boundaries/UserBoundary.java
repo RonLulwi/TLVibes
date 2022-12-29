@@ -3,18 +3,18 @@ package superapp.logic.boundaries;
 
 import java.util.Objects;
 
-import superapp.data.enums.Role;
+import superapp.data.UserRole;
 import superapp.logic.boundaries.identifiers.UserId;
 
 public class UserBoundary {
 
 	private UserId userId;
-	private Role role;
+	private UserRole role;
 	private String username;
 	private String avatar;
 	
 	public UserBoundary() {
-		this.role = Role.MINIAPP_USER;
+		this.role = UserRole.MINIAPP_USER;
 		this.username="Jane Roe";
 		this.avatar="J";
 
@@ -27,7 +27,7 @@ public class UserBoundary {
 	}
 
 	
-	public UserBoundary(UserId userId,Role role,String userName, String avatar)
+	public UserBoundary(UserId userId,UserRole role,String userName, String avatar)
 	{
 		this.userId = userId;
 		this.role=role;
@@ -43,11 +43,11 @@ public class UserBoundary {
 		this.userId = userId;
 	}
 
-	public Role getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRole(UserRole role) {
 		this.role = role;
 	}
 

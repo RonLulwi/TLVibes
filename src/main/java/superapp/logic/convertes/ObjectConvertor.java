@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
 
-import superapp.data.entities.SuperAppObjectEntity;
+import superapp.data.SuperAppObjectEntity;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 

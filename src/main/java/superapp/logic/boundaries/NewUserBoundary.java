@@ -3,13 +3,13 @@ package superapp.logic.boundaries;
 
 import java.util.Objects;
 
-import superapp.data.enums.Role;
+import superapp.data.UserRole;
 import superapp.logic.boundaries.identifiers.UserId;
 
 public class NewUserBoundary {
 	
 	private String email;
-	private Role role;
+	private UserRole role;
 	private String username;
 	private String avatar;
 	
@@ -29,11 +29,11 @@ public class NewUserBoundary {
 		this.email = email;
 	}
 
-	public Role getRole() {
+	public UserRole getRole() {
 		return role;
 	}
 
-	public void setRole(Role role) {
+	public void setRole(UserRole role) {
 		this.role = role;
 	}
 

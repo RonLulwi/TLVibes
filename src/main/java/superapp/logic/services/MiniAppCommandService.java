@@ -4,16 +4,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import superapp.data.entities.MiniAppCommandEntity;
+import superapp.data.MiniAppCommandEntity;
 import superapp.data.interfaces.MiniAppCommandRepository;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
+import superapp.logic.EnhancedMiniAppCommandsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.identifiers.CommandId;
 import superapp.logic.convertes.MiniAppCommandsConverter;
@@ -22,7 +22,6 @@ import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
 import superapp.logic.infrastructure.IdGenerator;
 import superapp.logic.superAppInvokables.CommandFactory;
-import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
 
 @Service
 public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
@@ -32,7 +31,6 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	private ConfigProperties configProperties;
 	private IdGenerator idGenerator;
 	private CommandFactory commandFactory;
-    private ApplicationContext appContext;
 
 
 	@Autowired
@@ -41,14 +39,12 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 			UserEntityRepository userEntityRepository,
 			SuperAppObjectRepository superAppObjectRepositoy,
 			MiniAppCommandRepository commandRepository,
-			CommandFactory commandFactory,
-			ApplicationContext appContext) {
+			CommandFactory commandFactory) {
 		this.converter = converter;
 		this.commandRepository = commandRepository;
 		this.idGenerator = idGenerator;
 		this.configProperties = configProperties;
 		this.commandFactory = commandFactory;
-		this.appContext = appContext;
 	}
 
 	@Override
