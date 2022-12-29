@@ -19,6 +19,7 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.identifiers.CommandId;
 import superapp.logic.convertes.MiniAppCommandsConverter;
 import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
 import superapp.logic.infrastructure.IdGenerator;
 import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
@@ -77,11 +78,12 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllCommands() {			
-		return StreamSupport
-				.stream(this.commandRepository.findAll().spliterator(), false)
-				.map(entity -> converter.toBoundary(entity))
-				.collect(Collectors.toList());
+//		return StreamSupport
+//				.stream(this.commandRepository.findAll().spliterator(), false)
+//				.map(entity -> converter.toBoundary(entity))
+//				.collect(Collectors.toList());
 
+		throw new DeprecatedFunctionException("Unsupported paging getAllCommands function is deprecated ");
 	}
 	
 	
@@ -99,12 +101,13 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	@Override	
 	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {	
-		return StreamSupport
-				.stream(this.commandRepository.findAll().spliterator(), false)
-				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
-				.map(entity -> converter.toBoundary(entity))
-				.collect(Collectors.toList());
+//		return StreamSupport
+//				.stream(this.commandRepository.findAll().spliterator(), false)
+//				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
+//				.map(entity -> converter.toBoundary(entity))
+//				.collect(Collectors.toList());
 
+		throw new DeprecatedFunctionException("Unsupported paging getAllMiniAppCommands function is deprecated ");
 	}
 	
 	@Override	

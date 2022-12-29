@@ -3,7 +3,6 @@ package superapp.logic.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import org.springframework.transaction.annotation.Transactional;
 
 import superapp.data.entities.UserEntity;
@@ -14,6 +13,7 @@ import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.UserConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
 import superapp.logic.interfaces.EnhancedUsersService;
 
@@ -96,12 +96,13 @@ public class UserService implements EnhancedUsersService {
 
 
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers() {
-		return StreamSupport
-				.stream(this.UsersRepository.findAll().spliterator(), false)
-				.map(this.convertor::UserEntityToBoundary)
-				.collect(Collectors.toList());
+//		return StreamSupport
+//				.stream(this.UsersRepository.findAll().spliterator(), false)
+//				.map(this.convertor::UserEntityToBoundary)
+//				.collect(Collectors.toList());
+		throw new DeprecatedFunctionException("Unsupported paging getAllUsers function is deprecated ");
 	}
 	
 	

@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 import org.springframework.stereotype.Service;
@@ -26,6 +25,7 @@ import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
 import superapp.logic.infrastructure.IdGenerator;
 import superapp.logic.interfaces.EnhancedObjectsService;
@@ -89,7 +89,7 @@ public class ObjectService implements EnhancedObjectsService {
 
 
 	@Override
-	@Transactional
+	//@Transactional
 	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary) {
 	
 //		Guard.AgainstNull(objectSuperApp, objectSuperApp);
@@ -105,8 +105,8 @@ public class ObjectService implements EnhancedObjectsService {
 //		SuperAppObjectEntity returned = this.objectsRepositoy.save(EntityUpdate);
 //				
 //		return convertor.toBoundary(returned);
-		throw new UnimplementedObjectRelatedOperationException("Function is no longer in use");
-	}
+		throw new DeprecatedFunctionException("Unsupported paging updateObject function is deprecated ");
+		}
 
 
 	
@@ -139,12 +139,9 @@ public class ObjectService implements EnhancedObjectsService {
 	
 	
 	@Override
-	@Transactional(readOnly = true)
+	//@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects() {
-		//TODO: Complete the throw exception
-		throw new UnimplementedObjectRelatedOperationException(
-				"This url for this function is no longer in use,"
-				+ " try to use pagination method instead");
+		throw new DeprecatedFunctionException("Unsupported paging getAllObjects function is deprecated ");
 	}
 	@Override
 	@Transactional
