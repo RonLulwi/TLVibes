@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
-import superapp.logic.services.UserService;
+import superapp.logic.interfaces.EnhancedUsersService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
-	private UserService userService;
+	private EnhancedUsersService userService;
 	
 	@Autowired
-	public void setUserService(UserService userService) {
+	public void setUserService(EnhancedUsersService userService) {
 		this.userService = userService;
 	}
 

@@ -118,7 +118,7 @@ public class ObjectController {
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.GetAllChildrens(superapp, InternalObjectId)
+			return this.enhancedObjectsService.getAllChildrens(superapp, InternalObjectId, page, size)
 					.toArray(new ObjectBoundary[0]);
 		}
 		
@@ -137,7 +137,7 @@ public class ObjectController {
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.GetParent(superapp, InternalObjectId)
+			return this.enhancedObjectsService.getParent(superapp, InternalObjectId,page,size)
 					.toArray(new ObjectBoundary[0]);
 		}
 		
@@ -155,7 +155,7 @@ public class ObjectController {
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.SearchObjectsByCreationTimeStamp(creation, page, size)
+			return this.enhancedObjectsService.searchObjectsByCreationTimeStamp(creation, page, size)
 					.toArray(new ObjectBoundary[0]);
 		}
 
