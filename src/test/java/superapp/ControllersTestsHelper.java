@@ -5,6 +5,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ControllersTestsHelper {
 	
+	public String userPrefix = "/superapp/users/";
+	public String objectPrefix = "/superapp/objects/";
+
 	public String GetBaseUserBoundaryAsJson() {
 		return "{\r\n"
 				+ "    \"email\": \"niv@demo.org\",\r\n"

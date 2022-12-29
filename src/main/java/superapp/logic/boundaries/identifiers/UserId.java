@@ -42,7 +42,7 @@ public class UserId implements Serializable{
 
 	@Override
 	public String toString() {
-		return "UserId [superApp=" + superapp + ", email=" + email + "]";
+		return "userId [superApp=" + superapp + ", email=" + email + "]";
 	}
 
 	@Override

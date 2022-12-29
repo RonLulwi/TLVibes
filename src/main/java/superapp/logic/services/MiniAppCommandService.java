@@ -53,7 +53,7 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 
 	@Override
 	@Transactional()
-	public Object invokeCommand(MiniAppCommandBoundary boundary) {
+	public Object invokeCommand(String miniAppName, MiniAppCommandBoundary boundary) {
 		
 		Guard.AgainstNull(boundary, boundary.getClass().getName());
 		try {
@@ -64,11 +64,11 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		}
 		Guard.AgainstNull(boundary.getInvokedBy(), boundary.getInvokedBy().getClass().getName());
 		Guard.AgainstNull(boundary.getTargetObject(), boundary.getTargetObject().getClass().getName());
-		Guard.AgainstNull(boundary.getCommandId().getMiniapp(), boundary.getCommandId().getMiniapp().getClass().getName());
+		Guard.AgainstNull(miniAppName, miniAppName);
 
 		CommandId commandId = new CommandId(
 				configProperties.getSuperAppName(),
-				boundary.getCommandId().getMiniapp(),
+				miniAppName,
 				idGenerator.GenerateUUID().toString());
 		
 		MiniAppCommandEntity commandEntity = converter.toEntity(boundary,commandId);

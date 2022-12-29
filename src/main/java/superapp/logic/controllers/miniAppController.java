@@ -35,7 +35,7 @@ public class miniAppController {
 				String userEmail) {
 			//TODO: Validate that the user is MINIAPP_USER 
 			//		and the target object is exist in the database
-			return this.MiniAppCommand.invokeCommand(boundary);
+			return this.MiniAppCommand.invokeCommand(miniAppName, boundary);
 		}
 	
 	

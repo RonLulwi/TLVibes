@@ -3,6 +3,7 @@ package superapp;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import javax.annotation.PostConstruct;
 
@@ -80,14 +81,14 @@ public class ObjectControllerTests {
 			
 			NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
 			
-			var createUserResponse  = this.restTemplate
-					.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
+			this.restTemplate
+					.postForObject(this.baseUrl + helper.userPrefix, userBoundary, UserBoundary.class);	
 
 			String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
 			
 			ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
 			
-			var response = this.restTemplate.postForObject(this.url, boundary, ObjectBoundary.class);
+			var response = this.restTemplate.postForObject(this.baseUrl + helper.objectPrefix , boundary, ObjectBoundary.class);
 			
 			assertEquals(boundary.getActive(),response.getActive());
 			assertEquals(boundary.getAlias(),response.getAlias());
@@ -96,6 +97,22 @@ public class ObjectControllerTests {
 			assertNotEquals(boundary.getObjectId().getSuperapp(),response.getObjectId().getSuperapp());
 			assertNotEquals(boundary.getObjectId().getInternalObjectId(),response.getObjectId().getInternalObjectId());
 			assertThat(response.getCreationTimestamp().after(boundary.getCreationTimestamp()));
+
+		}
+		
+		@Test
+		public void testCreateSuperAppObjectCreatedByUserNotExistThrows() throws JsonMappingException, JsonProcessingException
+		{			
+			String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+			
+			ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+			
+		    Exception exception = assertThrows(Exception.class, () -> {
+				this.restTemplate
+					.postForObject(this.baseUrl + helper.objectPrefix , boundary, ObjectBoundary.class);
+		    });
+
+			assertThat(exception.getMessage().contains("\"status\":400"));
 
 		}
 				
