@@ -8,10 +8,7 @@ import java.util.Objects;
 import javax.persistence.Convert;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -43,9 +40,7 @@ public class MiniAppCommandEntity {
 		this.invokedBy = new HashMap<>();
 		this.targetObject = new HashMap<>();
 	}
-	
-	public void invoke() {};
-	
+		
 	public String getCommand() {
 		return command;
 	}

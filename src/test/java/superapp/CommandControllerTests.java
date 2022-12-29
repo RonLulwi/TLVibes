@@ -5,6 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.security.InvalidParameterException;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -141,8 +145,88 @@ public class CommandControllerTests {
 		targetObject.put("targetObject", createObjectResponse.getObjectId());
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
+				
+		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.000+0000");
+
+		commandboundary.setCommand("objectTimeTravel");
 		
-		commandAttributes.put("creationTimeStamp", Instant.now().minus(2,ChronoUnit.DAYS));
+		commandboundary.setTargetObject(targetObject);
+		
+		commandboundary.setInvokedBy(createdBy);
+		
+		commandboundary.setCommandAttributes(commandAttributes);
+
+		Date beforeInvoking = createObjectResponse.getCreationTimestamp();
+		
+		var commandResponse  = this.restTemplate
+				.postForObject(this.url, commandboundary, MiniAppCommandBoundary.class);
+
+		var getObjectByIdResponse  = this.restTemplate
+				.getForObject(
+						this.baseUrl + 
+						this.objectPrefix + 
+						createObjectResponse.getObjectId().getSuperapp() + "/" +
+						createObjectResponse.getObjectId().getInternalObjectId()
+						, ObjectBoundary.class);
+
+		
+		Date afterInvoking = getObjectByIdResponse.getCreationTimestamp();
+
+		String newTimeStamp = commandboundary.getCommandAttributes().get("creationTimestamp").toString();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+		Date expectedData;
+		
+		try {
+			expectedData = sdf.parse(newTimeStamp);
+		} catch (ParseException e) {
+			throw new InvalidParameterException(newTimeStamp);
+		}
+
+
+		assertEquals(afterInvoking,expectedData);
+		assertNotEquals(afterInvoking,beforeInvoking);
+
+
+	}
+
+	@Test
+	public void InvokeEchoCommand_returnCommandEntity() throws JsonMappingException, JsonProcessingException
+	{
+		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
+		
+		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+		
+		var createUserResponse  = this.restTemplate
+				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
+		
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+		
+		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+
+		Map<String,UserId> createdBy = new HashMap<>();
+		
+		createdBy.put("createdBy", createUserResponse.getUserId());
+		
+		objectboundary.setCreatedBy(createdBy);
+		
+		var createObjectResponse  = this.restTemplate
+				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+
+		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
+		
+		MiniAppCommandBoundary commandboundary = 
+				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		
+		
+		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
+		
+		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		
+		Map<String,Object> commandAttributes = new HashMap<>();
+		
+		commandAttributes.put("echo", Instant.now().minus(2,ChronoUnit.DAYS));
 
 		commandboundary.setTargetObject(targetObject);
 		
@@ -169,7 +253,24 @@ public class CommandControllerTests {
 		assertThat(afterInvoking.before(beforeInvoking));
 
 	}
+	
+	@Test 
+	public void testDateAsStringToDateObjectConvert()
+	{
+		String dateAsString = "1985-10-26T01:22:00.000+0000";
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
+		Date date = null;
+		try {
+			date = sdf.parse(dateAsString);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		assertNotNull(date);
+	}
 	
 
 }
