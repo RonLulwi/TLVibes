@@ -3,7 +3,7 @@ package superapp.logic.convertes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import superapp.data.entities.UserEntity;
+import superapp.data.UserEntity;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.EmailValidator;

@@ -15,7 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
-import superapp.data.enums.Role;
+import superapp.data.UserRole;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
@@ -174,7 +174,7 @@ public class UserControllerTests {
 		newUser.setUsername("testUserName");
 		newUser.setEmail("testUser@gmail.com");
 		newUser.setAvatar("testAvatar");
-		newUser.setRole(Role.ADMIN);
+		newUser.setRole(UserRole.ADMIN);
 		return newUser;
 	}
 

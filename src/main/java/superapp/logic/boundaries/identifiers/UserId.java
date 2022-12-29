@@ -4,16 +4,11 @@ package superapp.logic.boundaries.identifiers;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-
-//@Entity
 public class UserId implements Serializable{
     private static final long serialVersionUID = 1L;
 
-	/*@Id*/ private String email;
-    /*@Id*/ private String superapp;
+	private String email;
+    private String superapp;
 	
 	public UserId() {
 	}
@@ -42,7 +37,7 @@ public class UserId implements Serializable{
 
 	@Override
 	public String toString() {
-		return "UserId [superApp=" + superapp + ", email=" + email + "]";
+		return "userId [superApp=" + superapp + ", email=" + email + "]";
 	}
 
 	@Override

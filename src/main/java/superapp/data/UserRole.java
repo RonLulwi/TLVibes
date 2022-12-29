@@ -1,16 +1,16 @@
-package superapp.data.enums;
+package superapp.data;
 
-public enum Role {
+public enum UserRole {
 	MINIAPP_USER,
 	SUPERAPP_USER,
 	ADMIN,
 	;
 
-	public static void ValidateEnumThrowsIfNotExists(Role role) {
+	public static void ValidateEnumThrowsIfNotExists(UserRole role) {
 		
 		boolean isExist = false;
 		
-	    for (Role r : Role.values()) {
+	    for (UserRole r : UserRole.values()) {
 	        if (r.name().equals(role.toString())) {
 	        	isExist =  true;
 	        	break;

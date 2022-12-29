@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import superapp.logic.EnhancedMiniAppCommandsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.interfaces.EnhancedMiniAppCommandsService;
 
 @RestController
 public class miniAppController {
@@ -35,7 +35,7 @@ public class miniAppController {
 				String userEmail) {
 			//TODO: Validate that the user is MINIAPP_USER 
 			//		and the target object is exist in the database
-			return this.MiniAppCommand.invokeCommand(boundary);
+			return this.MiniAppCommand.invokeCommand(miniAppName, boundary);
 		}
 	
 	

@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import superapp.data.enums.CreationEnum;
+import superapp.logic.EnhancedObjectsService;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import superapp.logic.interfaces.EnhancedObjectsService;
 
 @RestController
 public class ObjectController {

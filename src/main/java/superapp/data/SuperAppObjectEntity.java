@@ -1,13 +1,11 @@
-package superapp.data.entities;
+package superapp.data;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -149,13 +147,9 @@ public class SuperAppObjectEntity {
 		this.parent = parent;
 	}
 
-	@Override
-	public String toString() {
-		return "SuperAppObjectEntity [objectId=" + objectId + ", type=" + type + ", alias=" + alias + ", active="
-				+ active + ", creationTimestamp=" + creationTimestamp + ", createdBy=" + createdBy + ", objectDetails="
-				+ objectDetails + "]";
-	}
+	
 
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(objectId);
@@ -172,7 +166,15 @@ public class SuperAppObjectEntity {
 		SuperAppObjectEntity other = (SuperAppObjectEntity) obj;
 		return Objects.equals(objectId, other.objectId);
 	}
-	
+
+	@Override
+	public String toString() {
+		return "SuperAppObjectEntity [objectId=" + objectId + ", type=" + type + ", alias=" + alias + ", active="
+				+ active + ", creationTimestamp=" + creationTimestamp + ", createdBy=" + createdBy + ", objectDetails="
+				+ objectDetails + "]";
+	}
+
+
 	
 
 	

@@ -2,7 +2,7 @@ package superapp.logic.convertes;
 
 import org.springframework.stereotype.Component;
 
-import superapp.data.entities.MiniAppCommandEntity;
+import superapp.data.MiniAppCommandEntity;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.identifiers.CommandId;
 

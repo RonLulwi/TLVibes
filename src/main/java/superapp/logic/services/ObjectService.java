@@ -14,12 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.transaction.annotation.Transactional;
-import superapp.data.entities.SuperAppObjectEntity;
-import superapp.data.entities.UserEntity;
+
+import superapp.data.SuperAppObjectEntity;
+import superapp.data.UserRole;
 import superapp.data.enums.CreationEnum;
-import superapp.data.enums.Role;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
+import superapp.logic.EnhancedObjectsService;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
@@ -28,7 +29,6 @@ import superapp.logic.infrastructure.ConfigProperties;
 import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
 import superapp.logic.infrastructure.IdGenerator;
-import superapp.logic.interfaces.EnhancedObjectsService;
 
 @Service
 public class ObjectService implements EnhancedObjectsService {
@@ -65,7 +65,7 @@ public class ObjectService implements EnhancedObjectsService {
 		if (this.userRepository.findById(userId)
 			.orElseThrow(() -> 
 			new EntityNotFoundException("Could not find user with id : " + userId))
-			.getRole() != Role.SUPERAPP_USER)
+			.getRole() != UserRole.SUPERAPP_USER)
 		{
 			throw new UnAuthoriezedRoleRequestException("Only SuperApp User can create objects");
 		}
@@ -240,42 +240,6 @@ public class ObjectService implements EnhancedObjectsService {
 	}
 
 	
-	private HashSet<SuperAppObjectEntity> getRecursiveChildrens(Set<SuperAppObjectIdBoundary> childrenIds, UserEntity userEntity) {
-		
-		if(childrenIds == null || childrenIds.size() == 0)
-			return new HashSet<SuperAppObjectEntity>();
-		
-		var childrensAsEntity = new HashSet<SuperAppObjectEntity>();
-		
-		for(var childId : childrenIds)
-		{
-			Optional<SuperAppObjectEntity> optionalEntity = objectsRepository.findById(childId);
-			
-			if(optionalEntity.isEmpty())
-			{
-				throw new RuntimeException("Cannot find SuperAppObject with id " + childId); 
-			}
-						
-			childrensAsEntity.add(optionalEntity.get());
-		}
-		
-		return childrensAsEntity;
-	}
-	
-//	private Set<ObjectBoundary> getEntityChildrens(SuperAppObjectEntity entity,int page, int size) {
-//		
-//		if(entity== null || entity.getChildrens() == null || entity.getChildrens().isEmpty())
-//		{
-//			return new HashSet<ObjectBoundary>();
-//		}
-//		
-//		
-//		Set<SuperAppObjectIdBoundary> childrensAsBoundary = entity.getChildrens().stream()
-//				.map(child -> child.getObjectId())
-//				.collect(Collectors.toSet());
-//		return childrensAsBoundary;
-//	}
-
 	private void validateObjectBoundary(ObjectBoundary objWithoutId) throws NoSuchFieldException, SecurityException {
 		Map<String, Object> request = Map.of(objWithoutId.getClass().getName() ,objWithoutId,
 				objWithoutId.getClass().getDeclaredField("createdBy").toString(),objWithoutId.getCreatedBy(),
@@ -305,7 +269,7 @@ public class ObjectService implements EnhancedObjectsService {
 		if (this.userRepository.findById(userId)
 			.orElseThrow(() -> 
 			new EntityNotFoundException("Could not find user with id : " + userId))
-			.getRole() != Role.SUPERAPP_USER)
+			.getRole() != UserRole.SUPERAPP_USER)
 		{
 			throw new UnAuthoriezedRoleRequestException("Only SuperApp User can update objects");
 		}

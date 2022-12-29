@@ -1,4 +1,4 @@
-package superapp.logic.interfaces;
+package superapp.logic;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 
 public interface MiniAppCommandsService {
 	
-	public Object invokeCommand(MiniAppCommandBoundary command);
+	public Object invokeCommand(String miniAppName, MiniAppCommandBoundary command);
 	
 	@Deprecated
 	public List<MiniAppCommandBoundary> getAllCommands();

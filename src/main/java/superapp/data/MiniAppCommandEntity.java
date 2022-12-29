@@ -1,4 +1,4 @@
-package superapp.data.entities;
+package superapp.data;
 
 import java.util.Date;
 import java.util.HashMap;
