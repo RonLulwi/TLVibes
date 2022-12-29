@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
-import javax.persistence.ElementCollection;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,7 +17,6 @@ import javax.persistence.JoinColumns;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -107,10 +105,7 @@ public class SuperAppObjectEntity {
 	}
 
 	public void setCreationTimestamp(Date creationTimestamp) {
-		if(this.creationTimestamp == null) {
-			this.creationTimestamp = creationTimestamp;
-		}
-		
+		this.creationTimestamp = creationTimestamp;	
 	}
 
 	public Map<String,UserId> getCreatedBy() {

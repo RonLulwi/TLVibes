@@ -53,11 +53,11 @@ public class UserService implements UsersService {
 		
 		UserId userId = new UserId(configProperties.getSuperAppName(), user.getEmail());
 		
-		UserEntity entity = convertor.UserBoundaryToEntity(boundary,userId);
+		UserEntity entity = convertor.toEntity(boundary,userId);
 				
 		var response = UsersRepository.save(entity);
 		
-		return convertor.UserEntityToBoundary(response);
+		return convertor.toBoundary(response);
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class UserService implements UsersService {
 
 		UserEntity retrivedEntiry = GetUserEntityById(new UserId(userSuperApp,userEmail));
 		
-		return convertor.UserEntityToBoundary(retrivedEntiry);
+		return convertor.toBoundary(retrivedEntiry);
 	}
 
 	@Override
@@ -83,11 +83,11 @@ public class UserService implements UsersService {
 			throw new RuntimeException("Could not find user with id : " + update.getUserId());
 		}
 		
-		UserEntity updateAsEntity = convertor.UserBoundaryToEntity(update,update.getUserId());
+		UserEntity updateAsEntity = convertor.toEntity(update,update.getUserId());
 		
 		UserEntity returned = UsersRepository.save(updateAsEntity);
 
-		return convertor.UserEntityToBoundary(returned);
+		return convertor.toBoundary(returned);
 	}
 
 
@@ -96,7 +96,7 @@ public class UserService implements UsersService {
 	public List<UserBoundary> getAllUsers() {
 		return StreamSupport
 				.stream(this.UsersRepository.findAll().spliterator(), false)
-				.map(this.convertor::UserEntityToBoundary)
+				.map(this.convertor::toBoundary)
 				.collect(Collectors.toList());
 	}
 

@@ -1,14 +1,12 @@
 package superapp.logic.convertes;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 import superapp.data.entities.SuperAppObjectEntity;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
-import superapp.logic.boundaries.identifiers.UserId;
 
 @Component
 public class ObjectConvertor {
