@@ -14,10 +14,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
@@ -28,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.support.BeanDefinitionDsl.Role;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +39,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import superapp.data.MiniAppCommandEntity;
+import superapp.data.UserRole;
 import superapp.data.interfaces.MiniAppCommandRepository;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
@@ -329,6 +334,76 @@ public class CommandControllerTests {
 		Date afterInvoking = getObjectByIdResponse.getCreationTimestamp();
 
 		assertThat(afterInvoking.before(beforeInvoking));
+	}
+	
+	@Test
+	public void InvokeEchoCommand20TimesHappyFlow() throws JsonMappingException, JsonProcessingException
+	{
+		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
+		
+		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+				
+		var createUserResponse  = this.restTemplate
+				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
+		
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+		
+		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+
+		Map<String,UserId> createdBy = new HashMap<>();
+		
+		createdBy.put("userId", createUserResponse.getUserId());
+		
+		objectboundary.setCreatedBy(createdBy);
+		
+		var createObjectResponse  = this.restTemplate
+				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+
+		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
+		
+		MiniAppCommandBoundary commandboundary = 
+				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		
+		
+		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
+		
+		targetObject.put("targetObject", createObjectResponse.getObjectId());
+
+		commandboundary.setTargetObject(targetObject);
+		
+		commandboundary.setInvokedBy(createdBy);
+		
+		commandboundary.setCommand("echo");
+		
+		List<String> expected = new ArrayList<String>();
+		
+		IntStream.range(0, 20).forEach(i ->{
+			
+			Map<String,Object> commandAttributes = new HashMap<>();
+			
+			commandAttributes.put("echo", "Message " + i);
+
+			expected.add("Message " + i);
+			
+			commandboundary.setCommandAttributes(commandAttributes);
+
+			this.restTemplate
+			.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandboundary, String.class);
+		});
+		
+		var response = this.restTemplate
+				.getForObject(this.baseUrl + "/superapp/miniapp/getAllCommandsOf/" +
+					configProperties.getSuperAppName() +
+					"?size=20&userSuperapp=" + configProperties.getSuperAppName() +
+					"&userEmail=" + userBoundary.getEmail(),
+					MiniAppCommandBoundary[].class);
+
+
+		assertEquals(20,response.length);
+		
+		IntStream.range(0, 20).forEach(i ->{
+		    assertTrue(expected.contains(response[i].getCommandAttributes().get("echo")));
+		});
 	}
 	
 	@Test
