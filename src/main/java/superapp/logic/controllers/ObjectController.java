@@ -27,6 +27,62 @@ public class ObjectController {
 	public void setObjectService(EnhancedObjectsService enhancedObjectsService) {
 		this.enhancedObjectsService = enhancedObjectsService;
 	}
+	
+	
+	@RequestMapping(
+			method = RequestMethod.GET,
+			path = "/superapp/objects/search/byType/{type}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ObjectBoundary[] searchObjectsByType (
+			@PathVariable("type") String type,
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+			String userSuperApp, 
+			@RequestParam(name = "userEmail", required = false, defaultValue = "")
+			String userEmail,
+			@RequestParam(name = "page", required = false, defaultValue = "0") 
+			int page, 
+			@RequestParam(name = "size", required = false, defaultValue = "10")
+			int size){
+		return this.enhancedObjectsService.getAllObjectsByType(type, userSuperApp,userEmail,page,size)
+				.toArray(new ObjectBoundary[0]);
+	}
+	
+	
+	@RequestMapping(
+			method = RequestMethod.GET,
+			path = "/superapp/objects/search/byAlias/{alias}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ObjectBoundary[] searchObjectsByAlias(
+			@PathVariable("alias") String alias,
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+			String userSuperApp, 
+			@RequestParam(name = "userEmail", required = false, defaultValue = "")
+			String userEmail,
+			@RequestParam(name = "page", required = false, defaultValue = "0") 
+			int page, 
+			@RequestParam(name = "size", required = false, defaultValue = "10")
+			int size){
+		return this.enhancedObjectsService.getAllObjectsByAlias(alias, userSuperApp,userEmail,page,size)
+				.toArray(new ObjectBoundary[0]);
+	}
+	
+	@RequestMapping(
+			method = RequestMethod.GET,
+			path = "/superapp/objects/search/byAliasContaining/{text}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ObjectBoundary[] searchObjectsByAliasContainingText(
+			@PathVariable("text") String text,
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+			String userSuperApp, 
+			@RequestParam(name = "userEmail", required = false, defaultValue = "")
+			String userEmail,
+			@RequestParam(name = "page", required = false, defaultValue = "0") 
+			int page, 
+			@RequestParam(name = "size", required = false, defaultValue = "10")
+			int size){
+		return this.enhancedObjectsService.getAllObjectsByAliasContainingText(text, userSuperApp,userEmail,page,size)
+				.toArray(new ObjectBoundary[0]);
+	}
 
 	@RequestMapping(
 			method = RequestMethod.GET,

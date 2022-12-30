@@ -17,5 +17,16 @@ public interface SuperAppObjectRepository extends
 	
 
 	List<SuperAppObjectEntity> findAllByParent(SuperAppObjectEntity parent, Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByType(String type, Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByTypeAndActive(String type,boolean active, Pageable page);
     
+	List<SuperAppObjectEntity> findAllByAlias(String alias, Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByAliasAndActive(String alias,boolean active, Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByAliasContaining(String text, Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByAliasContainingAndActive(String text,boolean active , Pageable page);
 }	
