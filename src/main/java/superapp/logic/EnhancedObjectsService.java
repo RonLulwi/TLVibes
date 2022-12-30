@@ -21,4 +21,11 @@ public interface EnhancedObjectsService extends ObjectsService {
 	
 	List<ObjectBoundary> getAllObjects(int page, int size);
 
+	List<ObjectBoundary> getAllObjectsByType(String type, String userSuperApp, String userEmail, int page, int size);
+
+	List<ObjectBoundary> getAllObjectsByAlias(String alias, String userSuperApp, String userEmail, int page, int size);
+
+	List<ObjectBoundary> getAllObjectsByAliasContainingText(String text, String userSuperApp, String userEmail,
+			int page, int size);
+
 }
