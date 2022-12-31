@@ -1,6 +1,7 @@
 package superapp.logic.services;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -56,17 +57,14 @@ public class ObjectService implements EnhancedObjectsService {
 	@Transactional
 	public ObjectBoundary createObject(ObjectBoundary objWithoutId) {
 
-		try {
-			validateObjectBoundary(objWithoutId);
-		} catch (Exception e) {
-			throw new RuntimeException("Invalid ObjectBoundary", e);
-		}
+		validateObjectBoundary(objWithoutId);
 
 		UserId userId = objWithoutId.getCreatedBy().get("userId");
-		if (this.userRepository.findById(userId)
-				.orElseThrow(() -> 
-				new EntityNotFoundException("Could not find user with id : " + userId))
-				.getRole() != UserRole.SUPERAPP_USER)
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId); 
+		if(userEntity == null) {
+			throw new EntityNotFoundException("Could not find user with id : " + userId);
+		}
+		if(userEntity.get().getRole() != UserRole.SUPERAPP_USER)
 		{
 			throw new UnAuthoriezedRoleRequestException("Only SuperApp User can create objects");
 		}
@@ -241,13 +239,18 @@ public class ObjectService implements EnhancedObjectsService {
 	}
 
 
-	private void validateObjectBoundary(ObjectBoundary objWithoutId) throws NoSuchFieldException, SecurityException {
-		Map<String, Object> request = Map.of(objWithoutId.getClass().getName() ,objWithoutId,
-				objWithoutId.getClass().getDeclaredField("createdBy").toString(),objWithoutId.getCreatedBy(),
-				objWithoutId.getClass().getDeclaredField("active").toString(),objWithoutId.getActive(),
-				objWithoutId.getClass().getDeclaredField("type").toString(),objWithoutId.getType(),
-				objWithoutId.getClass().getDeclaredField("alias").toString(),objWithoutId.getAlias()
-				);
+	private void validateObjectBoundary(ObjectBoundary objWithoutId) throws RuntimeException {
+		Map<String, Object> request;
+		try {
+			request = Map.of(objWithoutId.getClass().getName() ,objWithoutId,
+					objWithoutId.getClass().getDeclaredField("createdBy").toString(),objWithoutId.getCreatedBy(),
+					objWithoutId.getClass().getDeclaredField("active").toString(),objWithoutId.getActive(),
+					objWithoutId.getClass().getDeclaredField("type").toString(),objWithoutId.getType(),
+					objWithoutId.getClass().getDeclaredField("alias").toString(),objWithoutId.getAlias()
+					);
+		} catch (NoSuchFieldException | SecurityException e) {
+			throw new RuntimeException(e);
+		}
 
 		Guard.AgainstNullRequest(request);
 	}
@@ -258,6 +261,8 @@ public class ObjectService implements EnhancedObjectsService {
 			String userSuperApp, String userEmail) {
 		Guard.AgainstNull(objectSuperApp, objectSuperApp);
 		Guard.AgainstNull(internalObjectId, internalObjectId);
+		Guard.AgainstNull(userSuperApp, userSuperApp);
+		Guard.AgainstNull(userEmail, userEmail);
 		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
 		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
 
@@ -266,21 +271,21 @@ public class ObjectService implements EnhancedObjectsService {
 			throw new EntityNotFoundException("Could not find object with id : " + objectId);
 		}
 
-		UserId userId = objectBoundary.getCreatedBy().get("userId");
-		if (this.userRepository.findById(userId)
-				.orElseThrow(() -> 
-				new EntityNotFoundException("Could not find user with id : " + userId))
-				.getRole() != UserRole.SUPERAPP_USER)
+		UserId userId = new UserId(userSuperApp,userEmail);
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId); 
+		if(userEntity == null) {
+			throw new EntityNotFoundException("Could not find user with id : " + userId);
+		}
+		if(userEntity.get().getRole() != UserRole.SUPERAPP_USER)
 		{
 			throw new UnAuthoriezedRoleRequestException("Only SuperApp User can update objects");
 		}
-
+		
 
 		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectId);
-
-		//TODO: how to set createdBy without changes
-
-
+		var oldUserId = new HashMap<String, UserId>();
+		oldUserId.put("userId", userId);
+		EntityUpdate.setCreatedBy(oldUserId);
 
 		SuperAppObjectEntity returned = this.objectsRepository.save(EntityUpdate);
 
