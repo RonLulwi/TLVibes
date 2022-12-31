@@ -13,7 +13,9 @@ public interface ObjectsService {
 	@Deprecated
 	public ObjectBoundary updateObject(String objectSuperApp,String internalObjectId, ObjectBoundary objectBoundary);
 	
+	@Deprecated
 	public ObjectBoundary getSpecificObject(String objectSuperApp,String internalObjectId);
+	
 	@Deprecated
 	public List<ObjectBoundary> getAllObjects();
 	

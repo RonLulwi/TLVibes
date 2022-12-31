@@ -95,7 +95,7 @@ public class ObjectController {
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail){
-		return this.enhancedObjectsService.getSpecificObject(superapp, InternalObjectId);
+		return this.enhancedObjectsService.getSpecificObject(userSuperApp, userEmail, superapp, InternalObjectId);
 	}
 
 
@@ -113,7 +113,7 @@ public class ObjectController {
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size){
 		//return this.enhancedObjectsService.getAllObjects();
-		return this.enhancedObjectsService.getAllObjects(page, size);
+		return this.enhancedObjectsService.getAllObjects(userSuperApp, userEmail, page, size);
 	}
 
 
@@ -178,7 +178,7 @@ public class ObjectController {
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.getAllChildrens(superapp, InternalObjectId, page, size)
+			return this.enhancedObjectsService.getAllChildrens(userSuperApp, userEmail, superapp, InternalObjectId, page, size)
 					.toArray(new ObjectBoundary[0]);
 		}
 		
@@ -197,7 +197,7 @@ public class ObjectController {
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.getParent(superapp, InternalObjectId,page,size)
+			return this.enhancedObjectsService.getParent(userSuperApp, userEmail, superapp, InternalObjectId,page,size)
 					.toArray(new ObjectBoundary[0]);
 		}
 		

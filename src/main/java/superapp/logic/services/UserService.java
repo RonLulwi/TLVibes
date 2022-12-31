@@ -165,7 +165,7 @@ public class UserService implements EnhancedUsersService {
 			throw new RuntimeException("could not find superAppObject with id : " + objectId.toString());
 		
 		
-		 if(optional.get().getActive())
+		 if(!optional.get().getActive())
 			 throw new MissingCommandOnPostRequestException("Target object is not Active");
 		
 	}

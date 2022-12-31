@@ -65,7 +65,7 @@ public class ObjectService implements EnhancedObjectsService {
 
 		UserBoundary user = userService.login(userSuperApp, userEmail);
 		if(user.getRole() != UserRole.SUPERAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+			throw new UnAuthoriezedRoleRequestException("Only SUPERAPP_APP has permission!");
 		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
 				configProperties.getSuperAppName(),
 				idGenerator.GenerateUUID().toString());
@@ -92,24 +92,44 @@ public class ObjectService implements EnhancedObjectsService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {	
+	public ObjectBoundary getSpecificObject(String userSuperApp, String userEmail, String objectSuperApp, String internalObjectId) {	
 
+		
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		
+		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
+		else if(user.getRole() == UserRole.MINIAPP_USER)
+			userService.validateObjectActive(objectSuperApp, internalObjectId, objectsRepository, convertor);
+			
 		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
-
+		
 		Optional<SuperAppObjectEntity> optional = this.objectsRepository.findById(objectId);
-
+		
 		if(optional.isEmpty())
-		{
 			throw new RuntimeException("could not find superAppObject with id : " + objectId.toString());
-		}
 
 		return convertor.toBoundary(optional.get());
 
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public ObjectBoundary getSpecificObject(String objectSuperApp, String internalObjectId) {	
+		throw new DeprecatedFunctionException("Unsupported paging getSpecificObject function is deprecated ");
+	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ObjectBoundary> getAllObjects(int page, int size) {
+	public List<ObjectBoundary> getAllObjects(String userSuperApp, String userEmail, int page, int size) {
+		
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
+		//TODO retrieve only ACTIVE objects for MINIAPP_USER case
+		
+		
+		
 		return this.objectsRepository
 				.findAll(PageRequest.of(page, size, Direction.DESC,  "objectId"))
 				.stream()
@@ -178,7 +198,13 @@ public class ObjectService implements EnhancedObjectsService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ObjectBoundary> getAllChildrens(String superApp, String internalId, int page, int size) {
+	public List<ObjectBoundary> getAllChildrens(String userSuperApp, String userEmail, String superApp, String internalId, int page, int size) {
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
+		
+		//TODO retrieve only ACTIVE objects for MINIAPP_USER case
+
 
 		Guard.AgainstNull(superApp, superApp);
 		Guard.AgainstNull(internalId, internalId);
@@ -201,10 +227,13 @@ public class ObjectService implements EnhancedObjectsService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Set<SuperAppObjectIdBoundary> getParent(String superApp, String internalId,int page,int size) {
-		Guard.AgainstNull(superApp, superApp);
-		Guard.AgainstNull(internalId, internalId);
-
+	public Set<SuperAppObjectIdBoundary> getParent(String userSuperApp, String userEmail, String superApp, String internalId,int page,int size) {
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
+		
+		//TODO retrieve only ACTIVE objects for MINIAPP_USER case
+		
 		var entityId = new SuperAppObjectIdBoundary(superApp,internalId);
 
 		Optional<SuperAppObjectEntity> optionalParentEntity =  this.objectsRepository.findById(entityId);
@@ -287,8 +316,7 @@ public class ObjectService implements EnhancedObjectsService {
 
 
 	@Override
-	public List<ObjectBoundary> getAllObjectsByType(String type, String userSuperApp, String userEmail, int page,
-			int size) {
+	public List<ObjectBoundary> getAllObjectsByType(String type, String userSuperApp, String userEmail, int page, int size) {
 
 		//USER_SUPERAPP , MINI_APPUSER - only active
 		Guard.AgainstNull(type, type);
@@ -321,8 +349,7 @@ public class ObjectService implements EnhancedObjectsService {
 	}
 
 	@Override
-	public List<ObjectBoundary> getAllObjectsByAlias(String alias, String userSuperApp, String userEmail, int page,
-			int size) {
+	public List<ObjectBoundary> getAllObjectsByAlias(String alias, String userSuperApp, String userEmail, int page, int size) {
 		
 		Guard.AgainstNull(alias, alias);
 		Guard.AgainstNull(userSuperApp, userSuperApp);
@@ -354,8 +381,7 @@ public class ObjectService implements EnhancedObjectsService {
 
 
 	@Override
-	public List<ObjectBoundary> getAllObjectsByAliasContainingText(String text, String userSuperApp, String userEmail,
-			int page, int size) {
+	public List<ObjectBoundary> getAllObjectsByAliasContainingText(String text, String userSuperApp, String userEmail, int page, int size) {
 		
 		Guard.AgainstNull(text, text);
 		Guard.AgainstNull(userSuperApp, userSuperApp);

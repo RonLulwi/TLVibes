@@ -19,6 +19,7 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.CommandId;
 import superapp.logic.convertes.MiniAppCommandsConverter;
+import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
 import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
@@ -34,25 +35,30 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	private IdGenerator idGenerator;
 	private CommandFactory commandFactory;
 	private UserService userService;
+	private SuperAppObjectRepository superAppObjectRepositoy;
+	private ObjectConvertor objectConvertor;
 
 	@Autowired
-	public MiniAppCommandService(MiniAppCommandsConverter converter,
-			ConfigProperties configProperties,IdGenerator idGenerator,
-			UserService userService, 
-			SuperAppObjectRepository superAppObjectRepositoy,
-			MiniAppCommandRepository commandRepository,
-			CommandFactory commandFactory) {
+	public MiniAppCommandService(MiniAppCommandsConverter converter, ConfigProperties configProperties,IdGenerator idGenerator,
+			UserService userService, ObjectConvertor objectConvertor, SuperAppObjectRepository superAppObjectRepositoy,MiniAppCommandRepository commandRepository,CommandFactory commandFactory) {
 		this.converter = converter;
 		this.commandRepository = commandRepository;
 		this.idGenerator = idGenerator;
 		this.configProperties = configProperties;
 		this.commandFactory = commandFactory;
 		this.userService = userService;
+		this.objectConvertor = objectConvertor;
 	}
 
 	@Override
 	@Transactional()
 	public Object invokeCommand(String miniAppName, MiniAppCommandBoundary boundary) {
+		throw new DeprecatedFunctionException("Unsupported paging invokeCommand function is deprecated ");
+	}
+	
+	@Override
+	@Transactional()
+	public Object invokeCommand(String userSuperApp, String userEmail, String miniAppName, MiniAppCommandBoundary boundary) {
 		
 		Guard.AgainstNull(boundary, boundary.getClass().getName());
 		try {
@@ -64,13 +70,19 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		Guard.AgainstNull(boundary.getInvokedBy(), boundary.getInvokedBy().getClass().getName());
 		Guard.AgainstNull(boundary.getTargetObject(), boundary.getTargetObject().getClass().getName());
 		Guard.AgainstNull(miniAppName, miniAppName);
-
+		
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.MINIAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		userService.validateObjectActive(userSuperApp, miniAppName, this.superAppObjectRepositoy, this.objectConvertor);
+		
 		CommandId commandId = new CommandId(
 				configProperties.getSuperAppName(),
 				miniAppName,
 				idGenerator.GenerateUUID().toString());
 		
 		MiniAppCommandEntity commandEntity = converter.toEntity(boundary,commandId);
+		
 		
 		var invokableCommand = commandFactory.GetCommand(commandEntity.getCommand());
 		
