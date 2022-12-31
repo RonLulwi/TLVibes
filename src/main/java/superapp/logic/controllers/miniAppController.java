@@ -52,9 +52,8 @@ public class miniAppController {
 				int size, 
 				@RequestParam(name = "page", required = false, defaultValue = "0") 
 				int page) {
-		//TODO: Validate that the user is ADMIN
 			return this.MiniAppCommand
-					.getAllCommands(size, page)
+					.getAllCommands(userSuperApp, userEmail, size, page)
 					.toArray(new MiniAppCommandBoundary[0]);
 		}
 	
@@ -72,9 +71,8 @@ public class miniAppController {
 				int size, 
 				@RequestParam(name = "page", required = false, defaultValue = "0") 
 				int page) {
-		//TODO: Validate that the user is ADMIN
 			return this.MiniAppCommand
-					.getAllMiniAppCommands(miniAppName, size, page)
+					.getAllMiniAppCommands(userSuperApp, userEmail, miniAppName, size, page)
 					.toArray(new MiniAppCommandBoundary[0]);
 		}
 	
@@ -86,8 +84,7 @@ public class miniAppController {
 					String userSuperApp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 					String userEmail) {
-		//TODO: Validate that the user is ADMIN
-			this.MiniAppCommand.deleteAllCommands();
+			this.MiniAppCommand.deleteAllCommands(userSuperApp, userEmail);
 		}
 		
 //	@RequestMapping(

@@ -33,8 +33,7 @@ public class AdminController {
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
-	//TODO: Validate that the user is ADMIN
-		userService.deleteAllUsers();
+		userService.deleteAllUsers(userSuperApp, userEmail);
 	}
 	@RequestMapping(
 			path= {"/superapp/admin/objects"},
@@ -44,9 +43,7 @@ public class AdminController {
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
-	//TODO: Validate that the user is ADMIN
-
-		objectService.deleteAllObjects();
+		objectService.deleteAllObjects(userSuperApp, userEmail);
 	}
 	@RequestMapping(
 			path= {"/superapp/admin/miniapp"},
@@ -56,8 +53,7 @@ public class AdminController {
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
-	//TODO: Validate that the user is ADMIN
-		commandService.deleteAllCommands();
+		commandService.deleteAllCommands(userSuperApp, userEmail);
 	}
 
 	@RequestMapping(
@@ -74,8 +70,7 @@ public class AdminController {
 			int size, 
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page) {
-	//TODO: Validate that the user is ADMIN
-		return commandService.getAllMiniAppCommands(selectedAppname,size, page)
+		return commandService.getAllMiniAppCommands(userSuperApp, userEmail, selectedAppname,size, page)
 				.toArray(new MiniAppCommandBoundary[0]);
 	}
 
@@ -92,8 +87,7 @@ public class AdminController {
 			int size, 
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page) {
-	//TODO: Validate that the user is ADMIN
-		return commandService.getAllCommands(size,page)
+		return commandService.getAllCommands(userSuperApp, userEmail, size,page)
 				.toArray(new MiniAppCommandBoundary[0]);
 	}
 
@@ -110,8 +104,7 @@ public class AdminController {
 			int size, 
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page) { 
-	//TODO: Validate that the user is ADMIN
-		return userService.getAllUsers(size, page)
+		return userService.getAllUsers(userSuperApp, userEmail ,size, page)
 				.toArray(new UserBoundary[0]);
 	}
 

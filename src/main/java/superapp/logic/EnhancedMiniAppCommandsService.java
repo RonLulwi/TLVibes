@@ -6,8 +6,10 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 
 public interface EnhancedMiniAppCommandsService extends MiniAppCommandsService {
 	
-	public List<MiniAppCommandBoundary> getAllCommands(int size,int page);	
+	public List<MiniAppCommandBoundary> getAllCommands(String userSuperApp, String userEmail, int size,int page);	
 	
-	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName,int size,int page);
+	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String userSuperApp, String userEmail, String miniAppName,int size,int page);
+	
+	public void deleteAllCommands(String userSuperApp, String userEmail);
 
 }

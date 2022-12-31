@@ -6,6 +6,8 @@ import superapp.logic.boundaries.UserBoundary;
 
 public interface EnhancedUsersService extends UsersService {
 	
-	public List<UserBoundary> getAllUsers(int size,int page);
+	public List<UserBoundary> getAllUsers(String userSuperApp, String userEmail, int size,int page);
+	
+	void deleteAllUsers(String userSuperApp, String userEmail);
 
 }

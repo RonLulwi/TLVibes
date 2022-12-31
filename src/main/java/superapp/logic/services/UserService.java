@@ -5,18 +5,21 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.transaction.annotation.Transactional;
 
+import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserEntity;
 import superapp.data.UserRole;
+import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.EnhancedUsersService;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
+import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.convertes.UserConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
 import superapp.logic.infrastructure.DeprecatedFunctionException;
 import superapp.logic.infrastructure.Guard;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -27,14 +30,16 @@ public class UserService implements EnhancedUsersService {
 	
     private ConfigProperties configProperties;
     private UserConvertor convertor;
-	private UserEntityRepository UsersRepository;
+	private UserEntityRepository usersRepository;
+
 
 	@Autowired
 	public UserService(ConfigProperties configProperties,UserConvertor convertor,UserEntityRepository UsersRepository)
 	{
 		this.configProperties = configProperties;
 		this.convertor = convertor;
-		this.UsersRepository = UsersRepository;
+		this.usersRepository = UsersRepository;
+
 	}
 	
 	
@@ -56,7 +61,7 @@ public class UserService implements EnhancedUsersService {
 		
 		UserEntity entity = convertor.toEntity(boundary,userId);
 				
-		var response = UsersRepository.save(entity);
+		var response = usersRepository.save(entity);
 		
 		return convertor.toBoundary(response);
 	}
@@ -81,7 +86,7 @@ public class UserService implements EnhancedUsersService {
 		
 
 		UserEntity updateAsEntity = convertor.toEntity(update,
-				this.UsersRepository.
+				this.usersRepository.
 				findById(new UserId(userSuperApp,userEmail))
 				.orElseThrow(() -> 
 				new EntityNotFoundException("Could not find user with id : " + 
@@ -89,7 +94,7 @@ public class UserService implements EnhancedUsersService {
 				.getUserId()
 				);
 				
-		UserEntity returned = UsersRepository.save(updateAsEntity);
+		UserEntity returned = usersRepository.save(updateAsEntity);
 
 		return convertor.toBoundary(returned);
 	}
@@ -104,8 +109,13 @@ public class UserService implements EnhancedUsersService {
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<UserBoundary> getAllUsers(int size,int page) {
-		return this.UsersRepository
+	public List<UserBoundary> getAllUsers(String userSuperApp, String userEmail, int size,int page) {
+		
+		UserBoundary user = login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.ADMIN)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		
+		return this.usersRepository
 				.findAll(PageRequest.of(page, size, Direction.DESC, "email","superapp"))
 				.stream()
 				.map(this.convertor::toBoundary)
@@ -113,26 +123,51 @@ public class UserService implements EnhancedUsersService {
 	}
 	
 
+	
 	@Override
 	@Transactional
 	public void deleteAllUsers() {
-		if(UsersRepository.count() == 0) {
-			return;
-		}
-		
-		UsersRepository.deleteAll();
+		throw new DeprecatedFunctionException("Unsupported paging deleteAllUsers function is deprecated ");
 	}
 	
+	
 	private UserEntity GetUserEntityById(UserId id) {
-		Optional<UserEntity> op = UsersRepository.findById(id);
 		
-		if (op.isEmpty()) {
-			// TODO replace with exception that maps to HTTP Status 404 (not found)
+		Optional<UserEntity> op = usersRepository.findById(id);
+		if (op.isEmpty()) 
 			throw new RuntimeException("Could not find UserEntity by id: " + id);	
-		}
 		
 		return op.get();
 
+	}
+
+
+	@Override
+	public void deleteAllUsers(String userSuperApp, String userEmail) {
+		
+		UserBoundary user = login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.ADMIN)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		
+		usersRepository.deleteAll();
+		
+	}
+	
+	
+	@Transactional(readOnly = true)
+	public void validateObjectActive(String objectSuperApp, String internalObjectId, SuperAppObjectRepository objectsRepositoy, ObjectConvertor convertor) {	
+		Guard.AgainstNull(objectSuperApp, objectSuperApp);
+		Guard.AgainstNull(internalObjectId, internalObjectId);
+		
+		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
+		Optional<SuperAppObjectEntity> optional = objectsRepositoy.findById(objectId);
+		if(optional.isEmpty())
+			throw new RuntimeException("could not find superAppObject with id : " + objectId.toString());
+		
+		
+		 if(optional.get().getActive())
+			 throw new MissingCommandOnPostRequestException("Target object is not Active");
+		
 	}
 
 

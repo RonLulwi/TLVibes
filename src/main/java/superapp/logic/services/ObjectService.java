@@ -24,6 +24,7 @@ import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.EnhancedObjectsService;
 import superapp.logic.boundaries.ObjectBoundary;
+import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.ObjectConvertor;
@@ -40,35 +41,31 @@ public class ObjectService implements EnhancedObjectsService {
 	private IdGenerator idGenerator;
 	private SuperAppObjectRepository objectsRepository;
 	private UserEntityRepository userRepository;
+	private UserService userService;
 
 	@Autowired
 	public ObjectService(ObjectConvertor convertor,ConfigProperties configProperties,
-			IdGenerator idGenerator, SuperAppObjectRepository objectsRepository,
+			IdGenerator idGenerator, SuperAppObjectRepository objectsRepository,UserService userService,
 			UserEntityRepository userRepository) {
 		this.convertor = convertor;
 		this.configProperties = configProperties;
 		this.idGenerator = idGenerator;
 		this.objectsRepository = objectsRepository;
 		this.userRepository = userRepository;
+		this.userService = userService;
+
 	}
 
 
 	@Override
 	@Transactional
-	public ObjectBoundary createObject(ObjectBoundary objWithoutId) {
+	public ObjectBoundary createObject(String userSuperApp, String userEmail, ObjectBoundary objWithoutId) {
 
 		validateObjectBoundary(objWithoutId);
 
-		UserId userId = objWithoutId.getCreatedBy().get("userId");
-		Optional<UserEntity> userEntity = this.userRepository.findById(userId); 
-		if(userEntity == null) {
-			throw new EntityNotFoundException("Could not find user with id : " + userId);
-		}
-		if(userEntity.get().getRole() != UserRole.SUPERAPP_USER)
-		{
-			throw new UnAuthoriezedRoleRequestException("Only SuperApp User can create objects");
-		}
-
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.SUPERAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
 		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
 				configProperties.getSuperAppName(),
 				idGenerator.GenerateUUID().toString());
@@ -86,27 +83,11 @@ public class ObjectService implements EnhancedObjectsService {
 	}
 
 
-
 	@Override
 	//@Transactional
 	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary) {
-
-		//		Guard.AgainstNull(objectSuperApp, objectSuperApp);
-		//		Guard.AgainstNull(internalObjectId, internalObjectId);
-		//		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
-		//		
-		//		if(!objectsRepositoy.existsById(objectBoundary.getObjectId()))
-		//		{
-		//			throw new RuntimeException("Could not find user with id : " + objectBoundary.getObjectId());
-		//		}
-		//		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectBoundary.getObjectId());
-		//		
-		//		SuperAppObjectEntity returned = this.objectsRepositoy.save(EntityUpdate);
-		//				
-		//		return convertor.toBoundary(returned);
 		throw new DeprecatedFunctionException("Unsupported paging updateObject function is deprecated ");
 	}
-
 
 
 	@Override
@@ -145,19 +126,33 @@ public class ObjectService implements EnhancedObjectsService {
 	@Override
 	@Transactional
 	public void deleteAllObjects() {
+		throw new DeprecatedFunctionException("Unsupported paging deleteAllObjects function is deprecated ");
+	}
+	
+	@Override
+	@Transactional
+	public void deleteAllObjects(String userSuperApp, String userEmail) {
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.ADMIN)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		
 		if(this.objectsRepository.count() == 0) {
 			return;
 		}
 		this.objectsRepository.deleteAll();
+		
 	}
 
 	@Override
 	@Transactional
-	public void BindExistingObjectToAnExisitingChild(String parentSuperApp, String parentInternalId, SuperAppObjectIdBoundary childId) {
+	public void BindExistingObjectToAnExisitingChild(String userSuperApp, String userEmail, String parentSuperApp, String parentInternalId, SuperAppObjectIdBoundary childId) {
 		Guard.AgainstNull(childId, childId.getClass().getName());
 		Guard.AgainstNull(parentSuperApp, parentSuperApp);
 		Guard.AgainstNull(parentInternalId, parentInternalId);
-
+		
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.SUPERAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
 		var parentId = new SuperAppObjectIdBoundary(parentSuperApp,parentInternalId);
 
 		Optional<SuperAppObjectEntity> optionalParentEntity =  this.objectsRepository.findById(parentId);
@@ -227,7 +222,13 @@ public class ObjectService implements EnhancedObjectsService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Set<ObjectBoundary> searchObjectsByCreationTimeStamp(CreationEnum creation, int page, int size) {
+	public Set<ObjectBoundary> searchObjectsByCreationTimeStamp(String userSuperApp, String userEmail, CreationEnum creation, int page, int size) {
+		
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.SUPERAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		
+		
 		Instant oneCreationUnitAgo = Instant.now().minus(1, CreationEnum.MapCreationEnumToChronoUnit(creation));
 
 		List<SuperAppObjectEntity> entities = objectsRepository.
@@ -257,32 +258,23 @@ public class ObjectService implements EnhancedObjectsService {
 
 
 	@Override
-	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary,
-			String userSuperApp, String userEmail) {
-		
+	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary, String userSuperApp, String userEmail) {	
 		Guard.AgainstNull(objectSuperApp, objectSuperApp);
 		Guard.AgainstNull(internalObjectId, internalObjectId);
-		Guard.AgainstNull(userSuperApp, userSuperApp);
-		Guard.AgainstNull(userEmail, userEmail);
+		
 		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
 		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
 
 		if(!objectsRepository.existsById(objectId))
-		{
 			throw new EntityNotFoundException("Could not find object with id : " + objectId);
-		}
-
-		UserId userId = new UserId(userSuperApp,userEmail);
-		Optional<UserEntity> userEntity = this.userRepository.findById(userId); 
-		if(userEntity == null) {
-			throw new EntityNotFoundException("Could not find user with id : " + userId);
-		}
-		if(userEntity.get().getRole() != UserRole.SUPERAPP_USER)
-		{
-			throw new UnAuthoriezedRoleRequestException("Only SuperApp User can update objects");
-		}
 		
-
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.SUPERAPP_USER)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		
+		
+		
+		UserId userId = new UserId(userSuperApp, userEmail);
 		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectId);
 		var oldUserId = new HashMap<String, UserId>();
 		oldUserId.put("userId", userId);
@@ -392,6 +384,18 @@ public class ObjectService implements EnhancedObjectsService {
 				.map(this.convertor::toBoundary)
 				.collect(Collectors.toList());
 	}
+
+
+	@Override
+	public ObjectBoundary createObject(ObjectBoundary objWithotId) {
+		throw new DeprecatedFunctionException("Unsupported paging createObject function is deprecated ");
+	}
+
+
+
+
+
+	
 
 
 

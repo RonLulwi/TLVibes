@@ -10,11 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import superapp.data.MiniAppCommandEntity;
+import superapp.data.UserRole;
 import superapp.data.interfaces.MiniAppCommandRepository;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.EnhancedMiniAppCommandsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
+import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.CommandId;
 import superapp.logic.convertes.MiniAppCommandsConverter;
 import superapp.logic.infrastructure.ConfigProperties;
@@ -31,12 +33,12 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	private ConfigProperties configProperties;
 	private IdGenerator idGenerator;
 	private CommandFactory commandFactory;
-
+	private UserService userService;
 
 	@Autowired
 	public MiniAppCommandService(MiniAppCommandsConverter converter,
 			ConfigProperties configProperties,IdGenerator idGenerator,
-			UserEntityRepository userEntityRepository,
+			UserService userService, 
 			SuperAppObjectRepository superAppObjectRepositoy,
 			MiniAppCommandRepository commandRepository,
 			CommandFactory commandFactory) {
@@ -45,6 +47,7 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		this.idGenerator = idGenerator;
 		this.configProperties = configProperties;
 		this.commandFactory = commandFactory;
+		this.userService = userService;
 	}
 
 	@Override
@@ -83,18 +86,18 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllCommands() {			
-//		return StreamSupport
-//				.stream(this.commandRepository.findAll().spliterator(), false)
-//				.map(entity -> converter.toBoundary(entity))
-//				.collect(Collectors.toList());
-
 		throw new DeprecatedFunctionException("Unsupported paging getAllCommands function is deprecated ");
 	}
 	
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<MiniAppCommandBoundary> getAllCommands(int size ,int page) {			
+	public List<MiniAppCommandBoundary> getAllCommands(String userSuperApp, String userEmail, int size ,int page) {			
+		
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.ADMIN)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+
 		return this.commandRepository
 				.findAll(PageRequest.of(page, size, Direction.DESC, "commandId.miniapp"))
 				.stream()
@@ -106,18 +109,16 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	@Override	
 	@Transactional(readOnly = true)
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName) {	
-//		return StreamSupport
-//				.stream(this.commandRepository.findAll().spliterator(), false)
-//				.filter(command -> command.getCommandId().getMiniapp().equals(miniAppName))
-//				.map(entity -> converter.toBoundary(entity))
-//				.collect(Collectors.toList());
-
 		throw new DeprecatedFunctionException("Unsupported paging getAllMiniAppCommands function is deprecated ");
 	}
 	
 	@Override	
 	@Transactional(readOnly = true)
-	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName,int size,int page) {
+	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String userSuperApp, String userEmail, String miniAppName,int size,int page) {
+
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.ADMIN)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
 
 		return  this.commandRepository
 				.findAllByCommandId_Miniapp(miniAppName,PageRequest.of(page, size, Direction.DESC,
@@ -126,10 +127,69 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 				.map(this.converter::toBoundary)
 				.collect(Collectors.toList());
 	}
-
+	
 	@Override
 	@Transactional
 	public void deleteAllCommands() {
+		throw new DeprecatedFunctionException("Unsupported paging deleteAllCommands function is deprecated ");
+	}
+	
+	@Override
+	@Transactional
+	public void deleteAllCommands(String userSuperApp, String userEmail) {
+
+		UserBoundary user = userService.login(userSuperApp, userEmail);
+		if(user.getRole() != UserRole.ADMIN)
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+
 		this.commandRepository.deleteAll();;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

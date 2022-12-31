@@ -16,5 +16,6 @@ public interface MiniAppCommandsService {
 	@Deprecated
 	public List<MiniAppCommandBoundary> getAllMiniAppCommands(String miniAppName);
 	
+	@Deprecated
 	public void deleteAllCommands();
 }

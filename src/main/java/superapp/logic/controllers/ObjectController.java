@@ -122,9 +122,13 @@ public class ObjectController {
 			method = RequestMethod.POST,
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId) {
+	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId,
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
+			String userSuperApp, 
+			@RequestParam(name = "userEmail", required = false, defaultValue = "")
+			String userEmail) {
 		//TODO: Validate object
-			return this.enhancedObjectsService.createObject(objWithoutId);
+			return this.enhancedObjectsService.createObject(userSuperApp, userEmail, objWithoutId);
 	} 
 
 
@@ -156,7 +160,7 @@ public class ObjectController {
 				String userSuperApp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 				String userEmail) {
-			this.enhancedObjectsService.BindExistingObjectToAnExisitingChild(superapp, InternalObjectId, update);
+			this.enhancedObjectsService.BindExistingObjectToAnExisitingChild(userSuperApp, userEmail, superapp, InternalObjectId, update);
 		}
 		
 		@RequestMapping(
@@ -211,7 +215,7 @@ public class ObjectController {
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.searchObjectsByCreationTimeStamp(creation, page, size)
+			return this.enhancedObjectsService.searchObjectsByCreationTimeStamp(userSuperApp, userEmail, creation, page, size)
 					.toArray(new ObjectBoundary[0]);
 		}
 
