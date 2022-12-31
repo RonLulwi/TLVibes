@@ -130,7 +130,7 @@ public class ObjectService implements EnhancedObjectsService {
 	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects(int page, int size) {
 		return this.objectsRepository
-				.findAll(PageRequest.of(page, size, Direction.DESC,  "internalObjectId"))
+				.findAll(PageRequest.of(page, size, Direction.DESC,  "objectId"))
 				.stream()
 				.map(entity -> convertor.toBoundary(entity))
 				.collect(Collectors.toList());
@@ -259,6 +259,7 @@ public class ObjectService implements EnhancedObjectsService {
 	@Override
 	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary,
 			String userSuperApp, String userEmail) {
+		
 		Guard.AgainstNull(objectSuperApp, objectSuperApp);
 		Guard.AgainstNull(internalObjectId, internalObjectId);
 		Guard.AgainstNull(userSuperApp, userSuperApp);
