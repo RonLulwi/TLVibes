@@ -337,7 +337,76 @@ public class CommandControllerTests {
 	}
 	
 	@Test
-	public void InvokeEchoCommand20TimesHappyFlow() throws JsonMappingException, JsonProcessingException
+	public void InvokeEchoCommand20TimesGetAllCommandOfAllMiniAppsHappyFlow() throws JsonMappingException, JsonProcessingException
+	{
+		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
+		
+		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+				
+		var createUserResponse  = this.restTemplate
+				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
+		
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+		
+		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+
+		Map<String,UserId> createdBy = new HashMap<>();
+		
+		createdBy.put("userId", createUserResponse.getUserId());
+		
+		objectboundary.setCreatedBy(createdBy);
+		
+		var createObjectResponse  = this.restTemplate
+				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+
+		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
+		
+		MiniAppCommandBoundary commandboundary = 
+				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		
+		
+		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
+		
+		targetObject.put("targetObject", createObjectResponse.getObjectId());
+
+		commandboundary.setTargetObject(targetObject);
+		
+		commandboundary.setInvokedBy(createdBy);
+		
+		commandboundary.setCommand("echo");
+		
+		List<String> expected = new ArrayList<String>();
+		
+		IntStream.range(0, 20).forEach(i ->{
+			
+			Map<String,Object> commandAttributes = new HashMap<>();
+			
+			commandAttributes.put("echo", "Message " + i);
+
+			expected.add("Message " + i);
+			
+			commandboundary.setCommandAttributes(commandAttributes);
+
+			this.restTemplate
+			.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandboundary, String.class);
+		});
+		
+		var response = this.restTemplate
+				.getForObject(this.baseUrl + "/superapp/miniapp/getAllCommands" +
+					"?size=20&userSuperapp=" + configProperties.getSuperAppName() +
+					"&userEmail=" + userBoundary.getEmail(),
+					MiniAppCommandBoundary[].class);
+
+
+		assertEquals(20,response.length);
+		
+		IntStream.range(0, 20).forEach(i ->{
+		    assertTrue(expected.contains(response[i].getCommandAttributes().get("echo")));
+		});
+	}
+	
+	@Test
+	public void InvokeEchoCommand20TimesGetAllCommandOfSpecificAppHappyFlow() throws JsonMappingException, JsonProcessingException
 	{
 		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
 		
@@ -393,7 +462,7 @@ public class CommandControllerTests {
 		
 		var response = this.restTemplate
 				.getForObject(this.baseUrl + "/superapp/miniapp/getAllCommandsOf/" +
-					configProperties.getSuperAppName() +
+					"TEST" +
 					"?size=20&userSuperapp=" + configProperties.getSuperAppName() +
 					"&userEmail=" + userBoundary.getEmail(),
 					MiniAppCommandBoundary[].class);
@@ -405,7 +474,7 @@ public class CommandControllerTests {
 		    assertTrue(expected.contains(response[i].getCommandAttributes().get("echo")));
 		});
 	}
-	
+
 	@Test
 	public void InvokeEchoCommandNotFromTESTMiniAppThrowException() throws JsonMappingException, JsonProcessingException
 	{
