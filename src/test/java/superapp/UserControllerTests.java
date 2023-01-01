@@ -2,6 +2,7 @@ package superapp;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -27,6 +28,7 @@ public class UserControllerTests {
 	private RestTemplate restTemplate;
 	private String url;
 	private ConfigProperties configProperties;
+	private ControllersTestsHelper helper;
 	
 	@Autowired
 	public void setConfigProperties(ConfigProperties configProperties) {
@@ -44,10 +46,16 @@ public class UserControllerTests {
 		this.url = "http://localhost:" + this.port + "/superapp/users";
 	}
 	
+	@Autowired
+	public void setHelper(ControllersTestsHelper helper) {
+		this.helper = helper;
+	}
+	
 	@AfterEach
 	public void teardown() {
-		this.restTemplate
-			.delete("http://localhost:" + this.port + "/superapp/admin/users");
+		helper.TeadDown();
+//		this.restTemplate
+//			.delete("http://localhost:" + this.port + "/superapp/admin/users");
 	}
 	
 
@@ -73,7 +81,25 @@ public class UserControllerTests {
 		assertEquals(expectedUser,response);
 	}
 
-
+	@Test
+	public void testLoginWithExistingUserHappyFlow()
+	{
+		NewUserBoundary newUser = createValidNewUserBoundary();
+		
+		UserBoundary createResponse = this.restTemplate
+				.postForObject(this.url, newUser, UserBoundary.class);
+		
+		assertNotNull(createResponse);
+		
+		UserBoundary loginResponse = this.restTemplate
+				.getForObject(this.url + "/login/" +
+						createResponse.getUserId().getSuperapp() + "/" +
+						createResponse.getUserId().getEmail()
+						, UserBoundary.class);
+		
+		assertEquals(createResponse,loginResponse);	
+	}
+	
 	@Test
 	public void testCreateNewUserWithNotValidEmail$InsteadOfAtSignThrowException () throws Exception {
 		NewUserBoundary newUser = createValidNewUserBoundary();
@@ -167,7 +193,6 @@ public class UserControllerTests {
 
 		assertTrue(exception.getMessage().contains("status\":500"));
 	}
-
 
 	private NewUserBoundary createValidNewUserBoundary() {
 		NewUserBoundary newUser = new NewUserBoundary();

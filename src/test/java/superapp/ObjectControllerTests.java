@@ -67,17 +67,18 @@ public class ObjectControllerTests {
 		
 		@AfterEach
 		public void teardown() {
-			this.restTemplate
-				.delete("http://localhost:" + this.port + "/superapp/admin/users");
-			this.restTemplate
-				.delete("http://localhost:" + this.port + "/superapp/admin/objects");
+			helper.TeadDown();
+//			this.restTemplate
+//				.delete("http://localhost:" + this.port + "/superapp/admin/users");
+//			this.restTemplate
+//				.delete("http://localhost:" + this.port + "/superapp/admin/objects");
 
 		}
 		
 		@Test
 		public void testCreateSuperAppObjectHappyFlow() throws JsonMappingException, JsonProcessingException
 		{
-			String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
+			String userBoundaryAsString  = helper.GetSuperAppUserBoundaryAsJson();
 			
 			NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
 			
@@ -88,7 +89,11 @@ public class ObjectControllerTests {
 			
 			ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
 			
-			var response = this.restTemplate.postForObject(this.baseUrl + helper.objectPrefix , boundary, ObjectBoundary.class);
+			var response = this.restTemplate.postForObject(this.baseUrl + 
+					helper.objectPrefix + 
+					"?userSuperapp=" + configProperties.getSuperAppName() +
+					"&userEmail=" + userBoundary.getEmail()
+					, boundary, ObjectBoundary.class);
 			
 			assertEquals(boundary.getActive(),response.getActive());
 			assertEquals(boundary.getAlias(),response.getAlias());
