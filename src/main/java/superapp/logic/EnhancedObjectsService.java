@@ -13,7 +13,7 @@ public interface EnhancedObjectsService extends ObjectsService {
 	
 	List<ObjectBoundary> getAllChildrens(String userSuperApp, String userEmail, String parentSuperApp, String parentInternalId,int page,int size);
 	
-	Set<SuperAppObjectIdBoundary> getParent(String userSuperApp, String userEmail, String parentSuperApp, String parentInternalId,int page,int size);
+	List<ObjectBoundary> getParent(String userSuperApp, String userEmail, String parentSuperApp, String parentInternalId,int page,int size);
 	
 	Set<ObjectBoundary> searchObjectsByCreationTimeStamp(String userSuperApp, String userEmail, CreationEnum creation, int page, int size);
 	

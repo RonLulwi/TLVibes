@@ -112,7 +112,6 @@ public class ObjectController {
 			int page, 
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size){
-		//return this.enhancedObjectsService.getAllObjects();
 		return this.enhancedObjectsService.getAllObjects(userSuperApp, userEmail, page, size);
 	}
 

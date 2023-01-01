@@ -111,15 +111,14 @@ public class ObjectService implements EnhancedObjectsService {
 		UserBoundary user = userService.login(userSuperApp, userEmail);
 		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
 			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
-		//TODO retrieve only ACTIVE objects for MINIAPP_USER case
 		
-		
-		
-		return this.objectsRepository
-				.findAll(PageRequest.of(page, size, Direction.DESC,  "objectId"))
-				.stream()
-				.map(entity -> convertor.toBoundary(entity))
-				.collect(Collectors.toList());
+		boolean addNonActive = (user.getRole() == UserRole.SUPERAPP_USER);
+		return (addNonActive) ?
+				this.objectsRepository
+				.findAll(PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(entity -> convertor.toBoundary(entity)).collect(Collectors.toList())
+				:
+				this.objectsRepository
+				.findAllByActive(true, PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());
 	}
 
 
@@ -214,31 +213,25 @@ public class ObjectService implements EnhancedObjectsService {
 			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
 		}
 		
-		//TODO retrieve only ACTIVE objects for MINIAPP_USER case
-
-
 		Guard.AgainstNull(superApp, superApp);
 		Guard.AgainstNull(internalId, internalId);
-
 		var entityId = new SuperAppObjectIdBoundary(superApp,internalId);
-
 		Optional<SuperAppObjectEntity> optionalEntity =  this.objectsRepository.findById(entityId);
-
 		Guard.AgainstNullOptinalIdNotFound(optionalEntity, optionalEntity.toString(), SuperAppObjectEntity.class.getName());
-
 		SuperAppObjectEntity entity = optionalEntity.get();
-
-		return this.objectsRepository
-				.findAllByParent(entity,PageRequest.of(page, size, Direction.DESC, "superapp","internalObjectId"))
-				.stream()
-				.map(this.convertor::toBoundary)
-				.collect(Collectors.toList());
+		
+		boolean addNonActive = (userEntity.get().getRole() == UserRole.SUPERAPP_USER);
+		return (addNonActive) ?
+				this.objectsRepository
+				.findAllByParent(entity,PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList())
+				:
+				this.objectsRepository
+				.findAllByParentAndActive(entity, true, PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());		
 	}
-
 
 	@Override
 	@Transactional(readOnly = true)
-	public Set<SuperAppObjectIdBoundary> getParent(String userSuperApp, String userEmail, String superApp, String internalId,int page,int size) {
+	public List<ObjectBoundary> getParent(String userSuperApp, String userEmail, String superApp, String internalId,int page,int size) {
 		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
 		Guard.AgainstNullOrEmpty(userEmail, userEmail);
 		
@@ -252,22 +245,24 @@ public class ObjectService implements EnhancedObjectsService {
 				userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
 			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
 		}
-		
-		//TODO retrieve only ACTIVE objects for MINIAPP_USER case
-		
+				
 		var entityId = new SuperAppObjectIdBoundary(superApp,internalId);
 
 		Optional<SuperAppObjectEntity> optionalParentEntity =  this.objectsRepository.findById(entityId);
 
 		Guard.AgainstNullOptinalIdNotFound(optionalParentEntity, entityId.toString(), SuperAppObjectEntity.class.getName());
 
-		SuperAppObjectEntity parent = optionalParentEntity.get().getParent();
+		SuperAppObjectEntity parent = optionalParentEntity.get();
 
-		var parents = new HashSet<SuperAppObjectIdBoundary>();
+		
+		boolean addNonActive = (userEntity.get().getRole() == UserRole.SUPERAPP_USER);
+		return (addNonActive) ?
+				this.objectsRepository
+				.findAllByChildrens(parent,PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList())
+				:
+				this.objectsRepository
+				.findAllByChildrensAndActive(parent, true, PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());		
 
-		parents.add(convertor.toBoundary(parent).getObjectId());	
-
-		return parents;
 	}
 
 	@Override
@@ -456,8 +451,6 @@ public class ObjectService implements EnhancedObjectsService {
 	public ObjectBoundary createObject(ObjectBoundary objWithoutId) {
 		
 		validateObjectBoundary(objWithoutId);
-		
-		
 		
 		UserId userId = objWithoutId.getCreatedBy().get("userId");
 		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
