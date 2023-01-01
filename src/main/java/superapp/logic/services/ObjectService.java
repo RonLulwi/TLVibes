@@ -57,31 +57,6 @@ public class ObjectService implements EnhancedObjectsService {
 	}
 
 
-	@Override
-	@Transactional
-	public ObjectBoundary createObject(String userSuperApp, String userEmail, ObjectBoundary objWithoutId) {
-
-		validateObjectBoundary(objWithoutId);
-
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.SUPERAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only SUPERAPP_APP has permission!");
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
-				configProperties.getSuperAppName(),
-				idGenerator.GenerateUUID().toString());
-
-
-		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId,objectId);
-
-		var id = new SuperAppObjectIdBoundary(configProperties.getSuperAppName(),idGenerator.GenerateUUID().toString());
-
-		entity.setObjectId(id);
-
-		SuperAppObjectEntity returned = this.objectsRepository.save(entity);
-
-		return convertor.toBoundary(returned);
-	}
-
 
 	@Override
 	//@Transactional
@@ -287,23 +262,30 @@ public class ObjectService implements EnhancedObjectsService {
 
 
 	@Override
-	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, ObjectBoundary objectBoundary, String userSuperApp, String userEmail) {	
+	public ObjectBoundary updateObject(String objectSuperApp, String internalObjectId, 
+			ObjectBoundary objectBoundary, String userSuperApp, String userEmail) {	
 		Guard.AgainstNull(objectSuperApp, objectSuperApp);
 		Guard.AgainstNull(internalObjectId, internalObjectId);
+		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
+		Guard.AgainstNullOrEmpty(userEmail, userEmail);
 		
 		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
 		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
+		
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		if(userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
+			throw new UnAuthoriezedRoleRequestException("Only SUPERAPP_APP user can update objects!");			
+		}
 
 		if(!objectsRepository.existsById(objectId))
 			throw new EntityNotFoundException("Could not find object with id : " + objectId);
 		
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.SUPERAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
 		
-		
-		
-		UserId userId = new UserId(userSuperApp, userEmail);
 		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectId);
 		var oldUserId = new HashMap<String, UserId>();
 		oldUserId.put("userId", userId);
@@ -413,8 +395,36 @@ public class ObjectService implements EnhancedObjectsService {
 
 
 	@Override
-	public ObjectBoundary createObject(ObjectBoundary objWithotId) {
-		throw new DeprecatedFunctionException("Unsupported paging createObject function is deprecated ");
+	public ObjectBoundary createObject(ObjectBoundary objWithoutId) {
+		
+		validateObjectBoundary(objWithoutId);
+		
+		
+		
+		UserId userId = objWithoutId.getCreatedBy().get("userId");
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		if(userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
+			throw new UnAuthoriezedRoleRequestException("Only SUPERAPP_APP user can create objects!");			
+		}
+		
+		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+				configProperties.getSuperAppName(),
+				idGenerator.GenerateUUID().toString());
+
+
+		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId,objectId);
+
+		var id = new SuperAppObjectIdBoundary(configProperties.getSuperAppName(),idGenerator.GenerateUUID().toString());
+
+		entity.setObjectId(id);
+
+		SuperAppObjectEntity returned = this.objectsRepository.save(entity);
+
+		return convertor.toBoundary(returned);
 	}
 
 

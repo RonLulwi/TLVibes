@@ -7,7 +7,7 @@ import superapp.logic.boundaries.ObjectBoundary;
 
 public interface ObjectsService {
 	
-	@Deprecated
+	
 	public ObjectBoundary createObject(ObjectBoundary objWithotId);
 	
 	@Deprecated
