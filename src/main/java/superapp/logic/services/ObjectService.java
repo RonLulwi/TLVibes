@@ -69,12 +69,21 @@ public class ObjectService implements EnhancedObjectsService {
 	@Transactional(readOnly = true)
 	public ObjectBoundary getSpecificObject(String userSuperApp, String userEmail, String objectSuperApp, String internalObjectId) {	
 
+		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
+		Guard.AgainstNullOrEmpty(userEmail, userEmail);
 		
-		UserBoundary user = userService.login(userSuperApp, userEmail);
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
 		
-		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
-		else if(user.getRole() == UserRole.MINIAPP_USER)
+		if(userEntity.get().getRole() != UserRole.MINIAPP_USER && 
+				userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
+			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
+		}
+		
+		if(userEntity.get().getRole() == UserRole.MINIAPP_USER)
 			userService.validateObjectActive(objectSuperApp, internalObjectId, objectsRepository, convertor);
 			
 		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
@@ -83,7 +92,8 @@ public class ObjectService implements EnhancedObjectsService {
 		
 		if(optional.isEmpty())
 			throw new RuntimeException("could not find superAppObject with id : " + objectId.toString());
-
+		
+		
 		return convertor.toBoundary(optional.get());
 
 	}
@@ -127,12 +137,17 @@ public class ObjectService implements EnhancedObjectsService {
 	@Override
 	@Transactional
 	public void deleteAllObjects(String userSuperApp, String userEmail) {
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.ADMIN)
-			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
+		Guard.AgainstNullOrEmpty(userEmail, userEmail);
 		
-		if(this.objectsRepository.count() == 0) {
-			return;
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		if(userEntity.get().getRole() != UserRole.ADMIN) {
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN user can delete users!");			
 		}
 		this.objectsRepository.deleteAll();
 		
@@ -144,10 +159,20 @@ public class ObjectService implements EnhancedObjectsService {
 		Guard.AgainstNull(childId, childId.getClass().getName());
 		Guard.AgainstNull(parentSuperApp, parentSuperApp);
 		Guard.AgainstNull(parentInternalId, parentInternalId);
+		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
+		Guard.AgainstNullOrEmpty(userEmail, userEmail);
 		
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.SUPERAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		if(userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
+			throw new UnAuthoriezedRoleRequestException("Only SUPERAPP_USER has permission!");			
+		}
+		
+		
 		var parentId = new SuperAppObjectIdBoundary(parentSuperApp,parentInternalId);
 
 		Optional<SuperAppObjectEntity> optionalParentEntity =  this.objectsRepository.findById(parentId);
@@ -174,9 +199,20 @@ public class ObjectService implements EnhancedObjectsService {
 	@Override
 	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllChildrens(String userSuperApp, String userEmail, String superApp, String internalId, int page, int size) {
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
+		
+		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
+		Guard.AgainstNullOrEmpty(userEmail, userEmail);
+		
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		if(userEntity.get().getRole() != UserRole.MINIAPP_USER && 
+				userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
+			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
+		}
 		
 		//TODO retrieve only ACTIVE objects for MINIAPP_USER case
 
@@ -203,9 +239,19 @@ public class ObjectService implements EnhancedObjectsService {
 	@Override
 	@Transactional(readOnly = true)
 	public Set<SuperAppObjectIdBoundary> getParent(String userSuperApp, String userEmail, String superApp, String internalId,int page,int size) {
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
+		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
+		Guard.AgainstNullOrEmpty(userEmail, userEmail);
+		
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		if(userEntity.get().getRole() != UserRole.MINIAPP_USER && 
+				userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
+			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
+		}
 		
 		//TODO retrieve only ACTIVE objects for MINIAPP_USER case
 		
@@ -228,9 +274,21 @@ public class ObjectService implements EnhancedObjectsService {
 	@Transactional(readOnly = true)
 	public Set<ObjectBoundary> searchObjectsByCreationTimeStamp(String userSuperApp, String userEmail, CreationEnum creation, int page, int size) {
 		
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.SUPERAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
+		Guard.AgainstNullOrEmpty(userEmail, userEmail);
+		
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> userEntity = this.userRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		if(userEntity.get().getRole() != UserRole.MINIAPP_USER && 
+				userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
+			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
+		}
+		
+		
 		
 		
 		Instant oneCreationUnitAgo = Instant.now().minus(1, CreationEnum.MapCreationEnumToChronoUnit(creation));

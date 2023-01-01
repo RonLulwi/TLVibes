@@ -145,9 +145,18 @@ public class UserService implements EnhancedUsersService {
 	@Override
 	public void deleteAllUsers(String userSuperApp, String userEmail) {
 		
-		UserBoundary user = login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.ADMIN)
-			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
+		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
+		Guard.AgainstNullOrEmpty(userEmail, userEmail);
+		
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> userEntity = this.usersRepository.findById(userId);
+		if(userEntity==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		if(userEntity.get().getRole() != UserRole.ADMIN) {
+			throw new UnAuthoriezedRoleRequestException("Only ADMIN user can delete users!");			
+		}
 		
 		usersRepository.deleteAll();
 		
