@@ -1,7 +1,9 @@
 package superapp;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.web.client.RestTemplate;
 
+import superapp.data.UserEntity;
 import superapp.data.UserRole;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.UserBoundary;
@@ -193,6 +196,45 @@ public class UserControllerTests {
 
 		assertTrue(exception.getMessage().contains("status\":500"));
 	}
+	
+	@Test
+	public void testUpdateUserUpdatesEverythingButUserId () {
+		NewUserBoundary newUser = createValidNewUserBoundary();
+		newUser.setRole(UserRole.SUPERAPP_USER);
+		
+		var createUserRes = this.restTemplate
+				.postForObject(this.url, newUser, UserBoundary.class);
+		
+		newUser.setUsername("new testUserName");
+		newUser.setEmail("new testUser@gmail.com");
+		newUser.setAvatar("new testAvatar");
+		newUser.setRole(UserRole.ADMIN);
+		
+		this.restTemplate
+				.put(this.url
+						+"/"
+						+createUserRes.getUserId().getSuperapp()
+						+"/"
+						+createUserRes.getUserId().getEmail()
+						, newUser);
+		
+		
+		var res = this.restTemplate
+				.getForObject(this.url 
+						+ "/login/" 
+						+createUserRes.getUserId().getSuperapp()
+						+"/"
+						+createUserRes.getUserId().getEmail()
+						, UserBoundary.class);
+
+	   assertNotEquals(res.getUsername(), createUserRes.getUsername());
+	   assertNotEquals(res.getAvatar(), createUserRes.getAvatar());
+	   assertNotEquals(res.getRole(), createUserRes.getRole());
+	   assertEquals(res.getUserId().getEmail(), createUserRes.getUserId().getEmail());
+	   
+			   
+	}
+	
 
 	private NewUserBoundary createValidNewUserBoundary() {
 		NewUserBoundary newUser = new NewUserBoundary();
