@@ -122,13 +122,9 @@ public class ObjectController {
 			method = RequestMethod.POST,
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId,
-			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-			String userSuperApp, 
-			@RequestParam(name = "userEmail", required = false, defaultValue = "")
-			String userEmail) {
+	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId) {
 		//TODO: Validate object
-			return this.enhancedObjectsService.createObject(userSuperApp, userEmail, objWithoutId);
+			return this.enhancedObjectsService.createObject(objWithoutId);
 	} 
 
 

@@ -29,7 +29,5 @@ public interface EnhancedObjectsService extends ObjectsService {
 	
 	public void deleteAllObjects(String userSuperApp, String userEmail);
 	
-	public ObjectBoundary createObject(String userSuperApp, String userEmail, ObjectBoundary objWithotId);
-	
 	public ObjectBoundary getSpecificObject(String userSuperApp, String userEmail, String objectSuperApp,String internalObjectId);
 }
