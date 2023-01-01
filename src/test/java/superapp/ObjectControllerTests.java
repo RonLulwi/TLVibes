@@ -31,6 +31,7 @@ import superapp.data.UserRole;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.UserBoundary;
+import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.ConfigProperties;
 
@@ -460,6 +461,81 @@ public class ObjectControllerTests {
 		assertFalse(Arrays.asList(response).contains(boundary3));
 		assertFalse(Arrays.asList(response).contains(boundary2));
 
+	}
+	
+	@Test
+	public void testUpdateSuperAppObject() throws JsonMappingException, JsonProcessingException
+	{
+		String userBoundaryAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+
+		var createUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, userBoundary, UserBoundary.class);	
+
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+
+		ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
+		createdBy.put("userId", createUserRes.getUserId());
+
+		boundary.setCreatedBy(createdBy);
+
+		var oldObj = this.restTemplate.postForObject(this.baseUrl + helper.objectPrefix, boundary, ObjectBoundary.class);
+		
+		boundary.setType("new Type");
+		boundary.setAlias("new Alias");
+		boundary.setActive(!oldObj.getActive());
+		boundary.setCreationTimestamp(oldObj.getCreationTimestamp());
+		
+		Map<String, UserId> createdBy2 = new HashMap<>();
+		UserId userId = new UserId("2023a","newMail@gmail.com");
+		createdBy2.put("userId", userId);
+		boundary.setCreatedBy(createdBy2);
+		Map<String, Object> objectDetails = oldObj.getObjectDetails();
+		objectDetails.put("key3", 3);
+		boundary.setObjectDetails(objectDetails);
+		var objectId =  boundary.getObjectId();
+		objectId.setInternalObjectId(objectId.getInternalObjectId() + "11");
+		objectId.setSuperapp(objectId.getSuperapp()+"new");
+		boundary.setObjectId(objectId);
+		
+		this.restTemplate.put(this.baseUrl
+				+helper.objectPrefix
+				+oldObj.getObjectId().getSuperapp()
+				+"/"
+				+oldObj.getObjectId().getInternalObjectId()
+				+"?userSuperapp="
+				+oldObj.getCreatedBy().get("userId").getSuperapp()
+				+"&userEmail="
+				+oldObj.getCreatedBy().get("userId").getEmail()
+				, boundary);
+		
+		var res = this.restTemplate
+				.getForObject(this.baseUrl
+						+helper.objectPrefix
+						+oldObj.getObjectId().getSuperapp()
+						+"/"
+						+oldObj.getObjectId().getInternalObjectId()
+						+"?userSuperapp="
+						+oldObj.getCreatedBy().get("userId").getSuperapp()
+						+"&userEmail="
+						+oldObj.getCreatedBy().get("userId").getEmail(), 
+						ObjectBoundary.class);
+		
+		assertNotNull(res);
+		
+		assertEquals(oldObj.getObjectId().getInternalObjectId(), res.getObjectId().getInternalObjectId());
+		assertEquals(oldObj.getObjectId().getSuperapp(), res.getObjectId().getSuperapp());
+		assertNotEquals(oldObj.getType(), res.getType());
+		assertNotEquals(oldObj.getAlias(), res.getAlias());
+		assertNotEquals(oldObj.getActive(), res.getActive());
+		assertEquals(oldObj.getCreatedBy().get("userId").getEmail(), res.getCreatedBy().get("userId").getEmail());
+		assertEquals(oldObj.getCreatedBy().get("userId").getSuperapp(), res.getCreatedBy().get("userId").getSuperapp());
+		assertThat(oldObj.getCreationTimestamp().equals(res.getCreationTimestamp()));
+		
 	}
 
 
