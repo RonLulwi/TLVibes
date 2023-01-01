@@ -1,16 +1,61 @@
 package superapp;
 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import superapp.data.UserRole;
+import superapp.logic.boundaries.NewUserBoundary;
+import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.services.MiniAppCommandService;
+import superapp.logic.services.ObjectService;
+import superapp.logic.services.UserService;
 
 @Component
 public class ControllersTestsHelper {
 	
+	
 	public String userPrefix = "/superapp/users/";
 	public String objectPrefix = "/superapp/objects/";
 
-	public String GetBaseUserBoundaryAsJson() {
+	private UserService userService;
+	private MiniAppCommandService commandService;
+	private ObjectService objectService;
+    private ConfigProperties configProperties;
+	
+	@Autowired
+	public ControllersTestsHelper(UserService userService, 
+			MiniAppCommandService commandService,
+			ObjectService objectService,
+			ConfigProperties configProperties) {
+		this.commandService = commandService;
+		this.objectService = objectService;
+		this.userService = userService;
+		this.configProperties = configProperties;
+	}
+	
+
+	public String GetMiniAppUserBoundaryAsJson() {
 		return "{\r\n"
-				+ "    \"email\": \"niv@demo.org\",\r\n"
+				+ "    \"email\": \"mini@demo.org\",\r\n"
+				+ "    \"role\": \"MINIAPP_USER\",\r\n"
+				+ "    \"username\": \"niv\",\r\n"
+				+ "    \"avatar\": \"N\"\r\n"
+				+ "}";
+	}
+	
+	public String GetAdminUserBoundaryAsJson() {
+		return "{\r\n"
+				+ "    \"email\": \"admin@demo.org\",\r\n"
+				+ "    \"role\": \"ADMIN\",\r\n"
+				+ "    \"username\": \"niv\",\r\n"
+				+ "    \"avatar\": \"N\"\r\n"
+				+ "}";
+	}
+	
+	public String GetSuperAppUserBoundaryAsJson() {
+		return "{\r\n"
+				+ "    \"email\": \"super@demo.org\",\r\n"
 				+ "    \"role\": \"SUPERAPP_USER\",\r\n"
 				+ "    \"username\": \"niv\",\r\n"
 				+ "    \"avatar\": \"N\"\r\n"
@@ -67,6 +112,28 @@ public class ControllersTestsHelper {
 				+ "        }\r\n"
 				+ "    }\r\n"
 				+ "}";
+	}
+	
+	public void TeadDown() 
+	{
+		var user = new NewUserBoundary();
+
+		user.setRole(UserRole.ADMIN);
+		user.setAvatar("T");
+		user.setUsername("test");
+		user.setEmail("Test@gmail.com");
+		
+		userService.createUser(user);
+		
+		commandService.deleteAllCommands(configProperties.getSuperAppName(),user.getEmail());
+		objectService.deleteAllObjects(configProperties.getSuperAppName(),user.getEmail());
+		userService.deleteAllUsers(configProperties.getSuperAppName(),user.getEmail());
+	}
+
+
+	public String GetBaseUserBoundaryAsJson() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -97,11 +97,8 @@ public class CommandControllerTests {
 	}
 
 	@AfterEach
-	public void teardown() {
-		this.restTemplate.delete("http://localhost:" + this.port + "/superapp/admin/users");
-		this.restTemplate.delete("http://localhost:" + this.port + "/superapp/admin/objects");
-		this.restTemplate.delete("http://localhost:" + this.port + "/superapp/admin/miniapp");
-
+	public void teardown() {		
+		helper.TeadDown();
 	}
 	
 	
