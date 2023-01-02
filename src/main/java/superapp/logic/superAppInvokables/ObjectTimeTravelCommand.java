@@ -36,7 +36,7 @@ public class ObjectTimeTravelCommand implements ICommandInvokable {
 			throw new RuntimeException("command : " + commandName + "can be invoke only from MiniApp TEST");
 		}
 
-		SuperAppObjectIdBoundary objectId = command.getTargetObject().get("targetObject");
+		SuperAppObjectIdBoundary objectId = command.getTargetObject().get("objectId");
 		
 		Optional<SuperAppObjectEntity> optionalEntity= objectsRepositoy.findById(objectId);
 		

@@ -28,14 +28,8 @@ public class miniAppController {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 		public Object invokeMiniAppCommand(
 				@PathVariable("miniAppName") String miniAppName,
-				@RequestBody MiniAppCommandBoundary boundary,
-				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-				String userSuperApp, 
-				@RequestParam(name = "userEmail", required = false, defaultValue = "")
-				String userEmail) {
-			//TODO: Validate that the user is MINIAPP_USER 
-			//		and the target object is exist in the database
-			return this.MiniAppCommand.invokeCommand(userSuperApp, userEmail, miniAppName, boundary);
+				@RequestBody MiniAppCommandBoundary boundary) {
+			return this.MiniAppCommand.invokeCommand(miniAppName, boundary);
 		}
 	
 	
@@ -87,13 +81,5 @@ public class miniAppController {
 			this.MiniAppCommand.deleteAllCommands(userSuperApp, userEmail);
 		}
 		
-//	@RequestMapping(
-//			path= {"/superapp/miniapp/TEST"},
-//			method = {RequestMethod.POST},
-//			produces = MediaType.APPLICATION_JSON_VALUE,
-//			consumes = MediaType.APPLICATION_JSON_VALUE)
-//		public Object objectTimeTravel(MiniAppCommandBoundary update) {
-//			return this.MiniAppCommand.invokeCommand(update);
-//		}
 
 }
