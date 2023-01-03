@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import superapp.data.MiniAppCommandEntity;
 
-@Component("echo")
+@Component("TEST.echo")
 public class EchoCommand implements ICommandInvokable{
 	private String commandName = "echo";
 

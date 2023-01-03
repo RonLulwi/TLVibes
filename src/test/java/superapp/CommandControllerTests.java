@@ -57,7 +57,6 @@ public class CommandControllerTests {
 	private int port;
 	private String url;
 	private String baseUrl;
-	private String userPrefix;
 	private ConfigProperties configProperties;
 	private ObjectMapper jackson;
 	private ControllersTestsHelper helper;
@@ -90,7 +89,6 @@ public class CommandControllerTests {
 		this.restTemplate = new RestTemplate();
 		this.baseUrl = "http://localhost:" + this.port;
 		this.url = this.baseUrl + "/superapp/miniapp/" + configProperties.getSuperAppName();
-		this.userPrefix = "/superapp/users/";
 		this.objectPrefix = "/superapp/objects/";
 		this.commandPrefix = "\"command\" :";
 		this.commandTestStr = " \"doSomthing\",\r\n";
@@ -328,12 +326,10 @@ public class CommandControllerTests {
 
 		Date beforeInvoking = createObjectResponse.getCreationTimestamp();
 		
-		Exception exception = assertThrows(Exception.class, () -> {
-			this.restTemplate
-			.postForObject(this.url, commandBoundary, String.class);
-			});
-
-		assertTrue(exception.getMessage().contains("can be invoke only from MiniApp TEST"));
+		var response = this.restTemplate
+				.postForObject(this.url, commandBoundary, String.class);
+					
+			assertEquals("Command not found",response);
 
 
 	}
@@ -588,7 +584,7 @@ public class CommandControllerTests {
 	}
 
 	@Test
-	public void InvokeEchoCommandNotFromTESTMiniAppThrowException() throws JsonMappingException, JsonProcessingException
+	public void InvokeEchoCommandNotFromTESTMiniAppInvokeDefaultCommand() throws JsonMappingException, JsonProcessingException
 	{
 		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
 
@@ -641,12 +637,10 @@ public class CommandControllerTests {
 		
 		commandBoundary.setCommand("echo");
 
-		Exception exception = assertThrows(Exception.class, () -> {
-			this.restTemplate
+		var response = this.restTemplate
 			.postForObject(this.url, commandBoundary, String.class);
-			});
-
-		assertTrue(exception.getMessage().contains("can be invoke only from MiniApp TEST"));
+				
+		assertEquals("Command not found",response);
 
 	}
 	
