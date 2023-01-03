@@ -84,8 +84,7 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		
 		MiniAppCommandEntity commandEntity = converter.toEntity(boundary,commandId);
 		
-		
-		var invokableCommand = commandFactory.GetCommand(commandEntity.getCommand());
+		var invokableCommand = commandFactory.GetInvokableCommand(commandEntity);
 		
 		var response = invokableCommand.Invoke(commandEntity);
 		

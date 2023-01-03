@@ -14,10 +14,9 @@ import superapp.data.SuperAppObjectEntity;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 
-@Component(value = "objectTimeTravel")
+@Component("TEST.objectTimeTravel")
 public class ObjectTimeTravelCommand implements ICommandInvokable {
 
-	private String commandName = "objectTimeTravel";
 	private SuperAppObjectRepository objectsRepositoy;
 
 	@Autowired
@@ -28,14 +27,6 @@ public class ObjectTimeTravelCommand implements ICommandInvokable {
 	@Override
 	public Object Invoke(MiniAppCommandEntity command) {
 		
-		if(!command.getCommand().equals(commandName)){
-			throw new RuntimeException("Invalid command name : " + commandName);
-		}
-		
-		if(!command.getCommandId().getMiniapp().equals("TEST")){
-			throw new RuntimeException("command : " + commandName + "can be invoke only from MiniApp TEST");
-		}
-
 		SuperAppObjectIdBoundary objectId = command.getTargetObject().get("objectId");
 		
 		Optional<SuperAppObjectEntity> optionalEntity= objectsRepositoy.findById(objectId);

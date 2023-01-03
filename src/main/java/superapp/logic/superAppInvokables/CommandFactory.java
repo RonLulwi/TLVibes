@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import superapp.data.MiniAppCommandEntity;
+
 
 @Component
 public class CommandFactory {
@@ -13,12 +15,13 @@ public class CommandFactory {
     @Value("${command.defualt}")
     private String defualtCommand;
 
-	public ICommandInvokable GetCommand(String command) {
+	public ICommandInvokable GetInvokableCommand(MiniAppCommandEntity command) {
 		try {
-			return (ICommandInvokable) appContext.getBean(command);
+			return (ICommandInvokable) appContext.getBean(command.getCommandId().getMiniapp() 
+					+ "." + command.getCommand(),ICommandInvokable.class);
 		}
 		catch (Exception e) {
-			return (ICommandInvokable) appContext.getBean(defualtCommand);
+			return (ICommandInvokable) appContext.getBean(defualtCommand,ICommandInvokable.class);
 		}
 	}
 	
