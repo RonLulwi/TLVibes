@@ -19,6 +19,7 @@ public class ObjectConvertor {
 		entity.setActive(boundary.getActive() != null ? boundary.getActive() : false);
 		entity.setAlias(boundary.getAlias());
 		entity.setCreatedBy(boundary.getCreatedBy());
+		entity.setCreationTimestamp(boundary.getCreationTimestamp());
 		entity.setObjectDetails(boundary.getObjectDetails() != null ? boundary.getObjectDetails() : new HashMap<String,Object>());
 		entity.setType(boundary.getType());
 		

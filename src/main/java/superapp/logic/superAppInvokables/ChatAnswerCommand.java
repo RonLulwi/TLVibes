@@ -25,33 +25,15 @@ public class ChatAnswerCommand implements ICommandInvokable {
 	private RestTemplate restTemplate;
 	private String gptApiUrl = "https://api.openai.com/v1/engines/text-davinci-003/completions";
 
-	
-	
-
-
-
 
 	@Autowired
 	public void setRestTemplate(RestTemplateBuilder builder) {
 		this.restTemplate = builder.build();
 	}
-
-
-
-
+	
 	@Override
 	public Object Invoke(MiniAppCommandEntity command) {
-		
-		if(!command.getCommand().equals(commandName)){
-			throw new RuntimeException("Invalid command name : " + commandName);
-		}
-		
-//		if(!command.getCommandId().getMiniapp().equals("CHAT")){
-//			throw new RuntimeException("command : " + commandName + "can be invoke only from MiniApp CHAT");
-//		}
-		
-		
-		
+			
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	    headers.setBearerAuth(this.apiKey);

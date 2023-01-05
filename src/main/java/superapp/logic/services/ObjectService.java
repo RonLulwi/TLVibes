@@ -1,8 +1,8 @@
 package superapp.logic.services;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -282,6 +282,7 @@ public class ObjectService implements EnhancedObjectsService {
 				userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
 			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
 		}
+
 		Instant oneCreationUnitAgo = Instant.now().minus(1, CreationEnum.MapCreationEnumToChronoUnit(creation));
 		
 		List<SuperAppObjectEntity> entities;
@@ -310,6 +311,7 @@ public class ObjectService implements EnhancedObjectsService {
 		}
 
 		Guard.AgainstNullRequest(request);
+		Guard.AgainstNullOrEmpty(objWithoutId.getAlias(), "Alias");
 	}
 
 
