@@ -37,6 +37,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import superapp.data.MiniAppCommandEntity;
 import superapp.data.UserRole;
@@ -227,7 +228,7 @@ public class CommandControllerTests {
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
 				
-		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.000+0000");
+		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.555+00:00");
 
 		commandBoundary.setCommand("objectTimeTravel");
 				
@@ -254,18 +255,22 @@ public class CommandControllerTests {
 		
 		Date afterInvoking = getObjectByIdResponse.getCreationTimestamp();
 
-		String newTimeStamp = commandBoundary.getCommandAttributes().get("creationTimestamp").toString();
+		String newTimeStamp =
+				"\"" +
+				commandBoundary.getCommandAttributes().get("creationTimestamp").toString() +
+				"\"";
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 		Date expectedData;
-		
+				
 		try {
-			expectedData = sdf.parse(newTimeStamp);
-		} catch (ParseException e) {
+			jackson.registerModule(new JavaTimeModule());
+
+			expectedData = jackson.readValue(newTimeStamp, Date.class);
+		} catch (Exception e) {
 			throw new InvalidParameterException(newTimeStamp);
 		}
-		
+
 		assertEquals(afterInvoking,expectedData);
 		assertNotEquals(afterInvoking,beforeInvoking);
 	}
@@ -317,8 +322,8 @@ public class CommandControllerTests {
 		commandBoundary.setTargetObject(targetObject);
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
-				
-		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.000+0000");
+												//2022-11-26T15:15:18.479+00:00
+		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.555+00:00");
 
 		commandBoundary.setCommand("objectTimeTravel");
 		
@@ -713,6 +718,7 @@ public class CommandControllerTests {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 		Date date = null;
+		
 		try {
 			date = sdf.parse(dateAsString);
 		} catch (ParseException e) {

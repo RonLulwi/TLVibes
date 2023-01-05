@@ -62,7 +62,7 @@ public class AdminController {
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public MiniAppCommandBoundary[] One_Command(
 			@PathVariable("selectedappname") String selectedAppname,
-			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail,
@@ -79,7 +79,7 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public MiniAppCommandBoundary[] GetAllCommands(
-			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail,

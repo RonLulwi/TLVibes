@@ -6,6 +6,7 @@ public enum UserRole {
 	ADMIN,
 	;
 
+	//TODO: extract to separate class
 	public static void ValidateEnumThrowsIfNotExists(UserRole role) {
 		
 		boolean isExist = false;
