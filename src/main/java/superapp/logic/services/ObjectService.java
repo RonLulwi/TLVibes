@@ -282,12 +282,15 @@ public class ObjectService implements EnhancedObjectsService {
 				userEntity.get().getRole() != UserRole.SUPERAPP_USER) {
 			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
 		}
-		
+
 		Instant oneCreationUnitAgo = Instant.now().minus(1, CreationEnum.MapCreationEnumToChronoUnit(creation));
-
-		List<SuperAppObjectEntity> entities = objectsRepository.
-				findBycreationTimestampAfter(oneCreationUnitAgo);
-
+		
+		List<SuperAppObjectEntity> entities;
+		if(userEntity.get().getRole() == UserRole.MINIAPP_USER)
+			 entities = objectsRepository.findBycreationTimestampAfterAndActive(true, oneCreationUnitAgo);
+		else
+			entities = objectsRepository.findBycreationTimestampAfter(oneCreationUnitAgo);
+		
 		return entities.stream()
 				.map(e -> convertor.toBoundary(e))
 				.collect(Collectors.toSet());
