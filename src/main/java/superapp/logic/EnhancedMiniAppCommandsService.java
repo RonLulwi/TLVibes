@@ -12,6 +12,4 @@ public interface EnhancedMiniAppCommandsService extends MiniAppCommandsService {
 	
 	public void deleteAllCommands(String userSuperApp, String userEmail);
 	
-	public Object invokeCommand(String userSuperApp, String userEmail, String miniAppName, MiniAppCommandBoundary command);
-
 }

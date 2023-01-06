@@ -36,14 +36,14 @@ public class ObjectController {
 	public ObjectBoundary[] searchObjectsByType (
 			@PathVariable("type") String type,
 			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-			String userSuperApp, 
+			String userSuperapp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail,
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page, 
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size){
-		return this.enhancedObjectsService.getAllObjectsByType(type, userSuperApp,userEmail,page,size)
+		return this.enhancedObjectsService.getAllObjectsByType(type, userSuperapp,userEmail,page,size)
 				.toArray(new ObjectBoundary[0]);
 	}
 	
@@ -55,14 +55,14 @@ public class ObjectController {
 	public ObjectBoundary[] searchObjectsByAlias(
 			@PathVariable("alias") String alias,
 			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-			String userSuperApp, 
+			String userSuperapp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail,
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page, 
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size){
-		return this.enhancedObjectsService.getAllObjectsByAlias(alias, userSuperApp,userEmail,page,size)
+		return this.enhancedObjectsService.getAllObjectsByAlias(alias, userSuperapp,userEmail,page,size)
 				.toArray(new ObjectBoundary[0]);
 	}
 	
@@ -73,14 +73,14 @@ public class ObjectController {
 	public ObjectBoundary[] searchObjectsByAliasContainingText(
 			@PathVariable("text") String text,
 			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-			String userSuperApp, 
+			String userSuperapp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail,
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page, 
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size){
-		return this.enhancedObjectsService.getAllObjectsByAliasContainingText(text, userSuperApp,userEmail,page,size)
+		return this.enhancedObjectsService.getAllObjectsByAliasContainingText(text, userSuperapp,userEmail,page,size)
 				.toArray(new ObjectBoundary[0]);
 	}
 
@@ -92,10 +92,10 @@ public class ObjectController {
 			@PathVariable("superapp") String superapp,
 			@PathVariable("InternalObjectId") String InternalObjectId,
 			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-			String userSuperApp, 
+			String userSuperapp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail){
-		return this.enhancedObjectsService.getSpecificObject(userSuperApp, userEmail, superapp, InternalObjectId);
+		return this.enhancedObjectsService.getSpecificObject(userSuperapp, userEmail, superapp, InternalObjectId);
 	}
 
 
@@ -103,17 +103,17 @@ public class ObjectController {
 			method = RequestMethod.GET,
 			path = "/superapp/objects",
 			produces = MediaType.APPLICATION_JSON_VALUE)
-	public List<ObjectBoundary> retriveAllObjects (
+	public ObjectBoundary[] retriveAllObjects (
 			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-			String userSuperApp, 
+			String userSuperapp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail,
 			@RequestParam(name = "page", required = false, defaultValue = "0") 
 			int page, 
 			@RequestParam(name = "size", required = false, defaultValue = "10")
 			int size){
-		//return this.enhancedObjectsService.getAllObjects();
-		return this.enhancedObjectsService.getAllObjects(userSuperApp, userEmail, page, size);
+		return this.enhancedObjectsService.getAllObjects(userSuperapp, userEmail, page, size)
+				.toArray(new ObjectBoundary[0]);
 	}
 
 
@@ -123,7 +123,6 @@ public class ObjectController {
 			produces = MediaType.APPLICATION_JSON_VALUE,
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ObjectBoundary createObject (@RequestBody ObjectBoundary objWithoutId) {
-		//TODO: Validate object
 			return this.enhancedObjectsService.createObject(objWithoutId);
 	} 
 
@@ -137,11 +136,10 @@ public class ObjectController {
 			@PathVariable("InternalObjectId") String InternalObjectId, 
 			@RequestBody ObjectBoundary update,
 			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-			String userSuperApp, 
+			String userSuperapp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail) {
-		//this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update);
-		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update, userSuperApp, userEmail);
+		this.enhancedObjectsService.updateObject(superapp, InternalObjectId, update, userSuperapp, userEmail);
 	}
 		
 		@RequestMapping(
@@ -153,10 +151,10 @@ public class ObjectController {
 				@PathVariable("InternalObjectId") String InternalObjectId, 
 				@RequestBody SuperAppObjectIdBoundary update,
 				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-				String userSuperApp, 
+				String userSuperapp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 				String userEmail) {
-			this.enhancedObjectsService.BindExistingObjectToAnExisitingChild(userSuperApp, userEmail, superapp, InternalObjectId, update);
+			this.enhancedObjectsService.BindExistingObjectToAnExisitingChild(userSuperapp, userEmail, superapp, InternalObjectId, update);
 		}
 		
 		@RequestMapping(
@@ -167,14 +165,14 @@ public class ObjectController {
 				@PathVariable("superapp") String superapp,
 				@PathVariable("InternalObjectId") String InternalObjectId,
 				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-				String userSuperApp, 
+				String userSuperapp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 				String userEmail,
 				@RequestParam(name = "page", required = false, defaultValue = "0") 
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.getAllChildrens(userSuperApp, userEmail, superapp, InternalObjectId, page, size)
+			return this.enhancedObjectsService.getAllChildrens(userSuperapp, userEmail, superapp, InternalObjectId, page, size)
 					.toArray(new ObjectBoundary[0]);
 		}
 		
@@ -186,14 +184,14 @@ public class ObjectController {
 				@PathVariable("superapp") String superapp,
 				@PathVariable("InternalObjectId") String InternalObjectId,
 				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-				String userSuperApp, 
+				String userSuperapp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 				String userEmail,
 				@RequestParam(name = "page", required = false, defaultValue = "0") 
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.getParent(userSuperApp, userEmail, superapp, InternalObjectId,page,size)
+			return this.enhancedObjectsService.getParent(userSuperapp, userEmail, superapp, InternalObjectId,page,size)
 					.toArray(new ObjectBoundary[0]);
 		}
 		
@@ -204,14 +202,14 @@ public class ObjectController {
 		public ObjectBoundary[] searchObjectsByCreationTimeStamp (
 				@PathVariable("creationEnum") CreationEnum creation,
 				@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
-				String userSuperApp, 
+				String userSuperapp, 
 				@RequestParam(name = "userEmail", required = false, defaultValue = "")
 				String userEmail,
 				@RequestParam(name = "page", required = false, defaultValue = "0") 
 				int page, 
 				@RequestParam(name = "size", required = false, defaultValue = "10")
 				int size) {
-			return this.enhancedObjectsService.searchObjectsByCreationTimeStamp(userSuperApp, userEmail, creation, page, size)
+			return this.enhancedObjectsService.searchObjectsByCreationTimeStamp(userSuperapp, userEmail, creation, page, size)
 					.toArray(new ObjectBoundary[0]);
 		}
 

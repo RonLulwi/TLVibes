@@ -164,7 +164,9 @@ public class UserService implements EnhancedUsersService {
 	
 	
 	@Transactional(readOnly = true)
-	public void validateObjectActive(String objectSuperApp, String internalObjectId, SuperAppObjectRepository objectsRepositoy, ObjectConvertor convertor) {	
+	public void validateObjectActive(String objectSuperApp, String internalObjectId
+			, SuperAppObjectRepository objectsRepositoy,
+			ObjectConvertor convertor) {	
 		Guard.AgainstNull(objectSuperApp, objectSuperApp);
 		Guard.AgainstNull(internalObjectId, internalObjectId);
 		

@@ -37,6 +37,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import superapp.data.MiniAppCommandEntity;
 import superapp.data.UserRole;
@@ -57,7 +58,6 @@ public class CommandControllerTests {
 	private int port;
 	private String url;
 	private String baseUrl;
-	private String userPrefix;
 	private ConfigProperties configProperties;
 	private ObjectMapper jackson;
 	private ControllersTestsHelper helper;
@@ -90,7 +90,6 @@ public class CommandControllerTests {
 		this.restTemplate = new RestTemplate();
 		this.baseUrl = "http://localhost:" + this.port;
 		this.url = this.baseUrl + "/superapp/miniapp/" + configProperties.getSuperAppName();
-		this.userPrefix = "/superapp/users/";
 		this.objectPrefix = "/superapp/objects/";
 		this.commandPrefix = "\"command\" :";
 		this.commandTestStr = " \"doSomthing\",\r\n";
@@ -106,11 +105,51 @@ public class CommandControllerTests {
 	@Test
 	public void testInvokeCommandHappyFlow() throws JsonMappingException, JsonProcessingException
 	{
+		
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
+
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
+		
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
+
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
-		MiniAppCommandBoundary boundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
-		var response = this.restTemplate.postForObject(this.url, boundary, String.class);
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
+		
+		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
+		
+		targetObject.put("objectId", createObjectResponse.getObjectId());
+
+		commandBoundary.setTargetObject(targetObject);
+		
+		var response = this.restTemplate.postForObject(this.url, commandBoundary, String.class);
 
 		assertNotNull(response);
 	}
@@ -138,76 +177,100 @@ public class CommandControllerTests {
 	@Test
 	public void InvokeObjectTimeTravelCommand_objectCreationDateHasChanged() throws JsonMappingException, JsonProcessingException
 	{
-		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
-		
-		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
-		
-		var createUserResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
-		
-		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
-		
-		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
 
-		Map<String,UserId> createdBy = new HashMap<>();
-		
-		createdBy.put("userId", createUserResponse.getUserId());
-		
-		objectboundary.setCreatedBy(createdBy);
-		
-		var createObjectResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
 
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		
+		
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
+		
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
+
+		
+		
+		
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
-		MiniAppCommandBoundary commandboundary = 
-				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
 		
 		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
 		
-		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		targetObject.put("objectId", createObjectResponse.getObjectId());
+
+		commandBoundary.setTargetObject(targetObject);
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
 				
-		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.000+0000");
+		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.555+00:00");
 
-		commandboundary.setCommand("objectTimeTravel");
-		
-		commandboundary.setTargetObject(targetObject);
-		
-		commandboundary.setInvokedBy(createdBy);
-		
-		commandboundary.setCommandAttributes(commandAttributes);
+		commandBoundary.setCommand("objectTimeTravel");
+				
+		commandBoundary.setCommandAttributes(commandAttributes);
 
 		Date beforeInvoking = createObjectResponse.getCreationTimestamp();
 		
 		var commandResponse  = this.restTemplate
-				.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandboundary, MiniAppCommandBoundary.class);
+				.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandBoundary, MiniAppCommandBoundary.class);
 
 		var getObjectByIdResponse  = this.restTemplate
 				.getForObject(
 						this.baseUrl + 
 						this.objectPrefix + 
 						createObjectResponse.getObjectId().getSuperapp() + "/" +
-						createObjectResponse.getObjectId().getInternalObjectId()
+						createObjectResponse.getObjectId().getInternalObjectId() 
+						+ "?userSuperapp="
+						+ createObjectResponse.getCreatedBy().get("userId").getSuperapp()
+						+ "&userEmail="
+						+ createObjectResponse.getCreatedBy().get("userId").getEmail()
+
 						, ObjectBoundary.class);
 
 		
 		Date afterInvoking = getObjectByIdResponse.getCreationTimestamp();
 
-		String newTimeStamp = commandboundary.getCommandAttributes().get("creationTimestamp").toString();
+		String newTimeStamp =
+				"\"" +
+				commandBoundary.getCommandAttributes().get("creationTimestamp").toString() +
+				"\"";
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 		Date expectedData;
-		
+				
 		try {
-			expectedData = sdf.parse(newTimeStamp);
-		} catch (ParseException e) {
+			jackson.registerModule(new JavaTimeModule());
+
+			expectedData = jackson.readValue(newTimeStamp, Date.class);
+		} catch (Exception e) {
 			throw new InvalidParameterException(newTimeStamp);
 		}
-		
+
 		assertEquals(afterInvoking,expectedData);
 		assertNotEquals(afterInvoking,beforeInvoking);
 	}
@@ -215,56 +278,63 @@ public class CommandControllerTests {
 	@Test
 	public void InvokeObjectTimeTravelCommandNotFromTESTMiniAppThrowException() throws JsonMappingException, JsonProcessingException
 	{
-		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
-		
-		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
-		
-		var createUserResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
-		
-		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
-		
-		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
 
-		Map<String,UserId> createdBy = new HashMap<>();
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
 		
-		createdBy.put("userId", createUserResponse.getUserId());
-		
-		objectboundary.setCreatedBy(createdBy);
-		
-		var createObjectResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
 
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
-		MiniAppCommandBoundary commandboundary = 
-				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
 		
 		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
 		
-		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		targetObject.put("objectId", createObjectResponse.getObjectId());
+
+		commandBoundary.setTargetObject(targetObject);
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
-				
-		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.000+0000");
+												//2022-11-26T15:15:18.479+00:00
+		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.555+00:00");
 
-		commandboundary.setCommand("objectTimeTravel");
+		commandBoundary.setCommand("objectTimeTravel");
 		
-		commandboundary.setTargetObject(targetObject);
-		
-		commandboundary.setInvokedBy(createdBy);
-		
-		commandboundary.setCommandAttributes(commandAttributes);
+		commandBoundary.setCommandAttributes(commandAttributes);
 
 		Date beforeInvoking = createObjectResponse.getCreationTimestamp();
 		
-		Exception exception = assertThrows(Exception.class, () -> {
-			this.restTemplate
-			.postForObject(this.url, commandboundary, String.class);
-			});
-
-		assertTrue(exception.getMessage().contains("can be invoke only from MiniApp TEST"));
+		var response = this.restTemplate
+				.postForObject(this.url, commandBoundary, String.class);
+					
+			assertEquals("Command not found",response);
 
 
 	}
@@ -272,59 +342,73 @@ public class CommandControllerTests {
 	@Test
 	public void InvokeEchoCommand_returnCommandEntity() throws JsonMappingException, JsonProcessingException
 	{
-		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
-		
-		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
-		
-		var createUserResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
-		
-		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
-		
-		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
 
-		Map<String,UserId> createdBy = new HashMap<>();
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
 		
-		createdBy.put("userId", createUserResponse.getUserId());
-		
-		objectboundary.setCreatedBy(createdBy);
-		
-		var createObjectResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
 
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
-		MiniAppCommandBoundary commandboundary = 
-				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
 		
 		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
 		
-		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		targetObject.put("objectId", createObjectResponse.getObjectId());
+
+		commandBoundary.setTargetObject(targetObject);
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
 		
 		commandAttributes.put("echo", Instant.now());
 
-		commandboundary.setTargetObject(targetObject);
+		commandBoundary.setCommandAttributes(commandAttributes);
 		
-		commandboundary.setInvokedBy(createdBy);
-		
-		commandboundary.setCommandAttributes(commandAttributes);
-		
-		commandboundary.setCommand("echo");
+		commandBoundary.setCommand("echo");
 
 		Date beforeInvoking = createObjectResponse.getCreationTimestamp();
 		
 		var commandResponse  = this.restTemplate
-				.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandboundary, String.class);
+				.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandBoundary, String.class);
 
 		var getObjectByIdResponse  = this.restTemplate
 				.getForObject(
 						this.baseUrl + 
 						this.objectPrefix + 
 						createObjectResponse.getObjectId().getSuperapp() + "/" +
-						createObjectResponse.getObjectId().getInternalObjectId()
+						createObjectResponse.getObjectId().getInternalObjectId() 
+						+ "?userSuperapp="
+						+ createObjectResponse.getCreatedBy().get("userId").getSuperapp()
+						+ "&userEmail="
+						+ createObjectResponse.getCreatedBy().get("userId").getEmail()
+
 						, ObjectBoundary.class);
 
 		
@@ -336,41 +420,57 @@ public class CommandControllerTests {
 	@Test
 	public void InvokeEchoCommand20TimesGetAllCommandOfAllMiniAppsHappyFlow() throws JsonMappingException, JsonProcessingException
 	{
-		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
-		
-		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
-				
-		var createUserResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
-		
-		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
-		
-		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
 
-		Map<String,UserId> createdBy = new HashMap<>();
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		String adminAppUserAsString  = helper.GetAdminUserBoundaryAsJson();
+
+		NewUserBoundary adminAppUserBoundary = jackson.readValue(adminAppUserAsString,NewUserBoundary.class);
+
+		var createAdminAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, adminAppUserBoundary, UserBoundary.class);	
+
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
 		
-		createdBy.put("userId", createUserResponse.getUserId());
-		
-		objectboundary.setCreatedBy(createdBy);
-		
-		var createObjectResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
 
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
-		MiniAppCommandBoundary commandboundary = 
-				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
 		
 		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
 		
-		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		targetObject.put("objectId", createObjectResponse.getObjectId());
 
-		commandboundary.setTargetObject(targetObject);
-		
-		commandboundary.setInvokedBy(createdBy);
-		
-		commandboundary.setCommand("echo");
+		commandBoundary.setTargetObject(targetObject);
+				
+		commandBoundary.setCommand("echo");
 		
 		List<String> expected = new ArrayList<String>();
 		
@@ -382,16 +482,16 @@ public class CommandControllerTests {
 
 			expected.add("Message " + i);
 			
-			commandboundary.setCommandAttributes(commandAttributes);
+			commandBoundary.setCommandAttributes(commandAttributes);
 
 			this.restTemplate
-			.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandboundary, String.class);
+			.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandBoundary, String.class);
 		});
 		
 		var response = this.restTemplate
 				.getForObject(this.baseUrl + "/superapp/miniapp/getAllCommands" +
 					"?size=20&userSuperapp=" + configProperties.getSuperAppName() +
-					"&userEmail=" + userBoundary.getEmail(),
+					"&userEmail=" + adminAppUserBoundary.getEmail(),
 					MiniAppCommandBoundary[].class);
 
 
@@ -405,41 +505,57 @@ public class CommandControllerTests {
 	@Test
 	public void InvokeEchoCommand20TimesGetAllCommandOfSpecificAppHappyFlow() throws JsonMappingException, JsonProcessingException
 	{
-		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
-		
-		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
-				
-		var createUserResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
-		
-		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
-		
-		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
 
-		Map<String,UserId> createdBy = new HashMap<>();
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		String adminAppUserAsString  = helper.GetAdminUserBoundaryAsJson();
+
+		NewUserBoundary adminAppUserBoundary = jackson.readValue(adminAppUserAsString,NewUserBoundary.class);
+
+		var createAdminAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, adminAppUserBoundary, UserBoundary.class);	
+
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
 		
-		createdBy.put("userId", createUserResponse.getUserId());
-		
-		objectboundary.setCreatedBy(createdBy);
-		
-		var createObjectResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
 
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
-		MiniAppCommandBoundary commandboundary = 
-				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
 		
 		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
 		
-		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		targetObject.put("objectId", createObjectResponse.getObjectId());
 
-		commandboundary.setTargetObject(targetObject);
-		
-		commandboundary.setInvokedBy(createdBy);
-		
-		commandboundary.setCommand("echo");
+		commandBoundary.setTargetObject(targetObject);
+				
+		commandBoundary.setCommand("echo");
 		
 		List<String> expected = new ArrayList<String>();
 		
@@ -451,17 +567,17 @@ public class CommandControllerTests {
 
 			expected.add("Message " + i);
 			
-			commandboundary.setCommandAttributes(commandAttributes);
+			commandBoundary.setCommandAttributes(commandAttributes);
 
 			this.restTemplate
-			.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandboundary, String.class);
+			.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandBoundary, String.class);
 		});
 		
 		var response = this.restTemplate
 				.getForObject(this.baseUrl + "/superapp/miniapp/getAllCommandsOf/" +
 					"TEST" +
 					"?size=20&userSuperapp=" + configProperties.getSuperAppName() +
-					"&userEmail=" + userBoundary.getEmail(),
+					"&userEmail=" + adminAppUserBoundary.getEmail(),
 					MiniAppCommandBoundary[].class);
 
 
@@ -473,105 +589,122 @@ public class CommandControllerTests {
 	}
 
 	@Test
-	public void InvokeEchoCommandNotFromTESTMiniAppThrowException() throws JsonMappingException, JsonProcessingException
+	public void InvokeEchoCommandNotFromTESTMiniAppInvokeDefaultCommand() throws JsonMappingException, JsonProcessingException
 	{
-		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
-		
-		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
-		
-		var createUserResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
-		
-		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
-		
-		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
 
-		Map<String,UserId> createdBy = new HashMap<>();
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
 		
-		createdBy.put("userId", createUserResponse.getUserId());
-		
-		objectboundary.setCreatedBy(createdBy);
-		
-		var createObjectResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
 
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
-		MiniAppCommandBoundary commandboundary = 
-				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
 		
 		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
 		
-		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		targetObject.put("objectId", createObjectResponse.getObjectId());
+
+		commandBoundary.setTargetObject(targetObject);
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
 		
 		commandAttributes.put("echo", Instant.now());
-
-		commandboundary.setTargetObject(targetObject);
 		
-		commandboundary.setInvokedBy(createdBy);
+		commandBoundary.setCommandAttributes(commandAttributes);
 		
-		commandboundary.setCommandAttributes(commandAttributes);
-		
-		commandboundary.setCommand("echo");
+		commandBoundary.setCommand("echo");
 
-		Exception exception = assertThrows(Exception.class, () -> {
-			this.restTemplate
-			.postForObject(this.url, commandboundary, String.class);
-			});
-
-		assertTrue(exception.getMessage().contains("can be invoke only from MiniApp TEST"));
+		var response = this.restTemplate
+			.postForObject(this.url, commandBoundary, String.class);
+				
+		assertEquals("Command not found",response);
 
 	}
 	
 	@Test
 	public void InvokeUnknownCommandInvokingDefaultCommandInstand() throws JsonMappingException, JsonProcessingException
 	{
-		String userBoundaryAsString  = helper.GetBaseUserBoundaryAsJson();
-		
-		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
-		
-		var createUserResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.userPrefix, userBoundary, UserBoundary.class);	
-		
-		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
-		
-		ObjectBoundary objectboundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
 
-		Map<String,UserId> createdBy = new HashMap<>();
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
 		
-		createdBy.put("userId", createUserResponse.getUserId());
-		
-		objectboundary.setCreatedBy(createdBy);
-		
-		var createObjectResponse  = this.restTemplate
-				.postForObject(this.baseUrl + this.objectPrefix, objectboundary, ObjectBoundary.class);	
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
 
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
-		MiniAppCommandBoundary commandboundary = 
-				jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
-		commandboundary.setCommand(UUID.randomUUID().toString());
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
 		
 		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
 		
-		targetObject.put("targetObject", createObjectResponse.getObjectId());
+		targetObject.put("objectId", createObjectResponse.getObjectId());
+
+		commandBoundary.setTargetObject(targetObject);
+		
+		commandBoundary.setCommand(UUID.randomUUID().toString());	
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
 		
 		commandAttributes.put("echo", Instant.now().minus(2,ChronoUnit.DAYS));
-
-		commandboundary.setTargetObject(targetObject);
 		
-		commandboundary.setInvokedBy(createdBy);
-		
-		commandboundary.setCommandAttributes(commandAttributes);
+		commandBoundary.setCommandAttributes(commandAttributes);
 		
 		var commandResponse  = this.restTemplate
-				.postForObject(this.url, commandboundary, String.class);
+				.postForObject(this.url, commandBoundary, String.class);
 
 		assertEquals(commandResponse.toString(), "Command not found");
 
@@ -585,6 +718,7 @@ public class CommandControllerTests {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
 		Date date = null;
+		
 		try {
 			date = sdf.parse(dateAsString);
 		} catch (ParseException e) {

@@ -48,18 +48,12 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		this.commandFactory = commandFactory;
 		this.userService = userService;
 		this.objectConvertor = objectConvertor;
+		this.superAppObjectRepositoy = superAppObjectRepositoy;
 	}
 
 	@Override
 	@Transactional()
 	public Object invokeCommand(String miniAppName, MiniAppCommandBoundary boundary) {
-		throw new DeprecatedFunctionException("Unsupported paging invokeCommand function is deprecated ");
-	}
-	
-	@Override
-	@Transactional()
-	public Object invokeCommand(String userSuperApp, String userEmail, String miniAppName, MiniAppCommandBoundary boundary) {
-		
 		Guard.AgainstNull(boundary, boundary.getClass().getName());
 		try {
 			Guard.AgainstNull(boundary.getCommand(), boundary.getCommand().getClass().getName());	
@@ -71,10 +65,17 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		Guard.AgainstNull(boundary.getTargetObject(), boundary.getTargetObject().getClass().getName());
 		Guard.AgainstNull(miniAppName, miniAppName);
 		
+		String userSuperApp = boundary.getInvokedBy().get("userId").getSuperapp();
+		String userEmail = boundary.getInvokedBy().get("userId").getEmail();
+		
 		UserBoundary user = userService.login(userSuperApp, userEmail);
 		if(user.getRole() != UserRole.MINIAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
-		userService.validateObjectActive(userSuperApp, miniAppName, this.superAppObjectRepositoy, this.objectConvertor);
+			throw new UnAuthoriezedRoleRequestException("Only MiniApp user has permission!");
+		
+		String objectSuperApp = boundary.getTargetObject().get("objectId").getSuperapp();
+		String objectInternalId = boundary.getTargetObject().get("objectId").getInternalObjectId();
+		
+		userService.validateObjectActive(objectSuperApp, objectInternalId, this.superAppObjectRepositoy, this.objectConvertor);
 		
 		CommandId commandId = new CommandId(
 				configProperties.getSuperAppName(),
@@ -83,16 +84,15 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		
 		MiniAppCommandEntity commandEntity = converter.toEntity(boundary,commandId);
 		
-		
-		var invokableCommand = commandFactory.GetCommand(commandEntity.getCommand());
+		var invokableCommand = commandFactory.GetInvokableCommand(commandEntity);
 		
 		var response = invokableCommand.Invoke(commandEntity);
 		
 		commandRepository.save(commandEntity);
 		
 		return response;
-		
 	}
+	
 
 
 	@Override

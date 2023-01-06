@@ -8,7 +8,6 @@ import superapp.logic.boundaries.MiniAppCommandBoundary;
 
 public interface MiniAppCommandsService {
 	
-	@Deprecated
 	public Object invokeCommand(String miniAppName, MiniAppCommandBoundary command);
 	
 	@Deprecated

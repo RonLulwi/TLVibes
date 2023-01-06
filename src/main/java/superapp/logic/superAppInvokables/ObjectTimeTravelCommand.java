@@ -9,34 +9,36 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import superapp.data.MiniAppCommandEntity;
 import superapp.data.SuperAppObjectEntity;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 
-@Component(value = "objectTimeTravel")
+@Component("TEST.objectTimeTravel")
 public class ObjectTimeTravelCommand implements ICommandInvokable {
 
-	private String commandName = "objectTimeTravel";
 	private SuperAppObjectRepository objectsRepositoy;
+	private ObjectMapper jackson;
 
 	@Autowired
 	public void setObjectsRepositoy(SuperAppObjectRepository objectsRepositoy) {
 		this.objectsRepositoy = objectsRepositoy;
 	}
+	
+	@Autowired
+	public void setJackson(ObjectMapper jackson) {
+		this.jackson = jackson;
+	}
 
 	@Override
 	public Object Invoke(MiniAppCommandEntity command) {
 		
-		if(!command.getCommand().equals(commandName)){
-			throw new RuntimeException("Invalid command name : " + commandName);
-		}
-		
-		if(!command.getCommandId().getMiniapp().equals("TEST")){
-			throw new RuntimeException("command : " + commandName + "can be invoke only from MiniApp TEST");
-		}
-
-		SuperAppObjectIdBoundary objectId = command.getTargetObject().get("targetObject");
+		SuperAppObjectIdBoundary objectId = command.getTargetObject().get("objectId");
 		
 		Optional<SuperAppObjectEntity> optionalEntity= objectsRepositoy.findById(objectId);
 		
@@ -47,22 +49,23 @@ public class ObjectTimeTravelCommand implements ICommandInvokable {
 		
 		SuperAppObjectEntity current = optionalEntity.get();
 		
-		String newTimeStamp = command.getCommandAttributes().get("creationTimestamp").toString();
+		String newTimeStamp = "\"" + command.getCommandAttributes().get("creationTimestamp") +"\"" ;
 				
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-
-		Date updatedData;
+		Object updatedData;
 		
 		try {
-			updatedData = sdf.parse(newTimeStamp);
-		} catch (ParseException e) {
+			jackson.registerModule(new JavaTimeModule());
+
+			updatedData = jackson.readValue(newTimeStamp, Date.class);
+		} catch (Exception e) {
 			throw new InvalidParameterException(newTimeStamp);
 		}
 
-		current.setCreationTimestamp(updatedData);
+		current.setCreationTimestamp((Date)updatedData);
 		
 		return objectsRepositoy.save(current);
 		
 	}
+	
 
 }

@@ -9,12 +9,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Array;
+import java.security.InvalidParameterException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.tomcat.jni.Time;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +35,19 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserRole;
+import superapp.data.enums.CreationEnum;
+import superapp.logic.ObjectsService;
+import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.NewUserBoundary;
 import superapp.logic.boundaries.ObjectBoundary;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
+import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -45,6 +60,12 @@ public class ObjectControllerTests {
 	private ControllersTestsHelper helper;
 	private String baseUrl;
 	private String userPrefix;
+	private ObjectConvertor objectConvertor;
+
+	@Autowired
+	public void setObjectConvertor(ObjectConvertor objectConvertor) {
+		this.objectConvertor = objectConvertor;
+	}
 
 	@Autowired
 	public void setConfigProperties(ConfigProperties configProperties) {
@@ -79,10 +100,6 @@ public class ObjectControllerTests {
 	@AfterEach
 	public void teardown() {
 		helper.TeadDown();
-		//			this.restTemplate
-		//				.delete("http://localhost:" + this.port + "/superapp/admin/users");
-		//			this.restTemplate
-		//				.delete("http://localhost:" + this.port + "/superapp/admin/objects");
 
 	}
 
@@ -115,6 +132,93 @@ public class ObjectControllerTests {
 		assertNotEquals(boundary.getObjectId().getSuperapp(),response.getObjectId().getSuperapp());
 		assertNotEquals(boundary.getObjectId().getInternalObjectId(),response.getObjectId().getInternalObjectId());
 		assertThat(response.getCreationTimestamp().after(boundary.getCreationTimestamp()));
+
+	}
+
+	@Test
+	public void testCreateSuperAppObjectWithNullType() throws JsonMappingException, JsonProcessingException
+	{
+		String userBoundaryAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+
+		var createUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, userBoundary, UserBoundary.class);	
+
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
+		createdBy.put("userId", createUserRes.getUserId());
+
+		boundary.setCreatedBy(createdBy);
+
+		boundary.setActive(null);
+		
+		Exception exception = assertThrows(Exception.class, () -> {
+			this.restTemplate.
+				postForObject(this.baseUrl + helper.objectPrefix, boundary, ObjectBoundary.class);		});
+
+		assertThat(exception.getMessage().contains("\"status\":400"));
+
+	}
+	
+	@Test
+	public void testCreateSuperAppObjectWithNullAlias() throws JsonMappingException, JsonProcessingException
+	{
+		String userBoundaryAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+
+		var createUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, userBoundary, UserBoundary.class);	
+
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
+		createdBy.put("userId", createUserRes.getUserId());
+
+		boundary.setCreatedBy(createdBy);
+
+		boundary.setAlias(null);
+		
+		Exception exception = assertThrows(Exception.class, () -> {
+			this.restTemplate.
+				postForObject(this.baseUrl + helper.objectPrefix, boundary, ObjectBoundary.class);		});
+
+		assertThat(exception.getMessage().contains("\"status\":400"));
+
+	}
+
+	@Test
+	public void testCreateSuperAppObjectWithEmptyStringAlias() throws JsonMappingException, JsonProcessingException
+	{
+		String userBoundaryAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary userBoundary = jackson.readValue(userBoundaryAsString,NewUserBoundary.class);
+
+		var createUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, userBoundary, UserBoundary.class);	
+
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
+		createdBy.put("userId", createUserRes.getUserId());
+
+		boundary.setCreatedBy(createdBy);
+
+		boundary.setAlias("");
+		
+		Exception exception = assertThrows(Exception.class, () -> {
+			this.restTemplate.
+				postForObject(this.baseUrl + helper.objectPrefix, boundary, ObjectBoundary.class);		});
+
+		assertThat(exception.getMessage().contains("\"status\":400"));
 
 	}
 
@@ -475,7 +579,6 @@ public class ObjectControllerTests {
 
 		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
 
-
 		ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
 
 		Map<String, UserId> createdBy = new HashMap<>();
@@ -537,6 +640,184 @@ public class ObjectControllerTests {
 		assertThat(oldObj.getCreationTimestamp().equals(res.getCreationTimestamp()));
 		
 	}
+	
+	@Test
+	public void testGetAllObjectThatCreatedInTheLastMinuts() throws JsonMappingException, JsonProcessingException
+	{
+		var createMiniAppUserRes = addMiniAppUserToDatabase();	
+		
+		var createSuperAppRes = addSuperAppUserToDatabase();	
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
+		IntStream.range(0, 20).forEach(i ->{
+			
+			ObjectBoundary createObjectResponse;
+			try {
+				createObjectResponse = addSuperAppUserByUserToDatabase(createSuperAppRes);
+			
+				MiniAppCommandBoundary commandBoundary = createCommandOnTargetByUser(createMiniAppUserRes,
+					createObjectResponse);
+			
+				if(i % 4 == 0) {
+					
+					Map<String,Object> commandAttributes = new HashMap<>();
+					
+					commandAttributes.put("creationTimestamp", formatter.format(
+							Instant.now().minus(30,ChronoUnit.SECONDS)));
+	
+					commandBoundary.setCommand("objectTimeTravel");
+							
+					commandBoundary.setCommandAttributes(commandAttributes);
+	
+					var getObjectByIdResponse = this.restTemplate
+							.getForObject(
+									this.baseUrl + 
+									helper.objectPrefix + 
+									createObjectResponse.getObjectId().getSuperapp() + "/" +
+									createObjectResponse.getObjectId().getInternalObjectId() 
+									+ "?userSuperapp="
+									+ createObjectResponse.getCreatedBy().get("userId").getSuperapp()
+									+ "&userEmail="
+									+ createObjectResponse.getCreatedBy().get("userId").getEmail()
+									, ObjectBoundary.class);
+					
+					this.restTemplate
+					.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandBoundary, String.class);
+				}
+			}
+			catch(Exception e)
+			{}
+		});
+		
+		var allObjectsFromLastMinuts = this.restTemplate
+				.getForObject(this.baseUrl + "/superapp/objects/search/byCreation/" +
+						CreationEnum.LAST_MINUTE.toString() 
+				+ "?userSuperapp="
+				+ createSuperAppRes.getUserId().getSuperapp()
+				+ "&userEmail="
+				+ createSuperAppRes.getUserId().getEmail()
+				, ObjectBoundary[].class);
+
+		assertEquals(4, allObjectsFromLastMinuts.length);
+	}
+
+	private MiniAppCommandBoundary createCommandOnTargetByUser(UserBoundary createMiniAppUserRes,
+			ObjectBoundary createObjectResponse) throws JsonProcessingException, JsonMappingException {
+		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
+		
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
+		
+		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
+		
+		targetObject.put("objectId", createObjectResponse.getObjectId());
+
+		commandBoundary.setTargetObject(targetObject);
+		return commandBoundary;
+	}
+
+	private ObjectBoundary addSuperAppUserByUserToDatabase(UserBoundary createSuperAppRes)
+			throws JsonProcessingException, JsonMappingException {
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+
+		Map<String, UserId> createdBy = new HashMap<>();
+		
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
+		return createObjectResponse;
+	}
+
+	private UserBoundary addSuperAppUserToDatabase() throws JsonProcessingException, JsonMappingException {
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);
+		return createSuperAppRes;
+	}
+
+	private UserBoundary addMiniAppUserToDatabase() throws JsonProcessingException, JsonMappingException {
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
+
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);
+		return createMiniAppUserRes;
+	}
+	
+	@Test
+	public void testConvertObjectBoundaryToEntity() throws JsonMappingException, JsonProcessingException{
+		
+		String objectboundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
+
+		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+				configProperties.getSuperAppName(),
+				UUID.randomUUID().toString());
+		
+		SuperAppObjectEntity entity = objectConvertor.toEntity(boundary, objectId);
+		
+		assertNotEquals(entity.getObjectId(),boundary.getObjectId());
+		assertEquals(entity.getActive(),boundary.getActive());
+		assertEquals(entity.getAlias(), boundary.getAlias());
+		assertEquals(entity.getType(), boundary.getType());
+		assertEquals(entity.getCreatedBy(),boundary.getCreatedBy());
+		assertEquals(entity.getCreationTimestamp(),boundary.getCreationTimestamp());
+		assertEquals(entity.getObjectDetails(), boundary.getObjectDetails());
+	}
+	
+	@Test
+	public void testConvertObjectEntityToboundary() throws JsonMappingException, JsonProcessingException{
+		
+		SuperAppObjectEntity entity = new SuperAppObjectEntity();
+		
+		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+				configProperties.getSuperAppName(),
+				UUID.randomUUID().toString());
+
+		entity.setObjectId(objectId);
+		entity.setActive(true);
+		entity.setAlias("testEntity");
+		entity.setCreationTimestamp(Date.from(Instant.now()));
+		entity.setType("testObject");
+		
+		Map<String, UserId> createdBy = new HashMap<>();
+		UserId userId = new UserId("test","test@gmail.com");
+		createdBy.put("userId", userId);
+
+		entity.setCreatedBy(createdBy);
+		
+		Map<String, Object> objectDetails = new HashMap<>();
+		objectDetails.put("testDetails","checkConvertionFromEntityToBoundary");
+		entity.setObjectDetails(objectDetails);
+		
+		ObjectBoundary boundary = objectConvertor.toBoundary(entity);
+		
+		assertEquals(entity.getObjectId(),boundary.getObjectId());
+		assertEquals(entity.getActive(),boundary.getActive());
+		assertEquals(entity.getAlias(), boundary.getAlias());
+		assertEquals(entity.getType(), boundary.getType());
+		assertEquals(entity.getCreatedBy(),boundary.getCreatedBy());
+		assertEquals(entity.getCreationTimestamp(),boundary.getCreationTimestamp());
+		assertEquals(entity.getObjectDetails(), boundary.getObjectDetails());
+	}
+
+	
 
 
 }

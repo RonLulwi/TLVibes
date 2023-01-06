@@ -13,6 +13,8 @@ import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 public interface SuperAppObjectRepository extends PagingAndSortingRepository<SuperAppObjectEntity,SuperAppObjectIdBoundary> {
 
     List<SuperAppObjectEntity> findBycreationTimestampAfter(Instant createdAfter);
+    
+    List<SuperAppObjectEntity> findBycreationTimestampAfterAndActive(boolean active, Instant createdAfter);
 
 	List<SuperAppObjectEntity> findAllByParent(SuperAppObjectEntity parent, Pageable page);
 	
@@ -27,4 +29,15 @@ public interface SuperAppObjectRepository extends PagingAndSortingRepository<Sup
 	List<SuperAppObjectEntity> findAllByAliasContaining(String text, Pageable page);
 	
 	List<SuperAppObjectEntity> findAllByAliasContainingAndActive(String text,boolean active , Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByActive(boolean active, Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByParentAndActive(SuperAppObjectEntity parent, boolean active ,Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByChildrens(SuperAppObjectEntity childrens, Pageable page);
+	
+	List<SuperAppObjectEntity> findAllByChildrensAndActive(SuperAppObjectEntity childrens, boolean active ,Pageable page);
+	
+	
+	
 }	
