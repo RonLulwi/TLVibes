@@ -1,7 +1,6 @@
 package superapp.logic.services;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,10 +114,10 @@ public class ObjectService implements EnhancedObjectsService {
 		boolean addNonActive = (user.getRole() == UserRole.SUPERAPP_USER);
 		return (addNonActive) ?
 				this.objectsRepository
-				.findAll(PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(entity -> convertor.toBoundary(entity)).collect(Collectors.toList())
+				.findAll(PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId")).stream().map(entity -> convertor.toBoundary(entity)).collect(Collectors.toList())
 				:
 				this.objectsRepository
-				.findAllByActive(true, PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());
+				.findAllByActive(true, PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());
 	}
 
 
@@ -223,10 +222,10 @@ public class ObjectService implements EnhancedObjectsService {
 		boolean addNonActive = (userEntity.get().getRole() == UserRole.SUPERAPP_USER);
 		return (addNonActive) ?
 				this.objectsRepository
-				.findAllByParent(entity,PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList())
+				.findAllByParent(entity,PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList())
 				:
 				this.objectsRepository
-				.findAllByParentAndActive(entity, true, PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());		
+				.findAllByParentAndActive(entity, true, PageRequest.of(page, size, Direction.DESC, "objectId.superapp","objectId.internalObjectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());		
 	}
 
 	@Override
@@ -258,10 +257,10 @@ public class ObjectService implements EnhancedObjectsService {
 		boolean addNonActive = (userEntity.get().getRole() == UserRole.SUPERAPP_USER);
 		return (addNonActive) ?
 				this.objectsRepository
-				.findAllByChildrens(parent,PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList())
+				.findAllByChildrens(parent,PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList())
 				:
 				this.objectsRepository
-				.findAllByChildrensAndActive(parent, true, PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());		
+				.findAllByChildrensAndActive(parent, true, PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId")).stream().map(this.convertor::toBoundary).collect(Collectors.toList());		
 
 	}
 
@@ -372,10 +371,10 @@ public class ObjectService implements EnhancedObjectsService {
 
 		List<SuperAppObjectEntity> allObjects = (addNonActive) ?
 				this.objectsRepository
-				.findAllByType(type,PageRequest.of(page, size, Direction.DESC, "objectId"))
+				.findAllByType(type,PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId"))
 				:
 				this.objectsRepository
-				.findAllByTypeAndActive(type,true,PageRequest.of(page, size, Direction.DESC, "objectId"));
+				.findAllByTypeAndActive(type,true,PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId"));
 		
 		return allObjects
 				.stream()
@@ -404,10 +403,10 @@ public class ObjectService implements EnhancedObjectsService {
 
 		List<SuperAppObjectEntity> allObjects = (addNonActive) ?
 				this.objectsRepository
-				.findAllByAlias(alias,PageRequest.of(page, size, Direction.DESC, "objectId"))
+				.findAllByAlias(alias,PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId"))
 				:
 				this.objectsRepository
-				.findAllByAliasAndActive(alias,true,PageRequest.of(page, size, Direction.DESC, "objectId"));
+				.findAllByAliasAndActive(alias,true,PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId"));
 		
 		return allObjects
 				.stream()
@@ -436,10 +435,10 @@ public class ObjectService implements EnhancedObjectsService {
 
 		List<SuperAppObjectEntity> allObjects = (addNonActive) ?
 				this.objectsRepository
-				.findAllByAliasContaining(text,PageRequest.of(page, size, Direction.DESC, "objectId"))
+				.findAllByAliasContaining(text,PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId"))
 				:
 				this.objectsRepository
-				.findAllByAliasContainingAndActive(text,true,PageRequest.of(page, size, Direction.DESC, "objectId"));
+				.findAllByAliasContainingAndActive(text,true,PageRequest.of(page, size, Direction.DESC,"objectId.superapp", "objectId.internalObjectId"));
 		
 		return allObjects
 				.stream()
@@ -478,19 +477,6 @@ public class ObjectService implements EnhancedObjectsService {
 
 		return convertor.toBoundary(returned);
 	}
-
-
-
-
-
-	
-
-
-
-
-
-
-
 
 
 

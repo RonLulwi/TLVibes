@@ -7,6 +7,7 @@ public class Weather {
 	
 	private Map<String,Object> location;
 	private Map<Object,Object> current;
+	private Map<Object,Object> forecast;
 	
 	
 	public Map<String, Object> getLocation() {
@@ -20,6 +21,12 @@ public class Weather {
 	}
 	public void setCurrent(Map<Object, Object> current) {
 		this.current = current;
+	}
+	public Map<Object,Object> getForecast() {
+		return forecast;
+	}
+	public void setForecast(Map<Object,Object> forecast) {
+		this.forecast = forecast;
 	}
 	
 
