@@ -13,7 +13,6 @@ import superapp.data.MiniAppCommandEntity;
 import superapp.data.UserRole;
 import superapp.data.interfaces.MiniAppCommandRepository;
 import superapp.data.interfaces.SuperAppObjectRepository;
-import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.EnhancedMiniAppCommandsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.UserBoundary;
@@ -111,7 +110,7 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
 
 		return this.commandRepository
-				.findAll(PageRequest.of(page, size, Direction.DESC, "commandId.miniapp"))
+				.findAll(PageRequest.of(page, size, Direction.DESC,"commandId.miniapp","commandId.internalCommandId"))
 				.stream()
 				.map(this.converter::toBoundary)
 				.collect(Collectors.toList());
@@ -158,50 +157,8 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
