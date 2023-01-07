@@ -28,6 +28,10 @@ public class Weather {
 	public void setForecast(Map<Object,Object> forecast) {
 		this.forecast = forecast;
 	}
+	@Override
+	public String toString() {
+		return "Weather [location=" + location + ", current=" + current + ", forecast=" + forecast + "]";
+	}
 	
 
 	
