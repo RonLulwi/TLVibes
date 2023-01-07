@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
 
 import javax.annotation.PostConstruct;
 
+import org.assertj.core.util.Arrays;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -64,6 +65,8 @@ public class CommandControllerTests {
 	private String objectPrefix;
 	private String commandPrefix;
 	private String commandTestStr;
+	private String specificCommandUrl;
+	private String specificAdminUrl;
 	
 	@Autowired
 	public void setHelper(ControllersTestsHelper helper) {
@@ -90,6 +93,8 @@ public class CommandControllerTests {
 		this.restTemplate = new RestTemplate();
 		this.baseUrl = "http://localhost:" + this.port;
 		this.url = this.baseUrl + "/superapp/miniapp/" + configProperties.getSuperAppName();
+		this.specificAdminUrl = this.baseUrl + "/superapp/admin/miniapp";
+		this.specificCommandUrl = this.baseUrl + "/superapp/miniapp/";
 		this.objectPrefix = "/superapp/objects/";
 		this.commandPrefix = "\"command\" :";
 		this.commandTestStr = " \"doSomthing\",\r\n";
@@ -98,6 +103,86 @@ public class CommandControllerTests {
 	@AfterEach
 	public void teardown() {		
 		helper.TeadDown();
+	}
+	
+	
+	@Test
+	public void testInvokeCommandForWeatherHappyFlow() throws JsonMappingException, JsonProcessingException
+	{
+		
+		String adminUserAsString = helper.GetAdminUserBoundaryAsJson();
+		
+		NewUserBoundary adminUserBounday = jackson.readValue(adminUserAsString,NewUserBoundary.class);
+		
+		var createAdminUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, adminUserBounday, UserBoundary.class);
+		
+		String miniAppUserAsString  = helper.GetMiniAppUserBoundaryAsJson();
+
+		NewUserBoundary miniappUserBoundary = jackson.readValue(miniAppUserAsString,NewUserBoundary.class);
+
+		var createMiniAppUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, miniappUserBoundary, UserBoundary.class);	
+
+		String superAppUserAsString  = helper.GetSuperAppUserBoundaryAsJson();
+
+		NewUserBoundary superAppUserBoundary = jackson.readValue(superAppUserAsString,NewUserBoundary.class);
+
+		var createSuperAppRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, superAppUserBoundary, UserBoundary.class);	
+
+		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
+
+		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+		
+
+		Map<String, UserId> createdBy = new HashMap<>();
+		
+		createdBy.put("userId", createSuperAppRes.getUserId());
+
+		objectBoundary.setCreatedBy(createdBy);
+
+
+		var createObjectResponse = this.restTemplate.postForObject(
+				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
+
+		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
+		
+		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		
+		commandBoundary.setCommand("getTlvWeather");
+		
+		Map<String, UserId> invokedBy = new HashMap<>();
+		
+		invokedBy.put("userId", createMiniAppUserRes.getUserId());
+
+		commandBoundary.setInvokedBy(invokedBy);
+		
+		Map<String,SuperAppObjectIdBoundary> targetObject = new HashMap<>();
+		
+		targetObject.put("objectId", createObjectResponse.getObjectId());
+
+		commandBoundary.setTargetObject(targetObject);
+		
+		
+		
+		var response = this.restTemplate.postForObject(
+				this.specificCommandUrl
+				+ "weather"
+				, commandBoundary, Object.class);
+		assertNotNull(response);
+		
+		var getRes = this.restTemplate.getForObject(
+				this.specificAdminUrl
+				+ "?userSuperapp="
+				+ createAdminUserRes.getUserId().getSuperapp()
+				+ "&userEmail="
+				+ createAdminUserRes.getUserId().getEmail()
+				, MiniAppCommandBoundary[].class);
+		
+		assertNotNull(Arrays.asList(getRes).contains(response));
+
+		
 	}
 	
 	
@@ -123,6 +208,7 @@ public class CommandControllerTests {
 		String objectBoundaryAsString  = helper.GetBaseObjectBoundaryAsJson();
 
 		ObjectBoundary objectBoundary = jackson.readValue(objectBoundaryAsString,ObjectBoundary.class);
+		
 
 		Map<String, UserId> createdBy = new HashMap<>();
 		
@@ -130,12 +216,14 @@ public class CommandControllerTests {
 
 		objectBoundary.setCreatedBy(createdBy);
 
+
 		var createObjectResponse = this.restTemplate.postForObject(
 				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
 
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
 		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
+		
 		
 		Map<String, UserId> invokedBy = new HashMap<>();
 		
@@ -149,8 +237,11 @@ public class CommandControllerTests {
 
 		commandBoundary.setTargetObject(targetObject);
 		
-		var response = this.restTemplate.postForObject(this.url, commandBoundary, String.class);
-
+		
+		var response = this.restTemplate.postForObject(
+				this.url
+				, commandBoundary, String.class);
+		
 		assertNotNull(response);
 	}
 	

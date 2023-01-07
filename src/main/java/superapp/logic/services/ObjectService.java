@@ -1,6 +1,7 @@
 package superapp.logic.services;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -475,7 +476,7 @@ public class ObjectService implements EnhancedObjectsService {
 
 
 		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId,objectId);
-
+		entity.setCreationTimestamp(new Date());
 		var id = new SuperAppObjectIdBoundary(configProperties.getSuperAppName(),idGenerator.GenerateUUID().toString());
 
 		entity.setObjectId(id);

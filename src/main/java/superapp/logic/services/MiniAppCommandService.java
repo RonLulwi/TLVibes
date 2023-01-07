@@ -1,6 +1,7 @@
 package superapp.logic.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +11,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import superapp.data.MiniAppCommandEntity;
+import superapp.data.UserEntity;
 import superapp.data.UserRole;
 import superapp.data.interfaces.MiniAppCommandRepository;
 import superapp.data.interfaces.SuperAppObjectRepository;
+import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.EnhancedMiniAppCommandsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.CommandId;
+import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.MiniAppCommandsConverter;
 import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
@@ -36,10 +40,14 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 	private UserService userService;
 	private SuperAppObjectRepository superAppObjectRepositoy;
 	private ObjectConvertor objectConvertor;
+	private UserEntityRepository userRepository;
 
 	@Autowired
 	public MiniAppCommandService(MiniAppCommandsConverter converter, ConfigProperties configProperties,IdGenerator idGenerator,
-			UserService userService, ObjectConvertor objectConvertor, SuperAppObjectRepository superAppObjectRepositoy,MiniAppCommandRepository commandRepository,CommandFactory commandFactory) {
+			UserService userService, ObjectConvertor objectConvertor, 
+			SuperAppObjectRepository superAppObjectRepositoy,
+			MiniAppCommandRepository commandRepository,CommandFactory commandFactory,
+			UserEntityRepository userRepository) {
 		this.converter = converter;
 		this.commandRepository = commandRepository;
 		this.idGenerator = idGenerator;
@@ -48,6 +56,7 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		this.userService = userService;
 		this.objectConvertor = objectConvertor;
 		this.superAppObjectRepositoy = superAppObjectRepositoy;
+		this.userRepository = userRepository;
 	}
 
 	@Override
@@ -67,9 +76,19 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		String userSuperApp = boundary.getInvokedBy().get("userId").getSuperapp();
 		String userEmail = boundary.getInvokedBy().get("userId").getEmail();
 		
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.MINIAPP_USER)
-			throw new UnAuthoriezedRoleRequestException("Only MiniApp user has permission!");
+		
+//		UserBoundary user = userService.login(userSuperApp, userEmail);
+//		if(user.getRole() != UserRole.MINIAPP_USER)
+//			throw new UnAuthoriezedRoleRequestException("Only MiniApp user has permission!");
+		
+		UserId userId = new UserId(userSuperApp,userEmail);
+		Optional<UserEntity> user = this.userRepository.findById(userId);
+		if(user == null)
+			new EntityNotFoundException("Could not find user with id : " + userId);
+		
+		if(user.get().getRole() != UserRole.MINIAPP_USER)
+		throw new UnAuthoriezedRoleRequestException("Only MiniApp user has permission!");
+		
 		
 		String objectSuperApp = boundary.getTargetObject().get("objectId").getSuperapp();
 		String objectInternalId = boundary.getTargetObject().get("objectId").getInternalObjectId();
