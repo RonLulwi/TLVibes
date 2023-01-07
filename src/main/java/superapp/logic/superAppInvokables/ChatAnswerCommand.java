@@ -17,7 +17,7 @@ import superapp.data.MiniAppCommandEntity;
 import superapp.logic.services.MissingCommandOnPostRequestException;
 
 
-@Component("chat.chatAnswer")
+@Component(value = "chat.chatAnswer")
 public class ChatAnswerCommand implements ICommandInvokable {
 	
 	private String commandName = "chatAnswer";

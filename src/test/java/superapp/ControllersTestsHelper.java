@@ -17,6 +17,8 @@ public class ControllersTestsHelper {
 	
 	public String userPrefix = "/superapp/users/";
 	public String objectPrefix = "/superapp/objects/";
+	public String adminPrefix = "/superapp/admin/";
+	public String miniappPrefix = "/superapp/miniapp/";
 
 	private UserService userService;
 	private MiniAppCommandService commandService;
