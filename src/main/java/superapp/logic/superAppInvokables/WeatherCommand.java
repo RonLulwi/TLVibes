@@ -16,9 +16,8 @@ public class WeatherCommand implements ICommandInvokable{
 	
 
 	private RestTemplate restTemplate;
-	private String apiKey2 = "639005825020473197c185446230301";
 	private String commandName = "getTlvWeather";
-	private String weatherApiBaseUrl2 = "http://api.weatherapi.com/v1/current.json?key=639005825020473197c185446230301&q=Tel%20Aviv&aqi=no";
+	private String weatherApiBaseUrl = "http://api.weatherapi.com/v1/forecast.json?key=639005825020473197c185446230301&q=Tel%20Aviv&aqi=no";
 	
 	
 	@Autowired
@@ -34,11 +33,14 @@ public class WeatherCommand implements ICommandInvokable{
 			throw new RuntimeException("Invalid command name : " + commandName);
 		}
 		
-
+		
+		if (command.getCommandAttributes().containsKey("days")) {
+			this.weatherApiBaseUrl+=("&days="+command.getCommandAttributes().getOrDefault("days", 0));
+		}
 		ResponseEntity<Weather> response;
 
 	    try {
-	    	response = restTemplate.getForEntity(weatherApiBaseUrl2,Weather.class);
+	    	response = restTemplate.getForEntity(weatherApiBaseUrl,Weather.class);
 	    	
 	    }
 	    catch (Exception e) {
