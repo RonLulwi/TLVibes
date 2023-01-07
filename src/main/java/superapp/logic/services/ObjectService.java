@@ -108,11 +108,18 @@ public class ObjectService implements EnhancedObjectsService {
 	@Transactional(readOnly = true)
 	public List<ObjectBoundary> getAllObjects(String userSuperApp, String userEmail, int page, int size) {
 		
-		UserBoundary user = userService.login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.MINIAPP_USER && user.getRole() != UserRole.SUPERAPP_USER)
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> user = this.userRepository.findById(userId);
+		if(user==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		
+		
+		if(user.get().getRole() != UserRole.MINIAPP_USER && 
+				user.get().getRole() != UserRole.SUPERAPP_USER)
 			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");
 		
-		boolean addNonActive = (user.getRole() == UserRole.SUPERAPP_USER);
+		boolean addNonActive = (user.get().getRole() == UserRole.SUPERAPP_USER);
 		return (addNonActive) ?
 				this.objectsRepository
 				.findAll(PageRequest.of(page, size, Direction.DESC, "objectId")).stream().map(entity -> convertor.toBoundary(entity)).collect(Collectors.toList())

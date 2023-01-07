@@ -111,8 +111,12 @@ public class UserService implements EnhancedUsersService {
 	@Transactional(readOnly = true)
 	public List<UserBoundary> getAllUsers(String userSuperApp, String userEmail, int size,int page) {
 		
-		UserBoundary user = login(userSuperApp, userEmail);
-		if(user.getRole() != UserRole.ADMIN)
+		UserId userId = new UserId(userSuperApp, userEmail);
+		Optional<UserEntity> user = this.usersRepository.findById(userId);
+		if(user==null) {
+			throw new EntityNotFoundException("No user with id " + userId);
+		}
+		if(user.get().getRole() != UserRole.ADMIN)
 			throw new UnAuthoriezedRoleRequestException("Only ADMIN has permission!");
 		
 		return this.usersRepository

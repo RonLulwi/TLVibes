@@ -96,7 +96,7 @@ public class AdminController {
 			method = {RequestMethod.GET},
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public UserBoundary[] GetAllUsers(
-			@RequestParam(name = "userSuperApp", required = false, defaultValue = "") 
+			@RequestParam(name = "userSuperapp", required = false, defaultValue = "") 
 			String userSuperApp, 
 			@RequestParam(name = "userEmail", required = false, defaultValue = "")
 			String userEmail,
