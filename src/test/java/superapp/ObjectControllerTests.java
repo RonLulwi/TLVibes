@@ -35,6 +35,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.ObjectIdInfo;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import superapp.data.SuperAppObjectEntity;
@@ -49,6 +50,7 @@ import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.SuperAppMapToJsonConverter;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ObjectControllerTests {
@@ -816,8 +818,95 @@ public class ObjectControllerTests {
 		assertEquals(entity.getCreationTimestamp(),boundary.getCreationTimestamp());
 		assertEquals(entity.getObjectDetails(), boundary.getObjectDetails());
 	}
-
+	@Test
+	public void testBindTwoObjectsAndGetChildObjectHisParentObjectHappyFlow() throws JsonMappingException, JsonProcessingException {
 	
+		// create superAppUser
+		UserBoundary superAppUser = addSuperAppUserToDatabase();
+		
+		// create two objects father and child
+		ObjectBoundary father = addSuperAppUserByUserToDatabase(superAppUser);
+		ObjectBoundary child = addSuperAppUserByUserToDatabase(superAppUser);
+		
+		// extract objectId from child
+		SuperAppObjectIdBoundary childObjectId = child.getObjectId();
+		
+		// bindChild URL  
+		String myURL = this.baseUrl + helper.objectPrefix + father.getObjectId().getSuperapp() + "/" + father.getObjectId().getInternalObjectId() + "/children"
+		+"?userSuperapp="
+				+father.getCreatedBy().get("userId").getSuperapp()
+				+"&userEmail="
+				+father.getCreatedBy().get("userId").getEmail() ;
+		
+		// bind father and child
+		this.restTemplate.put(myURL, childObjectId);
 
+		// getParents URL
+		String myURL2 = this.baseUrl + helper.objectPrefix + child.getObjectId().getSuperapp() + "/" + child.getObjectId().getInternalObjectId() + "/parents"
+				+"?userSuperapp="
+						+superAppUser.getUserId().getSuperapp()
+						+"&userEmail="
+						+superAppUser.getUserId().getEmail() ;
+		// get parent from DB
+		ObjectBoundary[] childParentFromDB = this.restTemplate.getForObject(myURL2, ObjectBoundary[].class);
+		
+		
+		// check if father is equals to childParentFromDB
+		assertEquals(childParentFromDB[0].getObjectId(),father.getObjectId());
+		assertEquals(childParentFromDB[0].getActive(),father.getActive());
+		assertEquals(childParentFromDB[0].getAlias(), father.getAlias());
+		assertEquals(childParentFromDB[0].getType(), father.getType());
+		assertEquals(childParentFromDB[0].getCreatedBy(),father.getCreatedBy());
+		assertEquals(childParentFromDB[0].getCreationTimestamp(),father.getCreationTimestamp());
+		assertEquals(childParentFromDB[0].getObjectDetails(), father.getObjectDetails());
+
+	}
+	
+	@Test
+	public void testBindTwoObjectsAndGetParentObjectHisChildObjectHappyFlow() throws JsonMappingException, JsonProcessingException {
+	
+		// create superAppUser
+		UserBoundary superAppUser = addSuperAppUserToDatabase();
+		
+		// create two objects father and child
+		ObjectBoundary father = addSuperAppUserByUserToDatabase(superAppUser);
+		ObjectBoundary child = addSuperAppUserByUserToDatabase(superAppUser);
+		
+		// extract objectId from child
+		SuperAppObjectIdBoundary childObjectId = child.getObjectId();
+		
+		// bindChild URL  
+		String myURL = this.baseUrl + helper.objectPrefix + father.getObjectId().getSuperapp() + "/" + father.getObjectId().getInternalObjectId() + "/children"
+		+"?userSuperapp="
+				+father.getCreatedBy().get("userId").getSuperapp()
+				+"&userEmail="
+				+father.getCreatedBy().get("userId").getEmail() ;
+		
+		// bind father and child
+		this.restTemplate.put(myURL, childObjectId);
+
+		// getParents URL
+		String myURL2 = this.baseUrl + helper.objectPrefix + father.getObjectId().getSuperapp() + "/" + father.getObjectId().getInternalObjectId() + "/children"
+				+"?userSuperapp="
+						+superAppUser.getUserId().getSuperapp()
+						+"&userEmail="
+						+superAppUser.getUserId().getEmail() ;
+		// get child from DB
+		ObjectBoundary[] fatherChildFromDB = this.restTemplate.getForObject(myURL2, ObjectBoundary[].class);
+		
+		
+		// check if father is equals to fatherChildFromDB
+		assertEquals(fatherChildFromDB[0].getObjectId(),child.getObjectId());
+		assertEquals(fatherChildFromDB[0].getActive(),child.getActive());
+		assertEquals(fatherChildFromDB[0].getAlias(), child.getAlias());
+		assertEquals(fatherChildFromDB[0].getType(), child.getType());
+		assertEquals(fatherChildFromDB[0].getCreatedBy(),child.getCreatedBy());
+		assertEquals(fatherChildFromDB[0].getCreationTimestamp(),child.getCreationTimestamp());
+		assertEquals(fatherChildFromDB[0].getObjectDetails(), child.getObjectDetails());
+
+	}
+	
+	
+	
 
 }
