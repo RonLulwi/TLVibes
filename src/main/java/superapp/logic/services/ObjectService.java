@@ -20,11 +20,11 @@ import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserEntity;
 import superapp.data.UserRole;
 import superapp.data.enums.CreationEnum;
+import superapp.data.identifiers.ObjectId;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.EnhancedObjectsService;
 import superapp.logic.boundaries.ObjectBoundary;
-import superapp.logic.boundaries.UserBoundary;
 import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.ObjectConvertor;
@@ -86,7 +86,7 @@ public class ObjectService implements EnhancedObjectsService {
 		if(userEntity.get().getRole() == UserRole.MINIAPP_USER)
 			userService.validateObjectActive(objectSuperApp, internalObjectId, objectsRepository, convertor);
 			
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
+		ObjectId objectId = new ObjectId(objectSuperApp, internalObjectId);
 		
 		Optional<SuperAppObjectEntity> optional = this.objectsRepository.findById(objectId);
 		
@@ -179,7 +179,7 @@ public class ObjectService implements EnhancedObjectsService {
 		}
 		
 		
-		var parentId = new SuperAppObjectIdBoundary(parentSuperApp,parentInternalId);
+		var parentId = new ObjectId(parentSuperApp,parentInternalId);
 
 		Optional<SuperAppObjectEntity> optionalParentEntity =  this.objectsRepository.findById(parentId);
 
@@ -187,7 +187,7 @@ public class ObjectService implements EnhancedObjectsService {
 
 		SuperAppObjectEntity parent = optionalParentEntity.get();
 
-		Optional<SuperAppObjectEntity> optionalChildEntity =  this.objectsRepository.findById(childId);
+		Optional<SuperAppObjectEntity> optionalChildEntity =  this.objectsRepository.findById(convertor.toEntityId(childId));
 
 		Guard.AgainstNullOptinalIdNotFound(optionalChildEntity, childId.toString(), SuperAppObjectEntity.class.getName());
 
@@ -222,8 +222,8 @@ public class ObjectService implements EnhancedObjectsService {
 		
 		Guard.AgainstNull(superApp, superApp);
 		Guard.AgainstNull(internalId, internalId);
-		var entityId = new SuperAppObjectIdBoundary(superApp,internalId);
-		Optional<SuperAppObjectEntity> optionalEntity =  this.objectsRepository.findById(entityId);
+		var objectId = new ObjectId(superApp,internalId);
+		Optional<SuperAppObjectEntity> optionalEntity =  this.objectsRepository.findById(objectId);
 		Guard.AgainstNullOptinalIdNotFound(optionalEntity, optionalEntity.toString(), SuperAppObjectEntity.class.getName());
 		SuperAppObjectEntity entity = optionalEntity.get();
 		
@@ -253,11 +253,11 @@ public class ObjectService implements EnhancedObjectsService {
 			throw new UnAuthoriezedRoleRequestException("Only MINIAPP_USER and SUPERAPP_USER has permission!");			
 		}
 				
-		var entityId = new SuperAppObjectIdBoundary(superApp,internalId);
+		var objectId = new ObjectId(superApp,internalId);
 
-		Optional<SuperAppObjectEntity> optionalParentEntity =  this.objectsRepository.findById(entityId);
+		Optional<SuperAppObjectEntity> optionalParentEntity =  this.objectsRepository.findById(objectId);
 
-		Guard.AgainstNullOptinalIdNotFound(optionalParentEntity, entityId.toString(), SuperAppObjectEntity.class.getName());
+		Guard.AgainstNullOptinalIdNotFound(optionalParentEntity, objectId.toString(), SuperAppObjectEntity.class.getName());
 
 		SuperAppObjectEntity parent = optionalParentEntity.get();
 
@@ -330,7 +330,8 @@ public class ObjectService implements EnhancedObjectsService {
 		Guard.AgainstNullOrEmpty(userSuperApp, userSuperApp);
 		Guard.AgainstNullOrEmpty(userEmail, userEmail);
 		
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
+		
+		var boundaryId = new SuperAppObjectIdBoundary(objectSuperApp,internalObjectId);
 		Guard.AgainstNull(objectBoundary, objectBoundary.getClass().getName());
 		
 		UserId userId = new UserId(userSuperApp, userEmail);
@@ -343,11 +344,11 @@ public class ObjectService implements EnhancedObjectsService {
 			throw new UnAuthoriezedRoleRequestException("Only SUPERAPP_APP user can update objects!");			
 		}
 
-		if(!objectsRepository.existsById(objectId))
-			throw new EntityNotFoundException("Could not find object with id : " + objectId);
+		if(!objectsRepository.existsById(convertor.toEntityId(boundaryId)))
+			throw new EntityNotFoundException("Could not find object with id : " + boundaryId);
 		
 		
-		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,objectId);
+		SuperAppObjectEntity EntityUpdate = convertor.toEntity(objectBoundary,convertor.toEntityId(boundaryId));
 		var oldUserId = new HashMap<String, UserId>();
 		oldUserId.put("userId", userId);
 		EntityUpdate.setCreatedBy(oldUserId);
@@ -470,16 +471,12 @@ public class ObjectService implements EnhancedObjectsService {
 			throw new UnAuthoriezedRoleRequestException("Only SUPERAPP_APP user can create objects!");			
 		}
 		
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+		ObjectId objectId = new ObjectId(
 				configProperties.getSuperAppName(),
 				idGenerator.GenerateUUID().toString());
 
 
 		SuperAppObjectEntity entity = convertor.toEntity(objWithoutId,objectId);
-		entity.setCreationTimestamp(new Date());
-		var id = new SuperAppObjectIdBoundary(configProperties.getSuperAppName(),idGenerator.GenerateUUID().toString());
-
-		entity.setObjectId(id);
 
 		SuperAppObjectEntity returned = this.objectsRepository.save(entity);
 

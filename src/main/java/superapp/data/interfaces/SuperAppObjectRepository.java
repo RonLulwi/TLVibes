@@ -7,10 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import superapp.data.SuperAppObjectEntity;
-import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.data.identifiers.ObjectId;
 
-public interface SuperAppObjectRepository extends PagingAndSortingRepository<SuperAppObjectEntity,SuperAppObjectIdBoundary> {
+
+public interface SuperAppObjectRepository extends PagingAndSortingRepository<SuperAppObjectEntity,ObjectId> {
 
     List<SuperAppObjectEntity> findBycreationTimestampAfter(Instant createdAfter);
     

@@ -163,9 +163,7 @@ public class CommandControllerTests {
 		targetObject.put("objectId", createObjectResponse.getObjectId());
 
 		commandBoundary.setTargetObject(targetObject);
-		
-		
-		
+				
 		var response = this.restTemplate.postForObject(
 				this.specificCommandUrl
 				+ "weather"
@@ -184,8 +182,6 @@ public class CommandControllerTests {
 
 		
 	}
-	
-	
 	
 	@Test
 	public void testInvokeCommandHappyFlow() throws JsonMappingException, JsonProcessingException
@@ -216,14 +212,12 @@ public class CommandControllerTests {
 
 		objectBoundary.setCreatedBy(createdBy);
 
-
 		var createObjectResponse = this.restTemplate.postForObject(
 				this.baseUrl + helper.objectPrefix , objectBoundary, ObjectBoundary.class);
 
 		String commandboundaryAsString  = helper.GetBaseCommandBoundaryAsJson();
 		
 		MiniAppCommandBoundary commandBoundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
-		
 		
 		Map<String, UserId> invokedBy = new HashMap<>();
 		
@@ -237,12 +231,10 @@ public class CommandControllerTests {
 
 		commandBoundary.setTargetObject(targetObject);
 		
-		
-		var response = this.restTemplate.postForObject(
-				this.url
-				, commandBoundary, String.class);
-		
-		assertNotNull(response);
+		var response = this.restTemplate
+				.postForObject(this.url, commandBoundary, String.class);
+					
+		assertEquals("Command not found",response);
 	}
 	
 	@Test
@@ -253,16 +245,13 @@ public class CommandControllerTests {
 		
 		MiniAppCommandBoundary boundary = jackson.readValue(commandboundaryAsString,MiniAppCommandBoundary.class);
 		
-		MiniAppCommandBoundary response = null;
-		try {
-			response = this.restTemplate.postForObject(this.url, boundary, MiniAppCommandBoundary.class);
-		}
-		catch(Exception e)
-		{
-			
-		}
-		assertNull(response);
 		
+		Exception exception = assertThrows(Exception.class, () -> {
+			this.restTemplate.postForObject(this.url, boundary, MiniAppCommandBoundary.class);
+		});
+
+		assertThat(exception.getMessage().contains("\"status\":400"));
+				
 	}
 	
 	@Test
@@ -476,36 +465,18 @@ public class CommandControllerTests {
 
 		commandBoundary.setTargetObject(targetObject);
 		
-		Map<String,Object> commandAttributes = new HashMap<>();
-		
-		commandAttributes.put("echo", Instant.now());
-
-		commandBoundary.setCommandAttributes(commandAttributes);
-		
 		commandBoundary.setCommand("echo");
-
-		Date beforeInvoking = createObjectResponse.getCreationTimestamp();
 		
 		var commandResponse  = this.restTemplate
-				.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandBoundary, String.class);
+				.postForObject(this.baseUrl + "/superapp/miniapp/TEST/", commandBoundary, MiniAppCommandEntity.class);
 
-		var getObjectByIdResponse  = this.restTemplate
-				.getForObject(
-						this.baseUrl + 
-						this.objectPrefix + 
-						createObjectResponse.getObjectId().getSuperapp() + "/" +
-						createObjectResponse.getObjectId().getInternalObjectId() 
-						+ "?userSuperapp="
-						+ createObjectResponse.getCreatedBy().get("userId").getSuperapp()
-						+ "&userEmail="
-						+ createObjectResponse.getCreatedBy().get("userId").getEmail()
 
-						, ObjectBoundary.class);
+		assertEquals(commandBoundary.getCommand(),commandResponse.getCommand());
+		assertEquals(commandBoundary.getCommandAttributes(),commandResponse.getCommandAttributes());
+		assertEquals(commandBoundary.getInvokedBy(),commandResponse.getInvokedBy());
+		assertEquals(commandBoundary.getTargetObject(),commandResponse.getTargetObject());
+		assertNotEquals(commandBoundary.getCommandId(),commandResponse.getCommand());
 
-		
-		Date afterInvoking = getObjectByIdResponse.getCreationTimestamp();
-
-		assertThat(afterInvoking.before(beforeInvoking));
 	}
 	
 	@Test
@@ -787,18 +758,27 @@ public class CommandControllerTests {
 		commandBoundary.setTargetObject(targetObject);
 		
 		commandBoundary.setCommand(UUID.randomUUID().toString());	
-		
-		Map<String,Object> commandAttributes = new HashMap<>();
-		
-		commandAttributes.put("echo", Instant.now().minus(2,ChronoUnit.DAYS));
-		
-		commandBoundary.setCommandAttributes(commandAttributes);
-		
-		var commandResponse  = this.restTemplate
+				
+		var response = this.restTemplate
 				.postForObject(this.url, commandBoundary, String.class);
+					
+		assertEquals("Command not found",response);
+		
+		String adminUserAsString  = helper.GetAdminUserBoundaryAsJson();
 
-		assertEquals(commandResponse.toString(), "Command not found");
+		NewUserBoundary adminUserBoundary = jackson.readValue(adminUserAsString,NewUserBoundary.class);
 
+		var createAdminUserRes = this.restTemplate
+				.postForObject(this.baseUrl + helper.userPrefix, adminUserBoundary, UserBoundary.class);	
+		
+		var getAllCommandsResponse = this.restTemplate
+				.getForObject(this.baseUrl + "/superapp/miniapp/getAllCommands/" +
+					"?size=20&userSuperapp=" + configProperties.getSuperAppName() +
+					"&userEmail=" +createAdminUserRes.getUserId().getEmail(),
+					MiniAppCommandBoundary[].class);
+
+
+		assertEquals(1,getAllCommandsResponse.length);		
 	}
 	
 	@Test 
