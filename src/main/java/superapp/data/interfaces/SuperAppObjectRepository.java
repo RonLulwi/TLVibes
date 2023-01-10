@@ -1,20 +1,21 @@
 package superapp.data.interfaces;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import superapp.data.SuperAppObjectEntity;
-import superapp.logic.boundaries.MiniAppCommandBoundary;
-import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.data.identifiers.ObjectId;
 
-public interface SuperAppObjectRepository extends PagingAndSortingRepository<SuperAppObjectEntity,SuperAppObjectIdBoundary> {
 
-    List<SuperAppObjectEntity> findBycreationTimestampAfter(Instant createdAfter);
+public interface SuperAppObjectRepository extends PagingAndSortingRepository<SuperAppObjectEntity,ObjectId> {
+
+    List<SuperAppObjectEntity> findBycreationTimestampAfter(Date createdAfter);
     
-    List<SuperAppObjectEntity> findBycreationTimestampAfterAndActive(boolean active, Instant createdAfter);
+    List<SuperAppObjectEntity> findBycreationTimestampAfterAndActive(boolean active, Date date);
 
 	List<SuperAppObjectEntity> findAllByParent(SuperAppObjectEntity parent, Pageable page);
 	

@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.lang.reflect.Array;
 import java.security.InvalidParameterException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
@@ -41,6 +42,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserRole;
 import superapp.data.enums.CreationEnum;
+import superapp.data.identifiers.ObjectId;
 import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.NewUserBoundary;
@@ -665,8 +667,12 @@ public class ObjectControllerTests {
 					
 					Map<String,Object> commandAttributes = new HashMap<>();
 					
-					commandAttributes.put("creationTimestamp", formatter.format(
-							Instant.now().minus(30,ChronoUnit.SECONDS)));
+
+					var date = 	ZonedDateTime.now()
+									.minus(30,ChronoUnit.SECONDS)
+									.format( DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+					
+					commandAttributes.put("creationTimestamp", date);
 	
 					commandBoundary.setCommand("objectTimeTravel");
 							
@@ -701,7 +707,7 @@ public class ObjectControllerTests {
 				+ createSuperAppRes.getUserId().getEmail()
 				, ObjectBoundary[].class);
 
-		assertEquals(4, allObjectsFromLastMinuts.length);
+		assertEquals(5, allObjectsFromLastMinuts.length);
 	}
 
 	private MiniAppCommandBoundary createCommandOnTargetByUser(UserBoundary createMiniAppUserRes,
@@ -768,13 +774,14 @@ public class ObjectControllerTests {
 
 		ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
 
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+		ObjectId objectId = new ObjectId(
 				configProperties.getSuperAppName(),
 				UUID.randomUUID().toString());
 		
 		SuperAppObjectEntity entity = objectConvertor.toEntity(boundary, objectId);
 		
-		assertNotEquals(entity.getObjectId(),boundary.getObjectId());
+		assertNotEquals(entity.getObjectId().getInternalObjectId(),boundary.getObjectId().getInternalObjectId());
+		assertNotEquals(entity.getObjectId().getSuperapp(),boundary.getObjectId().getSuperapp());
 		assertEquals(entity.getActive(),boundary.getActive());
 		assertEquals(entity.getAlias(), boundary.getAlias());
 		assertEquals(entity.getType(), boundary.getType());
@@ -788,7 +795,7 @@ public class ObjectControllerTests {
 		
 		SuperAppObjectEntity entity = new SuperAppObjectEntity();
 		
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+		ObjectId objectId = new ObjectId(
 				configProperties.getSuperAppName(),
 				UUID.randomUUID().toString());
 
@@ -810,7 +817,8 @@ public class ObjectControllerTests {
 		
 		ObjectBoundary boundary = objectConvertor.toBoundary(entity);
 		
-		assertEquals(entity.getObjectId(),boundary.getObjectId());
+		assertEquals(entity.getObjectId().getInternalObjectId(),boundary.getObjectId().getInternalObjectId());
+		assertEquals(entity.getObjectId().getSuperapp(),boundary.getObjectId().getSuperapp());
 		assertEquals(entity.getActive(),boundary.getActive());
 		assertEquals(entity.getAlias(), boundary.getAlias());
 		assertEquals(entity.getType(), boundary.getType());

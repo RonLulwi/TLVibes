@@ -169,6 +169,12 @@ public class AdminControllerTests {
 		
 		commandBoundary.setCommand(command);
 		
+		Map<String,Object> commandAttributes = new HashMap<>();
+
+		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.555+00:00");
+		
+		commandBoundary.setCommandAttributes(commandAttributes);
+
 		Map<String, UserId> invokedBy = new HashMap<>();
 		
 		invokedBy.put("userId", userId);
@@ -181,7 +187,6 @@ public class AdminControllerTests {
 
 		commandBoundary.setTargetObject(targetObject);
 		
-		//this.specificCommandUrl = this.baseUrl + "/superapp/miniapp/";
 		
 		return this.restTemplate.postForObject(
 				this.baseUrl

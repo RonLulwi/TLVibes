@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserEntity;
 import superapp.data.UserRole;
+import superapp.data.identifiers.ObjectId;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.EnhancedUsersService;
@@ -174,7 +175,7 @@ public class UserService implements EnhancedUsersService {
 		Guard.AgainstNull(objectSuperApp, objectSuperApp);
 		Guard.AgainstNull(internalObjectId, internalObjectId);
 		
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(objectSuperApp, internalObjectId);
+		ObjectId objectId = new ObjectId(objectSuperApp, internalObjectId);
 		Optional<SuperAppObjectEntity> optional = objectsRepositoy.findById(objectId);
 		if(optional.isEmpty())
 			throw new RuntimeException("could not find superAppObject with id : " + objectId.toString());
