@@ -29,6 +29,7 @@ public class SuperAppObjectEntity {
 	private String type;
 	private String alias;
 	private boolean active;
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationTimestamp;
 	@Convert(converter = SuperAppMapToJsonConverter.class)
 	private Map<String, UserId> createdBy;

@@ -402,7 +402,7 @@ public class CommandControllerTests {
 		commandBoundary.setTargetObject(targetObject);
 		
 		Map<String,Object> commandAttributes = new HashMap<>();
-												//2022-11-26T15:15:18.479+00:00
+
 		commandAttributes.put("creationTimestamp", "1985-10-26T01:22:00.555+00:00");
 
 		commandBoundary.setCommand("objectTimeTravel");

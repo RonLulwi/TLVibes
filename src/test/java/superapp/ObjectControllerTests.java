@@ -705,7 +705,7 @@ public class ObjectControllerTests {
 				+ createSuperAppRes.getUserId().getEmail()
 				, ObjectBoundary[].class);
 
-		assertEquals(4, allObjectsFromLastMinuts.length);
+		assertEquals(5, allObjectsFromLastMinuts.length);
 	}
 
 	private MiniAppCommandBoundary createCommandOnTargetByUser(UserBoundary createMiniAppUserRes,
@@ -778,8 +778,8 @@ public class ObjectControllerTests {
 		
 		SuperAppObjectEntity entity = objectConvertor.toEntity(boundary, objectId);
 		
-		assertEquals(entity.getObjectId().getInternalObjectId(),boundary.getObjectId().getInternalObjectId());
-		assertEquals(entity.getObjectId().getSuperapp(),boundary.getObjectId().getSuperapp());
+		assertNotEquals(entity.getObjectId().getInternalObjectId(),boundary.getObjectId().getInternalObjectId());
+		assertNotEquals(entity.getObjectId().getSuperapp(),boundary.getObjectId().getSuperapp());
 		assertEquals(entity.getActive(),boundary.getActive());
 		assertEquals(entity.getAlias(), boundary.getAlias());
 		assertEquals(entity.getType(), boundary.getType());

@@ -61,8 +61,14 @@ public class ObjectTimeTravelCommand implements ICommandInvokable {
 		
 		SuperAppObjectEntity current = optionalEntity.get();
 		
-		String newTimeStamp = "\"" + command.getCommandAttributes().get("creationTimestamp") +"\"" ;
-				
+		Object optionalNewTimeStamp = command.getCommandAttributes().get("creationTimestamp");
+	
+		if(optionalNewTimeStamp == null)
+		{
+			throw new IllegalArgumentException("creationTimestamp is missing");
+		}
+		String newTimeStamp= "\"" + optionalNewTimeStamp +"\"" ;
+		
 		Object updatedData;
 		
 		try {
