@@ -306,6 +306,8 @@ public class AdminControllerTests {
 		
 		var createObjectResponse = createObjectBySuperappUser(createSuperAppRes.getUserId());
 		
+		//TODO: MAP.class instead of Objects[].Class
+		
 		var response = createSpesificCommand(
 				"weather", "getTlvWeather",
 				createMiniAppUserRes.getUserId(),createObjectResponse.getObjectId()); 
