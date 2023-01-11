@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.lang.reflect.Array;
 import java.security.InvalidParameterException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
@@ -35,11 +36,13 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.ObjectIdInfo;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserRole;
 import superapp.data.enums.CreationEnum;
+import superapp.data.identifiers.ObjectId;
 import superapp.logic.ObjectsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 import superapp.logic.boundaries.NewUserBoundary;
@@ -49,6 +52,7 @@ import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.convertes.ObjectConvertor;
 import superapp.logic.infrastructure.ConfigProperties;
+import superapp.logic.infrastructure.SuperAppMapToJsonConverter;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ObjectControllerTests {
@@ -663,8 +667,12 @@ public class ObjectControllerTests {
 					
 					Map<String,Object> commandAttributes = new HashMap<>();
 					
-					commandAttributes.put("creationTimestamp", formatter.format(
-							Instant.now().minus(30,ChronoUnit.SECONDS)));
+
+					var date = 	ZonedDateTime.now()
+									.minus(30,ChronoUnit.SECONDS)
+									.format( DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+					
+					commandAttributes.put("creationTimestamp", date);
 	
 					commandBoundary.setCommand("objectTimeTravel");
 							
@@ -699,7 +707,7 @@ public class ObjectControllerTests {
 				+ createSuperAppRes.getUserId().getEmail()
 				, ObjectBoundary[].class);
 
-		assertEquals(4, allObjectsFromLastMinuts.length);
+		assertEquals(5, allObjectsFromLastMinuts.length);
 	}
 
 	private MiniAppCommandBoundary createCommandOnTargetByUser(UserBoundary createMiniAppUserRes,
@@ -766,13 +774,14 @@ public class ObjectControllerTests {
 
 		ObjectBoundary boundary = jackson.readValue(objectboundaryAsString,ObjectBoundary.class);
 
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+		ObjectId objectId = new ObjectId(
 				configProperties.getSuperAppName(),
 				UUID.randomUUID().toString());
 		
 		SuperAppObjectEntity entity = objectConvertor.toEntity(boundary, objectId);
 		
-		assertNotEquals(entity.getObjectId(),boundary.getObjectId());
+		assertNotEquals(entity.getObjectId().getInternalObjectId(),boundary.getObjectId().getInternalObjectId());
+		assertNotEquals(entity.getObjectId().getSuperapp(),boundary.getObjectId().getSuperapp());
 		assertEquals(entity.getActive(),boundary.getActive());
 		assertEquals(entity.getAlias(), boundary.getAlias());
 		assertEquals(entity.getType(), boundary.getType());
@@ -786,7 +795,7 @@ public class ObjectControllerTests {
 		
 		SuperAppObjectEntity entity = new SuperAppObjectEntity();
 		
-		SuperAppObjectIdBoundary objectId = new SuperAppObjectIdBoundary(
+		ObjectId objectId = new ObjectId(
 				configProperties.getSuperAppName(),
 				UUID.randomUUID().toString());
 
@@ -808,7 +817,8 @@ public class ObjectControllerTests {
 		
 		ObjectBoundary boundary = objectConvertor.toBoundary(entity);
 		
-		assertEquals(entity.getObjectId(),boundary.getObjectId());
+		assertEquals(entity.getObjectId().getInternalObjectId(),boundary.getObjectId().getInternalObjectId());
+		assertEquals(entity.getObjectId().getSuperapp(),boundary.getObjectId().getSuperapp());
 		assertEquals(entity.getActive(),boundary.getActive());
 		assertEquals(entity.getAlias(), boundary.getAlias());
 		assertEquals(entity.getType(), boundary.getType());
@@ -816,8 +826,95 @@ public class ObjectControllerTests {
 		assertEquals(entity.getCreationTimestamp(),boundary.getCreationTimestamp());
 		assertEquals(entity.getObjectDetails(), boundary.getObjectDetails());
 	}
-
+	@Test
+	public void testBindTwoObjectsAndGetChildObjectHisParentObjectHappyFlow() throws JsonMappingException, JsonProcessingException {
 	
+		// create superAppUser
+		UserBoundary superAppUser = addSuperAppUserToDatabase();
+		
+		// create two objects father and child
+		ObjectBoundary father = addSuperAppUserByUserToDatabase(superAppUser);
+		ObjectBoundary child = addSuperAppUserByUserToDatabase(superAppUser);
+		
+		// extract objectId from child
+		SuperAppObjectIdBoundary childObjectId = child.getObjectId();
+		
+		// bindChild URL  
+		String myURL = this.baseUrl + helper.objectPrefix + father.getObjectId().getSuperapp() + "/" + father.getObjectId().getInternalObjectId() + "/children"
+		+"?userSuperapp="
+				+father.getCreatedBy().get("userId").getSuperapp()
+				+"&userEmail="
+				+father.getCreatedBy().get("userId").getEmail() ;
+		
+		// bind father and child
+		this.restTemplate.put(myURL, childObjectId);
 
+		// getParents URL
+		String myURL2 = this.baseUrl + helper.objectPrefix + child.getObjectId().getSuperapp() + "/" + child.getObjectId().getInternalObjectId() + "/parents"
+				+"?userSuperapp="
+						+superAppUser.getUserId().getSuperapp()
+						+"&userEmail="
+						+superAppUser.getUserId().getEmail() ;
+		// get parent from DB
+		ObjectBoundary[] childParentFromDB = this.restTemplate.getForObject(myURL2, ObjectBoundary[].class);
+		
+		
+		// check if father is equals to childParentFromDB
+		assertEquals(childParentFromDB[0].getObjectId(),father.getObjectId());
+		assertEquals(childParentFromDB[0].getActive(),father.getActive());
+		assertEquals(childParentFromDB[0].getAlias(), father.getAlias());
+		assertEquals(childParentFromDB[0].getType(), father.getType());
+		assertEquals(childParentFromDB[0].getCreatedBy(),father.getCreatedBy());
+		assertEquals(childParentFromDB[0].getCreationTimestamp(),father.getCreationTimestamp());
+		assertEquals(childParentFromDB[0].getObjectDetails(), father.getObjectDetails());
+
+	}
+	
+	@Test
+	public void testBindTwoObjectsAndGetParentObjectHisChildObjectHappyFlow() throws JsonMappingException, JsonProcessingException {
+	
+		// create superAppUser
+		UserBoundary superAppUser = addSuperAppUserToDatabase();
+		
+		// create two objects father and child
+		ObjectBoundary father = addSuperAppUserByUserToDatabase(superAppUser);
+		ObjectBoundary child = addSuperAppUserByUserToDatabase(superAppUser);
+		
+		// extract objectId from child
+		SuperAppObjectIdBoundary childObjectId = child.getObjectId();
+		
+		// bindChild URL  
+		String myURL = this.baseUrl + helper.objectPrefix + father.getObjectId().getSuperapp() + "/" + father.getObjectId().getInternalObjectId() + "/children"
+		+"?userSuperapp="
+				+father.getCreatedBy().get("userId").getSuperapp()
+				+"&userEmail="
+				+father.getCreatedBy().get("userId").getEmail() ;
+		
+		// bind father and child
+		this.restTemplate.put(myURL, childObjectId);
+
+		// getParents URL
+		String myURL2 = this.baseUrl + helper.objectPrefix + father.getObjectId().getSuperapp() + "/" + father.getObjectId().getInternalObjectId() + "/children"
+				+"?userSuperapp="
+						+superAppUser.getUserId().getSuperapp()
+						+"&userEmail="
+						+superAppUser.getUserId().getEmail() ;
+		// get child from DB
+		ObjectBoundary[] fatherChildFromDB = this.restTemplate.getForObject(myURL2, ObjectBoundary[].class);
+		
+		
+		// check if father is equals to fatherChildFromDB
+		assertEquals(fatherChildFromDB[0].getObjectId(),child.getObjectId());
+		assertEquals(fatherChildFromDB[0].getActive(),child.getActive());
+		assertEquals(fatherChildFromDB[0].getAlias(), child.getAlias());
+		assertEquals(fatherChildFromDB[0].getType(), child.getType());
+		assertEquals(fatherChildFromDB[0].getCreatedBy(),child.getCreatedBy());
+		assertEquals(fatherChildFromDB[0].getCreationTimestamp(),child.getCreationTimestamp());
+		assertEquals(fatherChildFromDB[0].getObjectDetails(), child.getObjectDetails());
+
+	}
+	
+	
+	
 
 }

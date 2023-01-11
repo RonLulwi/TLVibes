@@ -76,11 +76,6 @@ public class MiniAppCommandService implements EnhancedMiniAppCommandsService {
 		String userSuperApp = boundary.getInvokedBy().get("userId").getSuperapp();
 		String userEmail = boundary.getInvokedBy().get("userId").getEmail();
 		
-		
-//		UserBoundary user = userService.login(userSuperApp, userEmail);
-//		if(user.getRole() != UserRole.MINIAPP_USER)
-//			throw new UnAuthoriezedRoleRequestException("Only MiniApp user has permission!");
-		
 		UserId userId = new UserId(userSuperApp,userEmail);
 		Optional<UserEntity> user = this.userRepository.findById(userId);
 		if(user == null)

@@ -18,17 +18,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import superapp.logic.boundaries.identifiers.SuperAppObjectIdBoundary;
+import superapp.data.identifiers.ObjectId;
 import superapp.logic.boundaries.identifiers.UserId;
 import superapp.logic.infrastructure.SuperAppMapToJsonConverter;
 
 @Entity
 public class SuperAppObjectEntity {
 	
-	@EmbeddedId private SuperAppObjectIdBoundary objectId;
+	@EmbeddedId private ObjectId objectId;
 	private String type;
 	private String alias;
 	private boolean active;
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date creationTimestamp;
 	@Convert(converter = SuperAppMapToJsonConverter.class)
 	private Map<String, UserId> createdBy;
@@ -52,18 +53,18 @@ public class SuperAppObjectEntity {
 		this.createdBy = new HashMap<String,UserId>();
 	}
 	
-	public SuperAppObjectEntity(SuperAppObjectIdBoundary objectId, Map<String,UserId> createdBy) {
+	public SuperAppObjectEntity(ObjectId objectId, Map<String,UserId> createdBy) {
 		this();
 		this.objectId = objectId;
 		this.createdBy = createdBy;
 	}
 
-	public SuperAppObjectIdBoundary getObjectId() {
+	public ObjectId getObjectId() {
 		return objectId;
 	}
 
 
-	public void setObjectId(SuperAppObjectIdBoundary objectId) {
+	public void setObjectId(ObjectId objectId) {
 		this.objectId = objectId;
 	}
 
