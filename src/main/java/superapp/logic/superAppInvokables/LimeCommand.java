@@ -26,9 +26,10 @@ import superapp.logic.services.MissingCommandOnPostRequestException;
 public class LimeCommand implements ICommandInvokable {
 
 	private RestTemplate restTemplate;
-	private String commandName = "getScooters"; //TODO: Change to final?
-	private String limeApiBaseUrl = "https://web-production.lime.bike/api/rider/v1/views/map?ne_lat=32.067441&ne_lng=34.781682&sw_lat=32.06512&sw_lng=34.779361&user_latitude=32.066429&user_longitude=34.780670&zoom=14";
+	private String commandName = "getScooters";
+	private String limeApiBaseUrl = "https://web-production.lime.bike/api/rider/v1/views/map?";
 	private ObjectMapper jackson;
+	
 	
 	
 	@Value("${lime.header.key}")
@@ -37,12 +38,9 @@ public class LimeCommand implements ICommandInvokable {
 	@Value("${lime.header.value}")
 	private String headerValue;
 	
-
-	/*
-	 * private double user_latitude;
-	 * private double user_longitude;
-	 * private int zoom;
-	 */
+	private double user_latitude = 32.066429;
+	private double user_longitude = 34.780670;
+	 
 	
 	@Autowired
 	public void setRestTemplate(RestTemplateBuilder builder) {
@@ -61,8 +59,9 @@ public class LimeCommand implements ICommandInvokable {
 			throw new RuntimeException("Invalid command name : " + commandName);
 		}
 		
+		buildUrl(command);
 		ResponseEntity<String> response;
-
+		ArrayList<Lime> limes = null;
 	    try {
 	    	var header = new HttpHeaders();
 	    	header.set(headerKey, headerValue);
@@ -71,7 +70,7 @@ public class LimeCommand implements ICommandInvokable {
 	    	
 	    	JsonNode root = jackson.readTree(response.getBody());
 	    	JsonNode innerNode = root.get("data").get("attributes").get("bikes");
-	    	ArrayList<Lime> limes = new ArrayList<>();
+	    	limes = new ArrayList<>();
 	    	Iterator<JsonNode> elements = innerNode.elements();
 	    	while(elements.hasNext()) {
 	    		JsonNode element = elements.next().get("attributes");
@@ -79,14 +78,38 @@ public class LimeCommand implements ICommandInvokable {
 	    		limes.add(lime);
 	    		
 	    	}	
-	    	System.err.println(limes.get(0));
-	    	System.err.println(limes.get(1));
+	    	
 	    }
 	    catch (Exception e) {
 	    	throw new MissingCommandOnPostRequestException("Something Went wrong");
 	    }
-	    	
-	    return response;
+	    finishRequest();
+	    return limes;
+	}
+	
+	
+	
+	private void finishRequest() {
+		this.limeApiBaseUrl = "https://web-production.lime.bike/api/rider/v1/views/map?";
+		this.user_latitude = 32.066429;
+		this.user_longitude = 34.780670;
+		
+	}
+
+	private void buildUrl(MiniAppCommandEntity command) {	
+		if (command.getCommandAttributes().containsKey("user_latitude") && command.getCommandAttributes().get("user_latitude") != null) {
+			this.user_latitude = (double) command.getCommandAttributes().get("user_latitude");
+		}
+		if(command.getCommandAttributes().containsKey("user_longitude") && command.getCommandAttributes().get("user_longitude") != null) {
+			this.user_longitude = (double) command.getCommandAttributes().get("user_longitude");
+		}
+		
+		double ne_lat = this.user_latitude + 0.001012;
+		double ne_lng = this.user_longitude + 0.001012;
+		double sw_lat = this.user_latitude - 0.001309;
+		double sw_lng = this.user_longitude - 0.001309;
+		
+		limeApiBaseUrl += "ne_lat="+ ne_lat +"&ne_lng="+ ne_lng +"&sw_lat="+ sw_lat +"&sw_lng="+ sw_lng +"&user_latitude="+ this.user_latitude +"&user_longitude="+ this.user_longitude +"&zoom=14";
 	}
 
 }

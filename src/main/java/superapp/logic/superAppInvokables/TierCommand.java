@@ -28,8 +28,13 @@ public class TierCommand implements ICommandInvokable {
 
 	private RestTemplate restTemplate;
 	private String commandName = "getScooters"; //TODO: Change to final?
-	private String tierApiBaseUrl = "https://platform.tier-services.io/v1/vehicle?lat=32.085300&lng=34.781769&radius=200";
+	private String tierApiBaseUrl = "https://platform.tier-services.io/v1/vehicle?";
+	
+	
 	private ObjectMapper jackson;
+	private double lat = 32.085300;
+	private double lng=34.781769;
+	private int radius=200;
 	
 	@Value("${tier.header.key}")
 	private String headerKey;
@@ -38,10 +43,7 @@ public class TierCommand implements ICommandInvokable {
 	private String headerValue;
 	
 	
-	/*
-	 * private double user_latitude;
-	 * private double user_longitude;
-	 */
+	
 	
 	@Autowired
 	public void setRestTemplate(RestTemplateBuilder builder) {
@@ -59,8 +61,10 @@ public class TierCommand implements ICommandInvokable {
 		if(!command.getCommand().equals(commandName)){
 			throw new RuntimeException("Invalid command name : " + commandName);
 		}
+		
+		buildUrl(command);
 		ResponseEntity<String> response;
-
+		ArrayList<Tier> tiers = null;
 	    try {
 	    	var header = new HttpHeaders();
 	    	header.set(headerKey, headerValue);
@@ -69,22 +73,43 @@ public class TierCommand implements ICommandInvokable {
 	    	
 	    	JsonNode root = jackson.readTree(response.getBody());
 	    	JsonNode innerNode = root.get("data");
-	    	ArrayList<Tier> limes = new ArrayList<>();
+	    	tiers = new ArrayList<>();
 	    	Iterator<JsonNode> elements = innerNode.elements();
 	    	while(elements.hasNext()) {
 	    		JsonNode element = elements.next().get("attributes");
-	    		Tier lime = jackson.convertValue(element, Tier.class);
-	    		limes.add(lime);
+	    		Tier tier = jackson.convertValue(element, Tier.class);
+	    		tiers.add(tier);
 	    		
 	    	}	
-	    	System.err.println(limes.get(0));
-	    	System.err.println(limes.get(1));
+
 	    }
 	    catch (Exception e) {
 	    	throw new MissingCommandOnPostRequestException("Something Went wrong");
 	    }
-	    	
-	    return response;
+	    finishRequest();
+	    return tiers;
+	}
+	
+	private void finishRequest() {
+		this.tierApiBaseUrl = "https://platform.tier-services.io/v1/vehicle?";
+		this.lat = 32.085300;
+		this.lng=34.781769;
+		this.radius=200;
+		
+	}
+
+	private void buildUrl(MiniAppCommandEntity command) {	
+		if (command.getCommandAttributes().containsKey("lat") && command.getCommandAttributes().get("lat") != null) {
+			this.lat = (double) command.getCommandAttributes().get("lat");
+		}
+		if(command.getCommandAttributes().containsKey("lng") && command.getCommandAttributes().get("lng") != null) {
+			this.lng = (double) command.getCommandAttributes().get("lng");
+		}
+		if(command.getCommandAttributes().containsKey("radius") && command.getCommandAttributes().get("radius") != null) {
+			this.radius = (int) command.getCommandAttributes().get("radius");
+		}
+
+		tierApiBaseUrl += "lat="+ this.lat +"&lng="+ this.lng +"&radius=" + this.radius;		
 	}
 
 }
