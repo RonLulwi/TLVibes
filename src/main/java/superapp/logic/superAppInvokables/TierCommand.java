@@ -20,28 +20,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import superapp.data.Lime;
 import superapp.data.MiniAppCommandEntity;
+import superapp.data.Tier;
 import superapp.logic.services.MissingCommandOnPostRequestException;
 
-@Component(value = "lime.getScooters")
-public class LimeCommand implements ICommandInvokable {
+@Component(value = "tier.getScooters")
+public class TierCommand implements ICommandInvokable {
 
 	private RestTemplate restTemplate;
 	private String commandName = "getScooters"; //TODO: Change to final?
-	private String limeApiBaseUrl = "https://web-production.lime.bike/api/rider/v1/views/map?ne_lat=32.067441&ne_lng=34.781682&sw_lat=32.06512&sw_lng=34.779361&user_latitude=32.066429&user_longitude=34.780670&zoom=14";
+	private String tierApiBaseUrl = "https://platform.tier-services.io/v1/vehicle?lat=32.085300&lng=34.781769&radius=200";
 	private ObjectMapper jackson;
 	
-	
-	@Value("${lime.header.key}")
+	@Value("${tier.header.key}")
 	private String headerKey;
 	
-	@Value("${lime.header.value}")
+	@Value("${tier.header.value}")
 	private String headerValue;
 	
-
+	
 	/*
 	 * private double user_latitude;
 	 * private double user_longitude;
-	 * private int zoom;
 	 */
 	
 	@Autowired
@@ -60,22 +59,21 @@ public class LimeCommand implements ICommandInvokable {
 		if(!command.getCommand().equals(commandName)){
 			throw new RuntimeException("Invalid command name : " + commandName);
 		}
-		
 		ResponseEntity<String> response;
 
 	    try {
 	    	var header = new HttpHeaders();
 	    	header.set(headerKey, headerValue);
 	    	HttpEntity request = new HttpEntity(header);
-	    	response = restTemplate.exchange(limeApiBaseUrl, HttpMethod.GET, request, String.class);
+	    	response = restTemplate.exchange(tierApiBaseUrl, HttpMethod.GET, request, String.class);
 	    	
 	    	JsonNode root = jackson.readTree(response.getBody());
-	    	JsonNode innerNode = root.get("data").get("attributes").get("bikes");
-	    	ArrayList<Lime> limes = new ArrayList<>();
+	    	JsonNode innerNode = root.get("data");
+	    	ArrayList<Tier> limes = new ArrayList<>();
 	    	Iterator<JsonNode> elements = innerNode.elements();
 	    	while(elements.hasNext()) {
 	    		JsonNode element = elements.next().get("attributes");
-	    		Lime lime = jackson.convertValue(element, Lime.class);
+	    		Tier lime = jackson.convertValue(element, Tier.class);
 	    		limes.add(lime);
 	    		
 	    	}	

@@ -1,67 +1,43 @@
 package superapp.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 public class Lime {
 	
-	private Map<String,Object> data;
-	//private Map<String,Object> attributes;
-	private ArrayList<Map<String,Object>> bikes; //TODO: Maybe change to Object
-	private Map<String,Object> attributes;
-	private int index = 0;
+	private double longitude;
+	private double latitude;
+	private int battery_percentage;
 	
-
-	public ArrayList<Map<String, Object>> getBikes() {
-		return bikes;
-	}
-
-	public void setBikes(ArrayList<Map<String, Object>> bikes) {
-		this.bikes = bikes;
-	}
-
-	public Map<String, Object> getAttributes() {
-		return attributes;
-	}
-
-	public void setAttributes(Map<String, Object> attributes) {
-		this.attributes = attributes;
-	}
-
-	public int getIndex() {
-		return index;
-	}
-
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
-	public Map<String, Object> getData() {
-		return data;
-	}
-
-	public void setData(Map<String, Object> data) {
-		this.data = data;
-	}
+	public Lime() {}
 	
-	public void initVars() {
-		this.bikes = 
-				(ArrayList<Map<String, Object>>) 
-				(((Map<String, Object>) this.data.get("attributes"))
-				.get("bikes"));
-		
-		this.index = 0;
-		this.attributes = new HashMap<>();
-		for(var element: this.bikes) {
-			attributes.put(index++ + "", element);
-		}
+	public double getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+	public double getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public int getBattery_percentage() {
+		return battery_percentage;
+	}
+
+	public void setBattery_percentage(int battery_percentage) {
+		this.battery_percentage = battery_percentage;
 	}
 
 	@Override
 	public String toString() {
-		return "Lime [bikes=" + bikes + "]";
+		return "Lime [longitude=" + longitude + ", latitude=" + latitude + ", battery_percentage=" + battery_percentage
+				+ "]";
 	}
+	
+	
+
+	
 	
 	
 	
