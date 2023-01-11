@@ -307,6 +307,7 @@ public class AdminControllerTests {
 				"weather", "getTlvWeather",
 				createMiniAppUserRes.getUserId(),createObjectResponse.getObjectId()); 
 		
+		
 		var response2 = createSpesificCommand(
 				"weather", "getTlvWeather",
 				createMiniAppUserRes.getUserId(),createObjectResponse.getObjectId()); 
@@ -330,7 +331,7 @@ public class AdminControllerTests {
 		responseLst.add(response3);
 		responseLst.add(response4);
 		
-		System.err.println(response4);
+		
 		
 		
 		var weatherCommandsRes = this.restTemplate.getForObject(
