@@ -5,6 +5,7 @@ public class Tier {
 	private double lat;
 	private double lng;
 	private int batteryLevel;
+	
 	public double getLat() {
 		return lat;
 	}
