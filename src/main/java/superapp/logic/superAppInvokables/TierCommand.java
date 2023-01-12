@@ -32,6 +32,7 @@ public class TierCommand implements ICommandInvokable {
 	
 	
 	private ObjectMapper jackson;
+	
 	private double lat = 32.085300;
 	private double lng=34.781769;
 	private int radius=200;
@@ -74,11 +75,14 @@ public class TierCommand implements ICommandInvokable {
 	    	JsonNode root = jackson.readTree(response.getBody());
 	    	JsonNode innerNode = root.get("data");
 	    	tiers = new ArrayList<>();
+	    	
 	    	Iterator<JsonNode> elements = innerNode.elements();
-	    	while(elements.hasNext()) {
+	    	int count=0;
+	    	while(elements.hasNext() && count<20) {
 	    		JsonNode element = elements.next().get("attributes");
 	    		Tier tier = jackson.convertValue(element, Tier.class);
 	    		tiers.add(tier);
+	    		count++;
 	    		
 	    	}	
 

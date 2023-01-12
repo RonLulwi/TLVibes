@@ -42,6 +42,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import superapp.data.Lime;
 import superapp.data.MiniAppCommandEntity;
+import superapp.data.Tier;
 import superapp.data.UserRole;
 import superapp.data.interfaces.MiniAppCommandRepository;
 import superapp.data.interfaces.SuperAppObjectRepository;
@@ -931,6 +932,7 @@ public class CommandControllerTests {
 				+ "tier"
 				, commandBoundary, Object.class);
 		assertNotNull(response);
+		
 
 	}
 	
@@ -987,7 +989,7 @@ public class CommandControllerTests {
 		Map<String, Object> commandAttributes = new HashMap<>();
 		commandAttributes.put("lat", 32.106171);
 		commandAttributes.put("lng", 34.815309);
-		commandAttributes.put("radius", 2000);
+		commandAttributes.put("radius", 20000);
 		commandBoundary.setCommandAttributes(commandAttributes);
 		
 		
@@ -1080,7 +1082,5 @@ public class CommandControllerTests {
 				, commandBoundary, Object.class);
 		assertNotNull(response);
 	}
-
-	
 
 }

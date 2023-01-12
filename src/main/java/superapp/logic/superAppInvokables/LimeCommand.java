@@ -70,13 +70,16 @@ public class LimeCommand implements ICommandInvokable {
 	    	
 	    	JsonNode root = jackson.readTree(response.getBody());
 	    	JsonNode innerNode = root.get("data").get("attributes").get("bikes");
+	    	
 	    	limes = new ArrayList<>();
+	    	
 	    	Iterator<JsonNode> elements = innerNode.elements();
-	    	while(elements.hasNext()) {
+	    	int count =0;
+	    	while(elements.hasNext() && count <20) {
 	    		JsonNode element = elements.next().get("attributes");
 	    		Lime lime = jackson.convertValue(element, Lime.class);
 	    		limes.add(lime);
-	    		
+	    		count++;
 	    	}	
 	    	
 	    }
