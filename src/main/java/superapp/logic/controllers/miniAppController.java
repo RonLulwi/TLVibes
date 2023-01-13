@@ -2,6 +2,7 @@ package superapp.logic.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import superapp.logic.EnhancedMiniAppCommandsService;
 import superapp.logic.boundaries.MiniAppCommandBoundary;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class miniAppController {
 	private EnhancedMiniAppCommandsService MiniAppCommand;
 

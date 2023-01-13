@@ -55,7 +55,7 @@ public class ChatAnswerCommand implements ICommandInvokable {
 	    
 	    
 		
-		return response.getBody().getChoices().get(0).get("text");
+		return response.getBody().getChoices().get(0);
 		
 	}
 

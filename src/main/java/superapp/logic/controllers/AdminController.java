@@ -1,6 +1,7 @@
 package superapp.logic.controllers;
 
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -14,6 +15,7 @@ import superapp.logic.services.ObjectService;
 import superapp.logic.services.UserService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
 	private UserService userService;
 	private ObjectService objectService;
