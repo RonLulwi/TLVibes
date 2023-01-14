@@ -27,6 +27,12 @@ public class SuperAppInitializer implements CommandLineRunner{
 	@Value("${scooter.defualtid}")
 	private String scooterId;
 	
+	@Value("${weather.defualtid}")
+	private String weatherId;
+	
+	@Value("${chatgpt.defualtid}")
+	private String chatGptId;
+	
 	@Value("${miniappuser.defualtemail}")
 	private String miniAppUserEmail;
 	
@@ -34,7 +40,8 @@ public class SuperAppInitializer implements CommandLineRunner{
 	
 	
 	@Autowired
-	public SuperAppInitializer(SuperAppObjectRepository objectsRepository, UserEntityRepository usersRepository, ConfigProperties configProperties) {
+	public SuperAppInitializer(SuperAppObjectRepository objectsRepository, 
+			UserEntityRepository usersRepository, ConfigProperties configProperties) {
 		this.objectsRepository = objectsRepository;
 		this.configProperties = configProperties;
 		this.usersRepository = usersRepository;
@@ -43,20 +50,55 @@ public class SuperAppInitializer implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		
-		ObjectId objectId = new ObjectId(configProperties.getSuperAppName(), scooterId);
+		ObjectId scooterObjectId = new ObjectId(configProperties.getSuperAppName(), scooterId);
+		SuperAppObjectEntity objectEntity = null;
 		
-		if(!this.objectsRepository.existsById(objectId)) {
+		if(!this.objectsRepository.existsById(scooterObjectId)) {
 			
-			SuperAppObjectEntity objectEntity = new SuperAppObjectEntity();
+			objectEntity = new SuperAppObjectEntity();
 			objectEntity.setActive(true);
 			objectEntity.setAlias("scooter");
 			objectEntity.setChildrens(null);
 			objectEntity.setCreatedBy(null);
 			objectEntity.setCreationTimestamp(new Date());
 			objectEntity.setObjectDetails(new HashMap<String, Object>());
-			objectEntity.setObjectId(objectId);
+			objectEntity.setObjectId(scooterObjectId);
 			objectEntity.setParent(null);
 			objectEntity.setType("vendor");			
+			this.objectsRepository.save(objectEntity);
+		}
+		
+		ObjectId weatherObjectId = new ObjectId(configProperties.getSuperAppName(), weatherId);
+		
+		if(!this.objectsRepository.existsById(weatherObjectId)) {
+			
+			objectEntity = new SuperAppObjectEntity();
+			objectEntity.setActive(true);
+			objectEntity.setAlias("weather");
+			objectEntity.setChildrens(null);
+			objectEntity.setCreatedBy(null);
+			objectEntity.setCreationTimestamp(new Date());
+			objectEntity.setObjectDetails(new HashMap<String, Object>());
+			objectEntity.setObjectId(weatherObjectId);
+			objectEntity.setParent(null);
+			objectEntity.setType("climate");			
+			this.objectsRepository.save(objectEntity);
+		}
+		
+		ObjectId chatGptObjectId = new ObjectId(configProperties.getSuperAppName(), chatGptId);
+		
+		if(!this.objectsRepository.existsById(weatherObjectId)) {
+			
+			objectEntity = new SuperAppObjectEntity();
+			objectEntity.setActive(true);
+			objectEntity.setAlias("chatGpt");
+			objectEntity.setChildrens(null);
+			objectEntity.setCreatedBy(null);
+			objectEntity.setCreationTimestamp(new Date());
+			objectEntity.setObjectDetails(new HashMap<String, Object>());
+			objectEntity.setObjectId(chatGptObjectId);
+			objectEntity.setParent(null);
+			objectEntity.setType("answerAI");			
 			this.objectsRepository.save(objectEntity);
 		}
 			
