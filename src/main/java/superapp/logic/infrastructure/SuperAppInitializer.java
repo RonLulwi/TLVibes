@@ -1,24 +1,24 @@
 package superapp.logic.infrastructure;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import superapp.data.SuperAppObjectEntity;
 import superapp.data.UserEntity;
 import superapp.data.UserRole;
+import superapp.data.identifiers.ObjectEntityId;
 import superapp.data.identifiers.ObjectId;
+import superapp.data.identifiers.UserEntityId;
 import superapp.data.interfaces.SuperAppObjectRepository;
 import superapp.data.interfaces.UserEntityRepository;
 import superapp.logic.boundaries.identifiers.UserId;
 
+@Component
 public class SuperAppInitializer implements CommandLineRunner{
 	
 	private SuperAppObjectRepository objectsRepository;
@@ -87,7 +87,7 @@ public class SuperAppInitializer implements CommandLineRunner{
 		
 		ObjectId chatGptObjectId = new ObjectId(configProperties.getSuperAppName(), chatGptId);
 		
-		if(!this.objectsRepository.existsById(weatherObjectId)) {
+		if(!this.objectsRepository.existsById(chatGptObjectId)) {
 			
 			objectEntity = new SuperAppObjectEntity();
 			objectEntity.setActive(true);

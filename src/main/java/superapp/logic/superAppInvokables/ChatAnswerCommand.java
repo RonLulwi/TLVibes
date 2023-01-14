@@ -34,12 +34,20 @@ public class ChatAnswerCommand implements ICommandInvokable {
 	@Override
 	public Object Invoke(MiniAppCommandEntity command) {
 			
+		Object prompt = command.getCommandAttributes().get("prompt");
+		
+		if(prompt == null || prompt.toString() == "")
+		{
+			throw new RuntimeException();
+		}
+		
+		
 	    HttpHeaders headers = new HttpHeaders();
 	    headers.setContentType(MediaType.APPLICATION_JSON);
 	    headers.setBearerAuth(this.apiKey);
 
 	    Map<String, Object> requestBody = new HashMap<>();
-	    requestBody.put("prompt", command.getCommandAttributes().get("prompt"));
+	    requestBody.put("prompt", prompt);
 	    requestBody.put("max_tokens", 128);
 	    requestBody.put("temperature", 0.5);
 	    requestBody.put("top_p", 1.0);
@@ -53,8 +61,6 @@ public class ChatAnswerCommand implements ICommandInvokable {
 	    	throw new MissingCommandOnPostRequestException("");
 	    }
 	    
-	    
-		
 		return response.getBody().getChoices().get(0);
 		
 	}
