@@ -2,6 +2,7 @@ package superapp.logic.superAppInvokables;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,8 @@ public class WeatherCommand implements ICommandInvokable{
 
 	private RestTemplate restTemplate;
 	private String commandName = "getTlvWeather";
+//	@Value("${weather.apiKey}")
+//	private String apiKey;
 	private String weatherApiBaseUrl = "http://api.weatherapi.com/v1/forecast.json?key=639005825020473197c185446230301&q=Tel%20Aviv&aqi=no";
 	
 	
