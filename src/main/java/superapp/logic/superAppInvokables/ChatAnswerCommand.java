@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,7 +22,9 @@ import superapp.logic.services.MissingCommandOnPostRequestException;
 public class ChatAnswerCommand implements ICommandInvokable {
 	
 	private String commandName = "chatAnswer";
-	private String apiKey = "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";
+	//private String apiKey = "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";
+	@Value("${chatgpt.apiKey}")
+	private String apiKey;
 	private RestTemplate restTemplate;
 	private String gptApiUrl = "https://api.openai.com/v1/engines/text-davinci-003/completions";
 
